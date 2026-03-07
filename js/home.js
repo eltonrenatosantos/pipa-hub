@@ -1,10 +1,30 @@
-import { events } from "./events.js";
+import { supabase } from "./supabase.js";
 
-function init() {
+async function init() {
 
-/* Separar tipos de evento */
-const stories = events.filter(e => e.plan === "story");
-const featuredEvents = events.filter(e => e.plan === "featured");
+  /* navegação para página do mapa */
+  const mapNav = document.querySelector('[data-page="map"]');
+
+  if (mapNav) {
+    mapNav.addEventListener("click", () => {
+      window.location.href = "map.html";
+    });
+  }
+
+  /* buscar eventos do banco */
+  const { data: events, error } = await supabase
+    .from("events")
+    .select("*")
+    .order("date", { ascending: true });
+
+  if (error) {
+    console.error("Erro ao buscar eventos:", error);
+    return;
+  }
+
+/* separar eventos para home */
+const stories = events.slice(0, 10);
+const featuredEvents = events.slice(0, 5);
 
 /* -------------------------
    STORIES (abre Instagram)
@@ -21,10 +41,12 @@ if (!storiesContainer) {
 let isDragging = false;
 let startX = 0;
 let startScroll = 0;
+let dragMoved = false;
 
 storiesContainer.addEventListener("mousedown", (e) => {
   if (e.button !== 0) return; // apenas botão esquerdo
   isDragging = true;
+  dragMoved = false;
   startX = e.pageX;
   startScroll = storiesContainer.scrollLeft;
   document.body.style.userSelect = "none"; // evita seleção de texto
@@ -38,6 +60,11 @@ window.addEventListener("mouseup", () => {
 storiesContainer.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
   const dx = e.pageX - startX;
+
+  if (Math.abs(dx) > 5) {
+    dragMoved = true;
+  }
+
   storiesContainer.scrollLeft = startScroll - dx;
 });
 
@@ -68,11 +95,19 @@ stories.forEach(event => {
     </div>
   `;
 
-  card.onclick = () => {
-    if (event.instagram_url) {
-      window.open(event.instagram_url, "_blank");
-    }
-  };
+  const btn = card.querySelector(".story-button");
+
+  if (btn) {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+
+      if (dragMoved) return;
+
+      if (event.instagram) {
+        window.open(event.instagram, "_blank");
+      }
+    });
+  }
 
   storiesContainer.appendChild(card);
 
@@ -89,7 +124,19 @@ if (!highlightCard) {
   return;
 }
 
+/* mostrar cursor de arrastar igual aos stories */
+highlightCard.style.cursor = "grab";
+
 let currentSlide = 0;
+let touchStartX = 0;
+let touchEndX = 0;
+let isSwiping = false;
+let isDraggingHighlight = false;
+
+function prevSlide() {
+  currentSlide = (currentSlide - 1 + featuredEvents.length) % featuredEvents.length;
+  renderFeatured();
+}
 
 function renderFeatured() {
 
@@ -105,12 +152,20 @@ function renderFeatured() {
       <div class="highlight-overlay">
         <h2 class="highlight-title">${event.title}</h2>
         <p class="highlight-meta">${event.location} • ${event.date}</p>
+
+        <div class="highlight-button">
+          Ver mais
+        </div>
       </div>
     `;
 
-    highlightCard.onclick = () => {
-      window.location.href = `event.html?id=${event.id}`;
-    };
+    const btn = highlightCard.querySelector(".highlight-button");
+    if (btn) {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        window.location.href = `event.html?id=${event.id}`;
+      });
+    }
 
     if (event.image) {
       highlightCard.style.backgroundImage = `url(${event.image})`;
@@ -130,6 +185,39 @@ function nextSlide() {
   currentSlide = (currentSlide + 1) % featuredEvents.length;
   renderFeatured();
 }
+
+/* arrastar com mouse */
+let dragStartX = 0;
+
+highlightCard.addEventListener("mousedown", (e) => {
+  dragStartX = e.clientX;
+  highlightCard.style.cursor = "grabbing";
+});
+
+highlightCard.addEventListener("mouseup", (e) => {
+  highlightCard.style.cursor = "grab";
+
+  const diff = dragStartX - e.clientX;
+
+  if (Math.abs(diff) < 40) return;
+
+  if (diff > 0) nextSlide();
+  else prevSlide();
+});
+
+/* swipe no celular */
+highlightCard.addEventListener("touchstart", (e) => {
+  dragStartX = e.touches[0].clientX;
+});
+
+highlightCard.addEventListener("touchend", (e) => {
+  const diff = dragStartX - e.changedTouches[0].clientX;
+
+  if (Math.abs(diff) < 40) return;
+
+  if (diff > 0) nextSlide();
+  else prevSlide();
+});
 
 /* iniciar slider */
 renderFeatured();

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Adicionar Evento</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<header class="header">
+<div class="logo">Adicionar Evento</div>
+</header>
+
+<section class="publish-container">
+
+  <div class="publish-card">
+
+    <div class="publish-group">
+      <label>Nome do evento</label>
+      <input id="event-title" type="text" placeholder="Ex: Festival das Bandeiras">
+    </div>
+
+    <div class="publish-group">
+      <label>Cidade</label>
+      <input id="event-city" type="text" placeholder="Ex: Guarulhos">
+    </div>
+
+    <div class="publish-group">
+      <label>Local</label>
+      <input id="event-location" type="text" placeholder="Ex: Parque, Campo, Praça">
+    </div>
+
+    <div class="publish-group">
+      <label>Data do evento</label>
+      <input id="event-date" type="date">
+    </div>
+
+    <div class="publish-group">
+      <label>Instagram do evento</label>
+      <input id="event-instagram" type="text" placeholder="Link do Instagram">
+    </div>
+
+    <div class="publish-group">
+      <label>Arte do evento</label>
+      <input id="event-image" type="file" accept="image/*">
+    </div>
+
+    <button id="publish-event" class="publish-button">Publicar evento</button>
+
+  </div>
+
+</section>
+
+<div id="app-footer"></div>
+<script src="../js/footer.js"></script>
+<script type="module" src="../js/publish.js"></script>
+
+</body>
+</html>

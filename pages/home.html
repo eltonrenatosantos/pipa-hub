@@ -113,6 +113,21 @@
     </div>
   </footer>
 
+  <script>
+    const navItems = document.querySelectorAll('.nav-item');
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const page = item.dataset.page;
+
+        if(page === 'events') window.location.href = 'home.html';
+        if(page === 'map') window.location.href = 'map.html';
+        if(page === 'publish') window.location.href = 'publish.html';
+        if(page === 'ranking') window.location.href = 'ranking.html';
+        if(page === 'profile') window.location.href = 'profile.html';
+      });
+    });
+  </script>
   <script type="module" src="../js/home.js"></script>
 
 </body>
