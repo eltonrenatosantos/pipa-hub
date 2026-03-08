@@ -7,7 +7,7 @@ async function init() {
 
   if (mapNav) {
     mapNav.addEventListener("click", () => {
-      window.location.href = "pages/map.html";
+      window.location.href = "map.html";
     });
   }
 
