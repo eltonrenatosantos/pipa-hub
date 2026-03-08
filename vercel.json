@@ -1,10 +1,10 @@
 {
+  "cleanUrls": true,
   "routes": [
-    { "src": "/", "dest": "/pages/home.html" },
-    { "src": "/map", "dest": "/pages/map.html" },
-    { "src": "/publish", "dest": "/pages/publish.html" },
-    { "src": "/ranking", "dest": "/pages/ranking.html" },
-    { "src": "/profile", "dest": "/pages/profile.html" },
-    { "src": "/pages/(.*)", "dest": "/pages/$1" }
+    { "src": "^/$", "dest": "/pages/home.html" },
+    { "src": "^/map$", "dest": "/pages/map.html" },
+    { "src": "^/publish$", "dest": "/pages/publish.html" },
+    { "src": "^/ranking$", "dest": "/pages/ranking.html" },
+    { "src": "^/profile$", "dest": "/pages/profile.html" }
   ]
 }
