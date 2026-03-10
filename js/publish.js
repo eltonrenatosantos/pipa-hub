@@ -223,7 +223,7 @@ async function geocode(city, location){
   try{
 
     // 🔑 coloque aqui seu token do Mapbox
-    const MAPBOX_TOKEN = "pk.eyJ1IjoiZHVja2NyZWF0aXZlIiwiYSI6ImNtbWpzMW5yeTFoZnAycnBvY2Q1Y203NTUifQ.bm0hHqXLaxD9n7FNB7SIGQ";
+    const MAPBOX_TOKEN = "pk.eyJ1IjoiZHVja2NyZWF0aXZlIiwiYSI6ImNtbWw3NDFqYTF5NHAycXBzbHB0aTkzNmgifQ.xEHr7Qq83kR6VP7T9bqcMQ";
 
     const query = encodeURIComponent(`${location}, ${city}, São Paulo, Brasil`);
 
