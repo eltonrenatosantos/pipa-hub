@@ -14,7 +14,7 @@ function crc16(str){
     for (let i = 0; i < 8; i++){
       if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
       else crc <<= 1;
-      crc &= 0xFFFF;
+      crc &= 0xFFFF;  
     }
   }
   return crc.toString(16).toUpperCase().padStart(4,"0");
