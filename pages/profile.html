@@ -12,9 +12,8 @@
 
 <body>
 
-<header class="header">
-<div class="logo">Perfil</div>
-</header>
+
+<div id="app-header"></div>
 
 <section style="padding:20px">
 
@@ -22,10 +21,39 @@
 
 </section>
 
-<footer class="footer"></footer>
+
+<script type="module">
+import { loadHeader } from "../js/header.js";
+loadHeader("Perfil");
+</script>
 
 <div id="app-footer"></div>
-<script src="../js/footer.js"></script>
+
+<script type="module">
+import { loadFooter } from "../js/footer.js";
+loadFooter("profile");
+</script>
+
+<script type="module">
+import { supabase } from "../js/supabase.js";
+
+const ADMIN_EMAILS = [
+  "duckcreativesolutions@gmail.com"
+  // adicione novos admins aqui
+];
+
+async function checkAdmin(){
+
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if(user && ADMIN_EMAILS.includes(user.email)){
+    window.location.href = "/pages/admin.html";
+  }
+
+}
+
+checkAdmin();
+</script>
 
 </body>
 </html>

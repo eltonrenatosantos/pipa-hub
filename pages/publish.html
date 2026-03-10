@@ -12,13 +12,17 @@
 
 <body>
 
-<header class="header">
-<div class="logo">Adicionar Evento</div>
-</header>
+
+<div id="app-header"></div>
 
 <section class="publish-container">
 
   <div class="publish-card">
+
+    <div class="publish-group">
+      <label>Nome da equipe</label>
+      <input id="event-team" type="text" placeholder="Ex: Equipe Ventos do Norte">
+    </div>
 
     <div class="publish-group">
       <label>Nome do evento</label>
@@ -48,6 +52,7 @@
     <div class="publish-group">
       <label>Arte do evento</label>
       <input id="event-image" type="file" accept="image/*">
+      <small class="publish-hint" style="display:block;font-size:10px;text-align:right;opacity:0.7;margin-top:4px;">Stories: 1080×1920 px • Destaque: 1200×1200 px</small>
     </div>
 
     <button id="publish-event" class="publish-button">Publicar evento</button>
@@ -56,8 +61,19 @@
 
 </section>
 
+
+<script type="module">
+import { loadHeader } from "../js/header.js";
+loadHeader("Adicionar Evento");
+</script>
+
 <div id="app-footer"></div>
-<script src="../js/footer.js"></script>
+
+<script type="module">
+import { loadFooter } from "../js/footer.js";
+loadFooter("publish");
+</script>
+
 <script type="module" src="../js/publish.js"></script>
 
 </body>

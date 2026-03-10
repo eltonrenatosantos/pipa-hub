@@ -4,6 +4,10 @@
   box-sizing:border-box;
 }
 
+:root{
+  --gold:#d4af37;
+}
+
 /* BASE */
 
 body{
@@ -23,6 +27,94 @@ body{
   padding:16px 20px;
   font-weight:600;
   font-size:18px;
+}
+
+/* =========================
+   GLOBAL APP HEADER (shared by all pages via header.js)
+========================= */
+
+.app-header-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:16px 20px;
+  position:sticky;
+  top:0;
+  z-index:1000;
+}
+
+.header-title{
+  font-size:18px;
+  font-weight:600;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+}
+
+.header-user{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+}
+
+/* user dropdown menu */
+
+.header-user{
+  position:relative;
+}
+
+.header-dropdown{
+  position:absolute;
+  top:38px;
+  right:0;
+  background:#141414;
+  border:1px solid #2a2a2a;
+  border-radius:10px;
+  min-width:140px;
+  padding:6px 0;
+  box-shadow:0 8px 24px rgba(0,0,0,0.6);
+  display:none;
+  flex-direction:column;
+  z-index:2000;
+}
+
+.header-dropdown.active{
+  display:flex;
+}
+
+.header-dropdown-item{
+  padding:10px 14px;
+  font-size:13px;
+  color:#fff;
+  cursor:pointer;
+  transition:background .15s;
+}
+
+.header-dropdown-item:hover{
+  background:#1f1f1f;
+}
+
+.header-avatar{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.header-name{
+  font-size:13px;
+  color:#fff;
+  white-space:nowrap;
+}
+
+.header-login-btn{
+  font-size:13px;
+  color:var(--gold);
+  cursor:pointer;
+  font-weight:600;
 }
 
 /* ADS */
@@ -168,7 +260,7 @@ body{
   text-align:center;
 
   font-size:11px;
-  background:#d4af37;
+  background:var(--gold);
   color:#000;
 
   padding:6px 0;
@@ -184,7 +276,7 @@ body{
 
 /* premium / destaque story */
 .story-card.premium{
-  border:1px solid rgba(212,175,55,0.8);
+  border:2px solid var(--gold);
   box-shadow:0 4px 14px rgba(212,175,55,0.25), 0 4px 12px rgba(0,0,0,0.6);
 }
 
@@ -251,7 +343,7 @@ body{
   padding:10px 16px;
   font-size:14px;
 
-  background:rgba(212,175,55,0.85);
+  background:var(--gold);
   color:#000;
 
   border-radius:10px;
@@ -305,10 +397,21 @@ body{
 .nav-item svg{
   width:26px;
   height:26px;
+  stroke:currentColor; /* ensures icon uses nav-item color */
+  fill:none;           /* prevents icons from filling unexpectedly */
 }
 
+/* active footer icon */
 .nav-item.active{
-  color:#d4af37;
+  color:var(--gold) !important;
+}
+
+.nav-item.active svg,
+.nav-item.active svg path,
+.nav-item.active svg line,
+.nav-item.active svg circle{
+  stroke:var(--gold) !important;
+  color:var(--gold) !important;
 }
 
 /* CENTER BUTTON */
@@ -361,41 +464,94 @@ body{
 .map-search-wrapper{
   position:absolute;
   top:14px;
-  left:14px;
-  right:14px;
+  left:20px;   /* space from left edge */
+  right:20px;  /* space from right edge */
+  padding-right:12px; /* extra internal spacing before screen edge */
   z-index:1000;
   display:flex;
   align-items:center;
   height:44px;
   background:#1a1a1a;
   border-radius:12px;
-  overflow:hidden;
+  overflow:visible; /* allow button spacing so border radius stays symmetrical */
+  padding:0 10px; /* slightly less internal padding */
+  gap:10px; /* more space between input and button */
 }
 
 .map-search{
   flex:1;
   height:100%;
-  background:transparent;
+  background:#1a1a1a; /* keep same color as bar so browser highlight doesn't show gray */
   border:none;
   outline:none;
   color:#fff;
   font-size:14px;
   padding:0 12px;
+  padding-right:80px; /* enough space for X and BUSCAR without cutting placeholder */
+}
+
+.map-search:focus{
+  background:#1a1a1a;
+}
+
+/* prevent browser autofill / active states from turning input light */
+.map-search:active,
+.map-search:hover{
+  background:#1a1a1a;
+}
+
+.map-search:-webkit-autofill,
+.map-search:-webkit-autofill:hover,
+.map-search:-webkit-autofill:focus{
+  -webkit-box-shadow:0 0 0 1000px #1a1a1a inset;
+  -webkit-text-fill-color:#fff;
+  caret-color:#fff;
+}
+
+.map-search::selection{
+  background:rgba(212,175,55,0.35);
+  color:#fff;
+}
+
+.map-search::-moz-selection{
+  background:rgba(212,175,55,0.35);
+  color:#fff;
 }
 
 .map-search-btn{
-  width:20%;
+  flex:0 0 auto; /* button keeps its size */
   min-width:90px;
-  height:100%;
+  height:32px; /* slightly smaller so it floats inside the bar */
+  margin-left:0px; /* keep breathing room from input */
+  margin-right:0px; /* prevents the button from touching the edge */
   display:flex;
   align-items:center;
   justify-content:center;
-  background:#d4af37;
+  background:var(--gold);
   border:none;
   color:#000;
   font-size:13px;
   font-weight:700;
   cursor:pointer;
+  border-radius:10px; /* floating look */
+}
+
+.map-search-clear{
+  position:absolute;
+  right:115px; /* move X a bit closer to BUSCAR */
+  top:50%;
+  transform:translateY(-50%);
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:#2a2a2a;
+  color:#aaa;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  cursor:pointer;
+  user-select:none;
 }
 
 /* card de evento no mapa */
@@ -466,6 +622,21 @@ body{
   border-color:#d4af37;
 }
 
+/* fix visual do campo de data no tema escuro */
+.publish-group input[type="date"]{
+  color:#686868;
+}
+
+.publish-group input[type="date"]::-webkit-calendar-picker-indicator{
+  filter:invert(1);
+  opacity:1;
+  cursor:pointer;
+}
+
+.publish-group input[type="date"]:valid{
+  color:#545454;
+}
+
 /* autocomplete suggestion dropdown */
 .publish-group > div{
   position:absolute;
@@ -484,7 +655,7 @@ body{
   height:46px;
   border-radius:12px;
   border:none;
-  background:#d4af37;
+  background:var(--gold);
   color:#000;
   font-size:15px;
   font-weight:700;
@@ -494,4 +665,143 @@ body{
 
 .publish-button:active{
   transform:scale(0.98);
+}
+
+
+/* =========================
+   GLOBAL APP POPUP
+========================= */
+
+.app-popup-overlay{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+}
+
+.app-popup{
+  background:#141414;
+  border:1px solid #2a2a2a;
+  border-radius:16px;
+  padding:24px 22px;
+  max-width:420px;
+  width:92%;
+  text-align:center;
+  box-shadow:0 14px 44px rgba(0,0,0,0.65);
+
+  animation:popupAppear .22s ease-out;
+}
+
+@keyframes popupAppear{
+  0%{
+    opacity:0;
+    transform:scale(.9) translateY(8px);
+  }
+  100%{
+    opacity:1;
+    transform:scale(1) translateY(0);
+  }
+}
+
+.app-popup-text{
+  color:#fff;
+  font-size:14px;
+  margin-bottom:20px;
+  line-height:1.45;
+  max-width:200px;
+  margin-left:auto;
+  margin-right:auto;
+}
+
+.app-popup-button{
+  background:var(--gold);
+  border:none;
+  padding:11px 26px;
+  border-radius:10px;
+  font-weight:600;
+  cursor:pointer;
+  min-width:120px;
+  font-size:14px;
+  transition:transform .08s ease, box-shadow .08s ease;
+}
+
+.app-popup-button:active{
+  transform:scale(.96);
+}
+
+/* =========================
+   PLAN SELECTION POPUP
+   (usado ao publicar evento)
+========================= */
+
+.plan-options{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top:14px;
+}
+
+.plan-highlight{
+  background:#d4af37;
+  color:#000;
+  font-weight:700;
+}
+
+.plan-free{
+  background:#2a2a2a;
+  color:#fff;
+}
+
+.plan-highlight:active,
+.plan-free:active{
+  transform:scale(.96);
+}
+
+/* slider horizontal dos planos */
+.plan-slider{
+  display:flex;
+  overflow-x:auto;
+  gap:14px;
+  margin-top:16px;
+  padding-bottom:6px;
+  scroll-snap-type:x mandatory;
+}
+
+.plan-slider::-webkit-scrollbar{
+  display:none;
+}
+
+/* card de plano */
+.plan-card{
+  min-width:320px;
+  background:none;
+  border:none;
+  border-radius:0;
+  padding:0;
+  scroll-snap-align:center;
+  box-shadow:none;
+  transition:transform .12s ease;
+}
+
+.plan-image{
+  width:100%;
+  height:auto;
+  display:block;
+  border-radius:12px;
+  object-fit:contain;
+}
+
+
+/* plano plus destacado */
+.plan-card[data-plan="plus"]{
+  border:1px solid #d4af37;
+  background:#171717;
 }

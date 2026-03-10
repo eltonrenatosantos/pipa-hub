@@ -1,9 +1,10 @@
+export function loadFooter(page){
 const footer = `
 <footer class="footer">
   <div class="footer-icons">
 
     <!-- Eventos -->
-    <div class="nav-item" data-page="events" onclick="location.href='home.html'">
+    <div class="nav-item" data-page="events" data-href="home.html">
       <div class="icon icon-home">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 10.5L12 3l9 7.5"></path>
@@ -14,7 +15,7 @@ const footer = `
     </div>
 
     <!-- Mapa -->
-    <div class="nav-item" data-page="map" onclick="location.href='map.html'">
+    <div class="nav-item" data-page="map" data-href="map.html">
       <div class="icon icon-map">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M12 21s6-5.5 6-10a6 6 0 10-12 0c0 4.5 6 10 6 10z"></path>
@@ -25,7 +26,7 @@ const footer = `
     </div>
 
     <!-- Divulgar evento -->
-    <div class="nav-item center" data-page="publish" onclick="location.href='publish.html'">
+    <div class="nav-item center" data-page="publish" data-href="publish.html">
       <div class="icon icon-plus">
         <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -35,7 +36,7 @@ const footer = `
     </div>
 
     <!-- Ranking -->
-    <div class="nav-item" data-page="ranking" onclick="location.href='ranking.html'">
+    <div class="nav-item" data-page="ranking" data-href="ranking.html">
       <div class="icon icon-trophy">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M8 21h8"></path>
@@ -49,7 +50,7 @@ const footer = `
     </div>
 
     <!-- Perfil -->
-    <div class="nav-item" data-page="profile" onclick="location.href='profile.html'">
+    <div class="nav-item" data-page="profile" data-href="profile.html">
       <div class="icon icon-user">
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="8" r="4"></circle>
@@ -63,7 +64,30 @@ const footer = `
 </footer>
 `;
 
-const container = document.getElementById("app-footer");
-if (container) {
-  container.innerHTML = footer;
+  document.body.insertAdjacentHTML("beforeend", footer);
+
+  // page already comes as the key (events, map, publish, ranking, profile)
+  const activeKey = page;
+
+  if (activeKey) {
+    const item = document.querySelector(`.nav-item[data-page="${activeKey}"]`);
+    if (item) {
+      item.classList.add("active");
+    }
+  }
+
+  // navigation handler
+  const items = document.querySelectorAll(".nav-item");
+
+  items.forEach(item => {
+    const href = item.getAttribute("data-href");
+
+    item.addEventListener("click", () => {
+      // prevent reload if already on the page
+      if(item.dataset.page === page) return;
+      if(href){
+        window.location.href = href;
+      }
+    });
+  });
 }

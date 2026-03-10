@@ -12,9 +12,8 @@
 
 <body>
 
-<header class="header">
-<div class="logo">Ranking</div>
-</header>
+
+<div id="app-header"></div>
 
 <section style="padding:20px">
 
@@ -28,8 +27,18 @@
 
 </section>
 
+
+<script type="module">
+import { loadHeader } from "../js/header.js";
+loadHeader("Ranking");
+</script>
+
 <div id="app-footer"></div>
-<script src="../js/footer.js"></script>
+
+<script type="module">
+import { loadFooter } from "../js/footer.js";
+loadFooter("ranking");
+</script>
 
 </body>
 </html>

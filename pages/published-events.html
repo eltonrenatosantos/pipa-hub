@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Eventos publicados</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+
+<div id="app-header"></div>
+
+<section style="padding:20px;">
+<h3 style="margin-bottom:14px">Eventos aprovados</h3>
+
+<div id="events-list"></div>
+
+</section>
+
+
+<script type="module">
+import { loadHeader } from "../js/header.js";
+loadHeader("Eventos publicados");
+</script>
+
+<div id="app-footer"></div>
+
+<script type="module">
+import { loadFooter } from "../js/footer.js";
+loadFooter("profile");
+</script>
+
+<script type="module">
+
+import { supabase } from "../js/supabase.js";
+
+const container = document.getElementById("events-list");
+
+async function loadEvents(){
+
+  const { data: events, error } = await supabase
+  .from("events")
+  .select("*")
+  .eq("payment_status","paid")
+  .order("date",{ ascending:true });
+
+  if(error){
+    console.error(error);
+    container.innerHTML = "Erro ao carregar eventos.";
+    return;
+  }
+
+  container.innerHTML = "";
+
+  if(!events || events.length === 0){
+    container.innerHTML = "Nenhum evento publicado.";
+    return;
+  }
+
+  events.forEach(event=>{
+
+    const row = document.createElement("div");
+
+    row.style.display = "flex";
+    row.style.alignItems = "center";
+    row.style.justifyContent = "space-between";
+    row.style.padding = "10px";
+    row.style.background = "#141414";
+    row.style.borderRadius = "10px";
+    row.style.marginBottom = "8px";
+
+    row.innerHTML = `
+
+      <div style="flex:1">
+
+        <strong>${event.date ? (()=>{ const d = event.date.slice(0,10).split('-'); return d[2] + '/' + d[1] + '/' + d[0].slice(2); })() : ""} — ${event.title}</strong><br>
+
+        <span style="font-size:13px;opacity:.7">
+        ${event.team || ""}
+        </span>
+
+      </div>
+
+      <div style="display:flex;gap:8px">
+
+        <button class="edit-btn"
+        style="
+        background:#d4af37;
+        border:none;
+        color:#000;
+        padding:6px 10px;
+        border-radius:6px;
+        cursor:pointer;
+        ">
+        Editar
+        </button>
+
+        <button class="delete-btn"
+        style="
+        background:#e53935;
+        border:none;
+        color:#fff;
+        padding:6px 10px;
+        border-radius:6px;
+        cursor:pointer;
+        ">
+        Deletar
+        </button>
+
+      </div>
+
+    `;
+
+    const editBtn = row.querySelector(".edit-btn");
+    const deleteBtn = row.querySelector(".delete-btn");
+
+    editBtn.onclick = ()=>{
+
+      const overlay = document.createElement("div");
+      overlay.className = "app-popup-overlay";
+
+      overlay.innerHTML = `
+        <div class="app-popup">
+
+          <div class="app-popup-text" style="font-weight:600;margin-bottom:10px">
+            Editar evento
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px;text-align:left">
+
+            <label style="font-size:12px;opacity:.8">Nome da equipe</label>
+            <input id="edit-team" value="${event.team || ""}" style="padding:6px;border-radius:6px;border:none;background:#222;color:#fff">
+
+            <label style="font-size:12px;opacity:.8">Nome do evento</label>
+            <input id="edit-title" value="${event.title || ""}" style="padding:6px;border-radius:6px;border:none;background:#222;color:#fff">
+
+            <label style="font-size:12px;opacity:.8">Data</label>
+            <input id="edit-date" type="date" value="${event.date ? event.date.slice(0,10) : ""}" style="padding:6px;border-radius:6px;border:none;background:#222;color:#fff">
+
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:14px;justify-content:center">
+            <button class="app-popup-button" id="save-edit">Salvar</button>
+            <button class="app-popup-button" id="cancel-edit" style="background:#333;color:#fff">Cancelar</button>
+          </div>
+
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      overlay.querySelector("#cancel-edit").onclick = ()=>{
+        overlay.remove();
+      };
+
+      overlay.querySelector("#save-edit").onclick = async ()=>{
+
+        const team = overlay.querySelector("#edit-team").value.trim();
+        const title = overlay.querySelector("#edit-title").value.trim();
+        const date = overlay.querySelector("#edit-date").value;
+
+        const { error } = await supabase
+          .from("events")
+          .update({ team: team, title: title, date: date })
+          .eq("id", event.id);
+
+        if(error){
+          console.error(error);
+          alert("Erro ao atualizar evento.");
+          return;
+        }
+
+        overlay.remove();
+        loadEvents();
+
+      };
+
+    };
+
+    deleteBtn.onclick = async ()=>{
+
+      const overlay = document.createElement("div");
+      overlay.className = "app-popup-overlay";
+
+      overlay.innerHTML = `
+        <div class="app-popup">
+          <div class="app-popup-text">
+            Deletar este evento?
+          </div>
+          <div style="display:flex;gap:10px;margin-top:14px;justify-content:center">
+            <button class="app-popup-button" id="confirm-delete">Deletar</button>
+            <button class="app-popup-button" id="cancel-delete" style="background:#333;color:#fff">Cancelar</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+
+      overlay.querySelector("#cancel-delete").onclick = ()=>{
+        overlay.remove();
+      };
+
+      overlay.querySelector("#confirm-delete").onclick = async ()=>{
+        overlay.remove();
+
+        const { error } = await supabase
+        .from("events")
+        .delete()
+        .eq("id",event.id);
+
+        if(error){
+          console.error(error);
+          alert("Erro ao deletar evento.");
+          return;
+        }
+
+        row.remove();
+      };
+
+    };
+
+    container.appendChild(row);
+
+  });
+
+}
+
+loadEvents();
+
+/* realtime updates for published events */
+supabase
+  .channel('events-realtime-published')
+  .on(
+    'postgres_changes',
+    {
+      event: '*',
+      schema: 'public',
+      table: 'events'
+    },
+    () => {
+      loadEvents();
+    }
+  )
+  .subscribe();
+
+</script>
+
+</body>
+
+</html>

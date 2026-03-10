@@ -14,16 +14,7 @@
 
 <body>
 
-  <!-- HEADER -->
-  <header class="header">
-    <div class="logo">WEBPIPA</div>
-    <div class="icons">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7"></path>
-        <path d="M13.73 21a2 2 0 01-3.46 0"></path>
-      </svg>
-    </div>
-  </header>
+  <div id="app-header"></div>
 
   <!-- ANÚNCIO -->
   <section class="ads">
@@ -45,73 +36,10 @@
   <div class="section-header">
     <span class="section-title">Eventos em destaque</span>
   </div>
-  <section class="highlight">
+  <section class="highlight" style="margin-top:12px;">
     <div class="highlight-card"></div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-icons">
-
-      <!-- Eventos -->
-      <div class="nav-item active" data-page="events">
-        <div class="icon icon-home">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 10.5L12 3l9 7.5"></path>
-            <path d="M5 10v10h14V10"></path>
-          </svg>
-        </div>
-        <span class="label">Eventos</span>
-      </div>
-
-      <!-- Mapa -->
-      <div class="nav-item" data-page="map">
-        <div class="icon icon-map">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 21s6-5.5 6-10a6 6 0 10-12 0c0 4.5 6 10 6 10z"></path>
-            <circle cx="12" cy="11" r="2"></circle>
-          </svg>
-        </div>
-        <span class="label">Mapa</span>
-      </div>
-
-      <!-- Divulgar evento -->
-      <div class="nav-item center" data-page="publish">
-        <div class="icon icon-plus">
-          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Ranking -->
-      <div class="nav-item" data-page="ranking">
-        <div class="icon icon-trophy">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M8 21h8"></path>
-            <path d="M12 17v4"></path>
-            <path d="M5 3h14v4a7 7 0 01-14 0V3z"></path>
-            <path d="M3 5h2a5 5 0 005 5"></path>
-            <path d="M21 5h-2a5 5 0 01-5 5"></path>
-          </svg>
-        </div>
-        <span class="label">Ranking</span>
-      </div>
-
-      <!-- Perfil -->
-      <div class="nav-item" data-page="profile">
-        <div class="icon icon-user">
-          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="8" r="4"></circle>
-            <path d="M4 21c2-4 6-6 8-6s6 2 8 6"></path>
-          </svg>
-        </div>
-        <span class="label">Perfil</span>
-      </div>
-
-    </div>
-  </footer>
 
   <script>
     const navItems = document.querySelectorAll('.nav-item');
@@ -124,10 +52,29 @@
         if(page === 'map') window.location.href = '/pages/map.html';
         if(page === 'publish') window.location.href = '/pages/publish.html';
         if(page === 'ranking') window.location.href = '/pages/ranking.html';
-        if(page === 'profile') window.location.href = '/pages/profile.html';
+        if(page === 'profile') {
+          const userEmail = localStorage.getItem("user_email");
+
+          const admins = [
+            "duckcreativesolutions@gmail.com"
+          ];
+
+          if (admins.includes(userEmail)) {
+            window.location.href = '/pages/admin.html';
+          } else {
+            window.location.href = '/pages/profile.html';
+          }
+        }
       });
     });
   </script>
+<script type="module">
+import { loadHeader } from "../js/header.js";
+import { loadFooter } from "../js/footer.js";
+
+loadHeader("Eventos");
+loadFooter("events");
+</script>
   <script type="module" src="../js/home.js"></script>
 
 </body>

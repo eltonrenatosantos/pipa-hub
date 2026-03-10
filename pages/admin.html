@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<div id="app-header"></div>
+
+<section id="admin-menu" style="padding:20px;">
+
+<h3 style="margin-bottom:14px">Painel administrativo</h3>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+
+<div id="open-approvals" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;">
+<div style="margin-bottom:6px">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="9"></circle>
+<path d="M8 12l2.5 2.5L16 9"></path>
+</svg>
+</div>
+<div style="font-size:14px">Aprovações de eventos</div>
+<div id="count-approvals" style="margin-top:6px;font-size:12px;opacity:.7">...</div>
+</div>
+
+<div id="open-events" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;">
+<div style="margin-bottom:6px">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 20h9"></path>
+<path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+</svg>
+</div>
+<div style="font-size:14px">Editar eventos</div>
+</div>
+
+<div id="open-today" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;">
+<div style="margin-bottom:6px">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="4" width="18" height="18" rx="2"></rect>
+<line x1="16" y1="2" x2="16" y2="6"></line>
+<line x1="8" y1="2" x2="8" y2="6"></line>
+<line x1="3" y1="10" x2="21" y2="10"></line>
+</svg>
+</div>
+<div style="font-size:14px">Eventos do dia</div>
+<div id="count-today" style="margin-top:6px;font-size:12px;opacity:.7">...</div>
+</div>
+
+<div id="open-stats" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;">
+<div style="margin-bottom:6px">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<line x1="18" y1="20" x2="18" y2="10"></line>
+<line x1="12" y1="20" x2="12" y2="4"></line>
+<line x1="6" y1="20" x2="6" y2="14"></line>
+</svg>
+</div>
+<div style="font-size:14px">Estatísticas do app</div>
+</div>
+
+<div id="open-database" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;grid-column:span 2;">
+<div style="margin-bottom:6px">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+<path d="M3 5v6c0 1.7 4 3 9 3s9-1.3 9-3V5"></path>
+<path d="M3 11v6c0 1.7 4 3 9 3s9-1.3 9-3v-6"></path>
+</svg>
+</div>
+<div style="font-size:14px">Banco de eventos</div>
+<div id="count-events" style="margin-top:6px;font-size:12px;opacity:.7">...</div>
+</div>
+
+</div>
+
+</section>
+
+<section id="approvals-section" style="padding:20px;display:none;">
+
+<h3 style="margin-bottom:10px">Eventos aguardando aprovação</h3>
+<div id="events-list"></div>
+
+</section>
+
+<div id="app-footer"></div>
+<script type="module">
+import { loadFooter } from "../js/footer.js";
+loadFooter("profile");
+</script>
+<script src="../js/footer.js"></script>
+<script>
+// make admin page behave like profile page in footer highlight
+window.addEventListener("DOMContentLoaded", ()=>{
+  const items = document.querySelectorAll(".nav-item");
+  items.forEach(i=>i.classList.remove("active"));
+
+  const profileItem = document.querySelector('.nav-item[data-page="profile"], .nav-item.profile');
+  if(profileItem){
+    profileItem.classList.add("active");
+  }
+});
+</script>
+
+<script type="module">
+
+import { supabase } from "../js/supabase.js";
+
+
+const menu = document.getElementById("admin-menu");
+const approvalsSection = document.getElementById("approvals-section");
+
+const approvalsBtn = document.getElementById("open-approvals");
+const eventsBtn = document.getElementById("open-events");
+const todayBtn = document.getElementById("open-today");
+const statsBtn = document.getElementById("open-stats");
+const databaseBtn = document.getElementById("open-database");
+
+// counters for admin dashboard
+async function loadAdminCounters(){
+
+  // pending approvals
+  const { data: pending } = await supabase
+    .from("events")
+    .select("id")
+    .in("payment_status", ["pending", "awaiting_payment"]);
+
+  const approvalsCount = document.getElementById("count-approvals");
+  if(approvalsCount){
+    approvalsCount.textContent = (pending?.length || 0) + " aguardando";
+  }
+
+  // today's events
+  const today = new Date().toISOString().split("T")[0];
+
+  const { data: todayEvents } = await supabase
+    .from("events")
+    .select("id")
+    .eq("date", today);
+
+  const todayCount = document.getElementById("count-today");
+  if(todayCount){
+    todayCount.textContent = (todayEvents?.length || 0) + " hoje";
+  }
+
+  // total events
+  const { data: allEvents } = await supabase
+    .from("events")
+    .select("id");
+
+  const eventsCount = document.getElementById("count-events");
+  if(eventsCount){
+    eventsCount.textContent = (allEvents?.length || 0) + " cadastrados";
+  }
+}
+
+loadAdminCounters();
+
+if(approvalsBtn){
+  approvalsBtn.onclick = ()=>{
+    menu.style.display = "none";
+    approvalsSection.style.display = "block";
+    loadEvents();
+  };
+}
+
+if(eventsBtn){
+  eventsBtn.onclick = ()=>{
+    window.location.href = "published-events.html";
+  };
+}
+
+if(todayBtn){
+  todayBtn.onclick = ()=>{
+
+    const popup = document.getElementById("admin-popup");
+    const text = document.getElementById("admin-popup-text");
+    const actions = document.getElementById("popup-actions");
+    actions.style.display = "none";
+
+    text.innerHTML = `
+    <strong>Eventos do dia</strong><br><br>
+    Mostra eventos que acontecem hoje.<br><br>
+    • acompanhar eventos ativos<br>
+    • divulgar eventos nas redes sociais<br>
+    • verificar eventos próximos
+    `;
+
+    popup.style.display = "flex";
+  };
+}
+
+if(statsBtn){
+  statsBtn.onclick = ()=>{
+
+    const popup = document.getElementById("admin-popup");
+    const text = document.getElementById("admin-popup-text");
+    const actions = document.getElementById("popup-actions");
+    actions.style.display = "none";
+
+    text.innerHTML = `
+    <strong>Estatísticas do aplicativo</strong><br><br>
+    • total de eventos cadastrados<br>
+    • eventos pagos<br>
+    • eventos gratuitos<br>
+    • eventos pendentes<br>
+    • eventos criados hoje<br>
+    • número de usuários ativos
+    `;
+
+    popup.style.display = "flex";
+  };
+}
+
+if(databaseBtn){
+  databaseBtn.onclick = ()=>{
+
+    const popup = document.getElementById("admin-popup");
+    const text = document.getElementById("admin-popup-text");
+    const actions = document.getElementById("popup-actions");
+    actions.style.display = "none";
+
+    text.innerHTML = `
+    <strong>Banco completo de eventos</strong><br><br>
+    • visualizar todos os eventos do banco<br>
+    • filtrar pagos / gratuitos<br>
+    • visualizar eventos passados<br>
+    • editar eventos<br>
+    • deletar eventos
+    `;
+
+    popup.style.display = "flex";
+  };
+}
+
+async function loadEvents(){
+
+  const { data: events, error } = await supabase
+    .from("events")
+    .select("*")
+    .in("payment_status", ["pending", "awaiting_payment"])
+    .order("date", { ascending:true });
+
+  if(events){
+    events.sort((a,b)=>{
+      const planPriority = { "30":3, "15":2, "7":1 };
+      const pa = planPriority[a.plan_type] || 0;
+      const pb = planPriority[b.plan_type] || 0;
+      return pb - pa;
+    });
+  }
+
+  const statusLabels = {
+    pending: "Aguardando aprovação",
+    awaiting_payment: "Aguardando confirmação PIX",
+    approved: "Aprovado",
+    paid: "Pago",
+    rejected: "Reprovado"
+  };
+
+  const container = document.getElementById("events-list");
+  container.innerHTML = "";
+
+  if(!events || events.length === 0){
+    container.innerHTML = "Nenhum evento aguardando.";
+    return;
+  }
+
+  events.forEach(event=>{
+
+    const card = document.createElement("div");
+
+    const planColors = {
+      "7": "#1DB954",   // verde
+      "15": "#2196F3",  // azul
+      "30": "#9C27B0"   // roxo
+    };
+
+    // normalizar planos antigos ou inválidos
+    const validPlans = ["7","15","30"];
+    let planType = event.plan_type;
+
+    if(!planType || planType === "free"){
+      planType = "free";
+    }else if(!validPlans.includes(planType)){
+      // planos antigos como "highlight" viram gratuito
+      planType = "free";
+    }
+
+    const color = planColors[planType] || "#444";
+
+    card.style.background="#141414";
+    card.style.padding="10px";
+    card.style.borderRadius="12px";
+    card.style.marginBottom="10px";
+    card.style.borderLeft="6px solid " + color;
+    card.style.display="flex";
+    card.style.flexDirection="column";
+    card.style.gap="10px";
+
+    card.innerHTML = `
+
+      <div style="display:flex;align-items:center;gap:14px;">
+
+        <div style="flex:1;min-width:150px;">
+          <strong style="font-size:13px;opacity:.9">${event.team || ""}</strong><br>
+          <strong style="font-size:14px">${event.title}</strong><br>
+          <span style="opacity:.8;font-size:13px">${event.city || ""}</span>
+        </div>
+
+        <div style="flex:1;font-size:12px;">
+          Data: <strong>${event.date ? (()=>{ const d = event.date.slice(0,10).split('-'); return d[2] + '/' + d[1] + '/' + d[0].slice(2); })() : ""}</strong><br>
+          Plano: <strong>${planType === "free" ? "Gratuito" : planType + " dias"}</strong><br>
+          Status: <strong>${statusLabels[event.payment_status] || event.payment_status}</strong>
+
+          ${planType !== "free" ? `
+            <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+              <span style="font-size:11px;opacity:.8">PIX:</span>
+              <strong id="pix-ref-${event.id}" style="font-size:11px">${event.payment_reference || ("EVT-" + event.id)}</strong>
+              <button class="copy-pix" style="font-size:10px;padding:2px 6px;border-radius:4px;border:none;background:#333;color:#fff;cursor:pointer;">Copiar</button>
+            </div>
+          ` : ``}
+        </div>
+
+        ${event.image ? `<div style="width:70px;height:70px;border-radius:8px;overflow:hidden;flex-shrink:0;">
+          <img src="${event.image}" style="width:100%;height:100%;object-fit:cover;">
+        </div>` : `<div style="width:70px"></div>`}
+
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 70px;gap:14px;">
+        <button class="approve" style="background:#1DB954;border:none;color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;width:100%;">${event.payment_status === "awaiting_payment" ? "Confirmar PIX" : "Aprovar"}</button>
+        <button class="reject" style="background:#d4af37;border:none;color:#000;padding:6px 10px;border-radius:6px;cursor:pointer;width:100%;">Reprovar</button>
+        <button class="delete" style="background:#e53935;border:none;color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;width:100%;">Deletar</button>
+      </div>
+
+    `;
+
+    const approveBtn = card.querySelector(".approve");
+    const rejectBtn = card.querySelector(".reject");
+    const deleteBtn = card.querySelector(".delete");
+    const copyPixBtn = card.querySelector(".copy-pix");
+    const pixRef = event.payment_reference || ("EVT-" + event.id);
+
+    if(copyPixBtn){
+      copyPixBtn.onclick = ()=>{
+        navigator.clipboard.writeText(pixRef);
+        copyPixBtn.textContent = "Copiado!";
+        setTimeout(()=>{
+          copyPixBtn.textContent = "Copiar PIX";
+        },1500);
+      };
+    }
+
+    approveBtn.onclick = async ()=>{
+
+      console.log("EVENT ID:", event.id);
+
+      const nextStatus = event.payment_status === "awaiting_payment" ? "paid" : "approved";
+
+      const { data, error } = await supabase
+        .from("events")
+        .update({ payment_status: nextStatus })
+        .match({ id: event.id })
+        .select();
+
+      console.log("UPDATE RESULT:", data, error);
+
+      if(error){
+        console.error("Erro ao aprovar:", error);
+        alert("Erro ao aprovar evento. Veja o console.");
+        return;
+      }
+
+      card.remove();
+      loadAdminCounters();
+    };
+
+    rejectBtn.onclick = async ()=>{
+
+      const { error } = await supabase
+        .from("events")
+        .update({ payment_status:"rejected" })
+        .eq("id", event.id);
+
+      if(error){
+        console.error("Erro ao reprovar:", error);
+        alert("Erro ao reprovar evento.");
+        return;
+      }
+
+      card.remove();
+      loadAdminCounters();
+    };
+
+    deleteBtn.onclick = ()=>{
+
+      const popup = document.getElementById("admin-popup");
+      const text = document.getElementById("admin-popup-text");
+      const cancel = document.getElementById("popup-cancel");
+      const confirmBtn = document.getElementById("popup-confirm");
+      const actions = document.getElementById("popup-actions");
+      actions.style.display = "flex";
+
+      text.textContent = "Deletar evento?";
+      popup.style.display = "flex";
+
+      cancel.onclick = ()=>{
+        popup.style.display = "none";
+      };
+
+      confirmBtn.onclick = async ()=>{
+
+        popup.style.display = "none";
+
+        const { error } = await supabase
+          .from("events")
+          .delete()
+          .eq("id", event.id);
+
+        if(error){
+          console.error("Erro ao deletar:", error);
+          alert("Erro ao deletar evento.");
+          return;
+        }
+
+        card.remove();
+        loadAdminCounters();
+
+      };
+
+    };
+
+    container.appendChild(card);
+
+  });
+
+}
+
+const popupOverlay = document.getElementById("admin-popup");
+
+popupOverlay.addEventListener("click", (e)=>{
+  if(e.target.id === "admin-popup"){
+    popupOverlay.style.display = "none";
+  }
+});
+
+</script>
+
+<div id="admin-popup" class="app-popup-overlay" style="display:none;">
+  <div class="app-popup">
+    <div id="admin-popup-text" class="app-popup-text"></div>
+
+    <div id="popup-actions" style="display:flex;gap:10px;justify-content:center;margin-top:14px;">
+      <button id="popup-cancel" class="app-popup-button" style="background:#333;color:#fff;">Cancelar</button>
+      <button id="popup-confirm" class="app-popup-button">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { loadHeader } from "../js/header.js";
+loadHeader("Painel Admin");
+</script>
+
+</body>
+</html>

@@ -6,7 +6,16 @@
 
 <title>Mapa de Eventos</title>
 
+
 <link rel="stylesheet" href="../css/style.css">
+
+<style>
+/* Ensure header dropdown stays above map search bar */
+#app-header{
+  position: relative;
+  z-index: 5000;
+}
+</style>
 
 
 <link rel="stylesheet"
@@ -18,9 +27,7 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <body>
 
-<header class="header">
-<div class="logo">Mapa</div>
-</header>
+<div id="app-header"></div>
 
 <section class="map-container">
 <div class="map-search-wrapper">
@@ -39,8 +46,15 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<script type="module">
+import { loadHeader } from "../js/header.js";
+import { loadFooter } from "../js/footer.js";
+
+loadHeader("Mapa");
+loadFooter("map");
+</script>
+
 <script type="module" src="../js/map.js"></script>
-<script src="../js/footer.js"></script>
 
 </body>
 </html>
