@@ -295,7 +295,7 @@ if(button) button.addEventListener("click", async ()=>{
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.href
+        redirectTo: `${window.location.origin}/`
       }
     });
     return;
