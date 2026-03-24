@@ -1,5 +1,5 @@
-import { loadActiveHomeAdvertisingList } from "../services/advertising.js";
-import { recordHomeAdImpression, recordHomeAdClick } from "../services/homeAdAnalytics.js";
+import { loadActiveHomeAdvertisingList } from "../services/advertising.js?v=2";
+import { recordHomeAdImpression, recordHomeAdClick } from "../services/homeAdAnalytics.js?v=2";
 
 const HOME_AD_ROTATION_MS = 7000;
 

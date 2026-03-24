@@ -1,8 +1,8 @@
 import { supabase } from "./supabase.js";
-import { initHomeAdBanner } from "./ui/homeAdBanner.js?v=2";
-import { loadHomeEvents } from "./services/home.js?v=2";
-import { isHighlightActiveEvent } from "./services/highlightLifecycle.js?v=1";
-import { beginPageLoad, finishPageLoad } from "./ui/page-loader.js?v=2";
+import { initHomeAdBanner } from "./ui/homeAdBanner.js?v=3";
+import { loadHomeEvents } from "./services/home.js?v=3";
+import { isHighlightActiveEvent } from "./services/highlightLifecycle.js?v=2";
+import { beginPageLoad, finishPageLoad } from "./ui/page-loader.js?v=3";
 
 function showPopup(message){
 
