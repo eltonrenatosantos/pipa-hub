@@ -1,0 +1,267 @@
+/* WebPipa — tokens, reset, base layout, page loader */
+:root{
+  --app-bg:#0f0f0f;
+  --app-surface:#171717;
+  --app-surface-muted:#111111;
+  --app-surface-soft:rgba(255,255,255,.03);
+  --app-border:#2a2a2a;
+  --app-border-soft:rgba(255,255,255,.08);
+  --app-primary:#27a8ff;
+  --app-gold:#d4af37;
+  --app-text:#ffffff;
+  --app-text-secondary:rgba(255,255,255,.72);
+  --app-text-muted:rgba(255,255,255,.54);
+  --app-radius-dialog:24px;
+  --app-radius-card:20px;
+  --app-radius-control:16px;
+  --app-radius-field:10px;
+  --app-shadow-card:0 12px 24px rgba(0,0,0,.45);
+  --app-shadow-dialog:0 18px 30px rgba(0,0,0,.54);
+  --app-type-title-xl-size:22px;
+  --app-type-title-lg-size:18px;
+  --app-type-title-md-size:16px;
+  --app-type-body-size:14px;
+  --app-type-body-line-height:1.5;
+  --app-type-field-label-size:11px;
+  --app-type-field-label-weight:500;
+  --app-type-field-label-line-height:1.1;
+  --app-type-field-text-size:14px;
+  --app-type-field-text-line-height:1.15;
+  --app-type-field-hint-size:13px;
+  --app-type-field-hint-line-height:1.1;
+  --app-space-2:8px;
+  --app-space-3:12px;
+  --app-space-4:16px;
+  --app-space-5:20px;
+  --app-space-6:24px;
+  --app-button-height:44px;
+  --app-button-height-compact:40px;
+  --app-button-height-mini:32px;
+  --app-button-radius:12px;
+  --app-button-radius-mini:9px;
+  --app-button-font-size:14px;
+  --app-button-font-size-compact:13px;
+  --app-button-font-size-mini:12px;
+  --app-button-padding-x:16px;
+  --app-button-padding-x-compact:14px;
+  --app-button-padding-x-mini:10px;
+  --app-button-border:rgba(255,255,255,.12);
+  --app-button-shadow:0 10px 24px rgba(0,0,0,.3);
+  --app-header-bar-height:56px;
+  --app-header-padding-x:16px;
+  --app-header-padding-top:10px;
+  --app-header-padding-bottom:8px;
+  --app-header-title-size:16px;
+  --app-header-title-weight:700;
+  --app-header-title-line-height:1.05;
+  --app-header-logo-width:92px;
+  --app-header-logo-height:38px;
+  --app-header-action-gap:10px;
+  --app-header-account-size:32px;
+  --app-header-account-border:rgba(255,255,255,.08);
+  --app-header-account-bg:rgba(255,255,255,.08);
+  --app-footer-height:64px;
+  --app-footer-offset:6px;
+  --app-footer-safe-gap:20px;
+  --app-footer-center-size:66px;
+  --app-footer-center-offset:-10px;
+  --app-footer-center-core-inset:4px;
+  --app-footer-center-inner-ring-size:50px;
+  --app-footer-center-icon-size:28px;
+  --app-footer-center-border:rgba(255,255,255,.08);
+  --app-footer-center-inner-ring-border:rgba(255,255,255,.09);
+  --app-footer-center-shadow:0 8px 18px rgba(0,0,0,.5);
+  --app-footer-center-sweep-opacity:.44;
+  --app-form-card-padding:12px 11px;
+  --app-form-gap:14px;
+  --app-form-field-gap:7px;
+  --app-form-row-gap:10px;
+  --app-form-label-size:var(--app-type-field-label-size);
+  --app-form-input-height:36px;
+  --app-form-input-padding-x:12px;
+  --app-form-input-font-size:var(--app-type-field-text-size);
+  --app-form-placeholder-font-size:var(--app-type-field-hint-size);
+  --app-form-textarea-height:56px;
+  --app-form-textarea-padding-y:10px;
+  --app-form-button-height:var(--app-button-height-compact);
+  --app-form-button-font-size:var(--app-button-font-size-compact);
+  --app-form-prefix-gap:2px;
+  --app-form-file-height:36px;
+  --app-form-file-padding:4px;
+  --app-form-file-button-padding:var(--app-button-padding-x-mini);
+  --app-form-file-button-font-size:var(--app-button-font-size-mini);
+  --app-form-file-text-size:11px;
+  --app-form-hint-margin-top:4px;
+  --gold:var(--app-gold);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+/* BASE */
+
+body{
+  font-family:-apple-system, BlinkMacSystemFont, sans-serif;
+  background:var(--app-bg);
+  color:var(--app-text);
+  min-height:100vh;
+  padding-bottom:calc(var(--app-footer-height) + var(--app-footer-offset) + var(--app-footer-safe-gap) + env(safe-area-inset-bottom, 0px));
+}
+
+html.app-preload body{
+  overflow:hidden;
+}
+
+html.app-preload body > *:not(.app-page-loader-overlay){
+  visibility:hidden !important;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Header desligado (teste): classe aplicada por `loadHeader` quando           */
+/* APP_SHOW_HEADER é false em js/header.js                                   */
+/* -------------------------------------------------------------------------- */
+
+html.app-layout--no-header #app-header{
+  display:none !important;
+  height:0 !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden;
+  border:none !important;
+}
+
+/* Evento: botão voltar não precisa “descer” por causa da barra */
+html.app-layout--no-header .event-back-btn{
+  top:calc(12px + env(safe-area-inset-top, 0px));
+}
+
+/* FAB voltar sem header — posição (padding do conteúdo em pages.css) */
+html.app-layout--no-header .admin-page-shell .admin-back-btn,
+html.app-layout--no-header .published-events-page .admin-back-btn{
+  top:calc(12px + env(safe-area-inset-top, 0px));
+}
+
+.app-page-loader-overlay{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--app-bg);
+  opacity:1;
+  transition:opacity .18s ease;
+}
+
+.app-page-loader-overlay.is-hiding{
+  opacity:0;
+  pointer-events:none;
+}
+
+.app-page-loader-shell{
+  position:relative;
+  width:97px;
+  height:97px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation:appLoaderFloat 1.9s ease-in-out infinite;
+}
+
+.app-page-loader-ring{
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at center, transparent 0 38%, rgba(255,255,255,.07) 38% 40%, transparent 40% 100%),
+    conic-gradient(
+      from -90deg,
+      #27a8ff 0deg 52deg,
+      #46f0a7 52deg 108deg,
+      #ffc938 108deg 168deg,
+      #ff8a2a 168deg 228deg,
+      #f04b5b 228deg 292deg,
+      #b05cff 292deg 344deg,
+      #27a8ff 344deg 360deg
+    );
+  animation:appLoaderSpin 1.45s linear infinite;
+  opacity:.96;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.05) inset,
+    0 0 22px rgba(39,168,255,.14),
+    0 0 26px rgba(255,201,56,.1);
+}
+
+.app-page-loader-kite{
+  position:relative;
+  width:20px;
+  height:20px;
+  transform:translateY(-7px) rotate(45deg);
+  filter:drop-shadow(0 8px 12px rgba(0,0,0,.32));
+  z-index:2;
+  animation:appLoaderKiteFloat 1.9s ease-in-out infinite;
+}
+
+.app-page-loader-kite-part{
+  position:absolute;
+  width:50%;
+  height:50%;
+}
+
+.app-page-loader-kite-part.part-red{
+  top:0;
+  left:50%;
+  background:#f04b5b;
+}
+
+.app-page-loader-kite-part.part-blue{
+  top:50%;
+  left:50%;
+  background:#27a8ff;
+}
+
+.app-page-loader-kite-part.part-orange{
+  top:50%;
+  left:0;
+  background:#ff8a2a;
+}
+
+.app-page-loader-kite-part.part-yellow{
+  top:0;
+  left:0;
+  background:#ffc938;
+}
+
+.app-page-loader-kite::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border:1.4px solid rgba(255,255,255,.2);
+  box-sizing:border-box;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.14) inset,
+    0 0 14px rgba(39,168,255,.08);
+}
+
+@keyframes appLoaderSpin{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+@keyframes appLoaderFloat{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-3px); }
+}
+
+@keyframes appLoaderKiteFloat{
+  0%,100%{ transform:translateY(-7px) rotate(45deg); }
+  50%{ transform:translateY(-9px) rotate(48deg); }
+}
+
+.hidden{
+  display:none !important;
+}

@@ -3,10 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>document.documentElement.classList.add('app-preload');</script>
 
 <title>Ranking</title>
 
-<link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../assets/css/global.css?v=9" />
+  <link rel="stylesheet" href="../assets/css/components.css?v=5" />
+  <link rel="stylesheet" href="../assets/css/pages.css?v=1" />
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="WebPipa">
 
 </head>
 
@@ -15,30 +23,581 @@
 
 <div id="app-header"></div>
 
-<section style="padding:20px">
+<section id="home-ad-slot" class="home-ad-slot" hidden aria-label="Publicidade"></section>
 
-<h3>Eventos mais curtidos</h3>
+<section class="ranking-page">
 
-<br>
+<div class="ranking-hero">
+  <div class="ranking-hero-status" id="ranking-hero-status">Aguardando nova competição</div>
+  <div class="ranking-hero-title">As melhores do Brasil</div>
+  <div class="ranking-hero-subtitle" id="ranking-hero-subtitle">Busque sua equipe e acompanhe a disputa do mês.</div>
+</div>
 
-<div>Festival Zona Leste</div>
-<div>Campeonato Interestadual</div>
-<div>Encontro Dragão</div>
+<div class="ranking-search">
+  <div class="ranking-search-field">
+    <span class="ranking-search-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 5.5a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="m15 15 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <input
+      type="text"
+      id="team-search-input"
+      placeholder="Buscar equipe"
+      class="ranking-search-input"
+    >
+  </div>
+  <button
+    type="button"
+    id="team-search-button"
+    class="ranking-search-button"
+  >
+    Buscar
+  </button>
+</div>
+
+<div id="ranking-feedback" class="ranking-message-card" hidden></div>
+
+<div class="ranking-section-copy">
+  <div class="ranking-section-title">Placar de equipes</div>
+  <div class="ranking-section-subtitle">Toque em uma equipe para ver detalhes e pedir entrada.</div>
+</div>
+
+<div id="ranking-rows" class="ranking-list"></div>
+
+<div class="ranking-legend">
+  <span><strong>MB</strong> = membros</span>
+  <span><strong>EV</strong> = eventos</span>
+  <span><strong>INT</strong> = interação</span>
+</div>
+
+<div class="ranking-prize">
+  <div class="ranking-prize-copy">
+    <div id="prize-month-label" class="ranking-prize-pill">Prêmio de março</div>
+    <div id="prize-title" class="ranking-prize-title">Aguardando prêmio do mês</div>
+    <div id="prize-description" class="ranking-prize-description">
+      Assim que o novo prêmio for cadastrado no painel admin, ele aparecerá aqui.
+    </div>
+  </div>
+  <div class="ranking-prize-media">
+    <img id="prize-image" src="" alt="Prêmio do mês" class="ranking-prize-image">
+    <svg id="prize-fallback-icon" width="52" height="52" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <circle cx="12" cy="12" r="8" stroke="#d4af37" stroke-width="1.7"/>
+      <circle cx="12" cy="12" r="2.6" stroke="#d4af37" stroke-width="1.7"/>
+      <path d="M12 4V2.5M12 21.5V20M4 12H2.5M21.5 12H20M6.35 6.35L5.2 5.2M18.8 18.8L17.65 17.65M17.65 6.35L18.8 5.2M5.2 18.8L6.35 17.65" stroke="#d4af37" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+</div>
 
 </section>
 
 
+<div id="team-entry-modal" class="app-sheet">
+  <div class="app-sheet-card">
+    <div class="app-sheet-header">
+      <div>
+        <div id="team-entry-name" class="app-sheet-title">Equipe</div>
+        <div id="team-entry-meta" class="app-sheet-subtitle">Cidade • Região</div>
+      </div>
+      <button id="close-team-entry-modal" type="button" class="app-sheet-close">×</button>
+    </div>
+
+    <div class="ranking-team-card">
+      <div class="ranking-team-logo-wrap">
+        <span id="team-entry-logo-placeholder" class="ranking-team-logo-placeholder">equipe</span>
+        <img id="team-entry-logo" alt="Logo da equipe" class="ranking-team-logo">
+      </div>
+      <div class="ranking-team-copy">
+        <div id="team-entry-founder" class="ranking-team-founder">Fundador</div>
+        <div id="team-entry-founded-at" class="ranking-team-founded">Fundação</div>
+      </div>
+    </div>
+
+    <div id="team-entry-status" class="ranking-team-status">
+      Veja os dados da equipe e solicite sua entrada.
+    </div>
+
+    <div class="ranking-sheet-actions">
+      <button id="cancel-team-entry" type="button" class="ui-button ui-button-secondary">Cancelar</button>
+      <button id="request-team-join-button" type="button" class="ui-button ui-button-primary">Solicitar entrada</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
-import { loadHeader } from "../js/header.js";
-loadHeader("Ranking");
+import { beginPageLoad, finishPageLoad } from "../js/ui/page-loader.js?v=7";
+import { initHomeAdBanner } from "../js/ui/homeAdBanner.js?v=2";
+import { loadHeader } from "../js/header.js?v=4";
+import { supabase } from "../js/supabase.js?v=1";
+import { getAuthRedirectUrl, storeAuthReturnUrl } from "../js/auth-redirect.js?v=1";
+import {
+  getMyTeam,
+  loadMonthlyPrize as loadRankingMonthlyPrize,
+  loadRankingMonthChampion,
+  loadRankingPageData,
+  loadTeam,
+  requestTeamJoin as requestRankingTeamJoin
+} from "../js/services/ranking.js?v=3";
+import { showMessagePopup } from "../js/ui/popup.js?v=1";
+
+beginPageLoad();
+await loadHeader("Ranking");
+
+const teamEntryModal = document.getElementById("team-entry-modal");
+const closeTeamEntryModalBtn = document.getElementById("close-team-entry-modal");
+const cancelTeamEntryBtn = document.getElementById("cancel-team-entry");
+const requestTeamJoinButton = document.getElementById("request-team-join-button");
+const teamEntryName = document.getElementById("team-entry-name");
+const teamEntryMeta = document.getElementById("team-entry-meta");
+const teamEntryFounder = document.getElementById("team-entry-founder");
+const teamEntryFoundedAt = document.getElementById("team-entry-founded-at");
+const teamEntryStatus = document.getElementById("team-entry-status");
+const teamEntryLogo = document.getElementById("team-entry-logo");
+const teamEntryLogoPlaceholder = document.getElementById("team-entry-logo-placeholder");
+const rankingFeedback = document.getElementById("ranking-feedback");
+const rankingHeroStatus = document.getElementById("ranking-hero-status");
+const rankingHeroSubtitle = document.getElementById("ranking-hero-subtitle");
+
+let currentTeamEntryId = null;
+
+async function ensureRankingLoggedUser(){
+  const { data: { user } } = await supabase.auth.getUser();
+  if(user) return user;
+
+  storeAuthReturnUrl("/pages/ranking.html");
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: getAuthRedirectUrl("/pages/ranking.html")
+    }
+  });
+
+  return null;
+}
+
+function setRankingFeedback(message = "", emphasized = false){
+  if(!rankingFeedback) return;
+  if(!message){
+    rankingFeedback.hidden = true;
+    rankingFeedback.textContent = "";
+    rankingFeedback.classList.remove("emphasized");
+    return;
+  }
+
+  rankingFeedback.hidden = false;
+  rankingFeedback.textContent = message;
+  rankingFeedback.classList.toggle("emphasized", emphasized);
+}
+
+function openTeamEntryModal(){
+  if(teamEntryModal) teamEntryModal.style.display = "flex";
+}
+
+function closeTeamEntryModal(){
+  if(teamEntryModal) teamEntryModal.style.display = "none";
+  currentTeamEntryId = null;
+}
+
+function getRowBackground(position){
+  if(position === 1) return "background:rgba(212,175,55,.14);";
+  if(position === 2) return "background:rgba(192,192,192,.14);";
+  if(position === 3) return "background:rgba(205,127,50,.14);";
+  return "";
+}
+
+function getAccentClass(position){
+  if(position === 1) return "is-gold";
+  if(position === 2) return "is-silver";
+  if(position === 3) return "is-bronze";
+  return "is-default";
+}
+
+function getPositionBadge(position){
+  if(position <= 3){
+    return `
+      <div class="ranking-position-badge ranking-position-badge--premium">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" aria-hidden="true">
+          <circle cx="12" cy="8.5" r="5.25" fill="currentColor"></circle>
+          <circle cx="12" cy="8.5" r="3.35" fill="#111"></circle>
+          <path d="M12 5.95l.78 1.58 1.75.26-1.27 1.24.3 1.75L12 9.98l-1.56.8.3-1.75-1.27-1.24 1.75-.26L12 5.95z" fill="currentColor"></path>
+          <path d="M9.2 13.3 7.35 20.5l2.85-1.45L12 21.25l1.8-2.2 2.85 1.45-1.85-7.2z" fill="currentColor" opacity=".92"></path>
+        </svg>
+      </div>
+    `;
+  }
+
+  return `<div class="ranking-position-badge ranking-position-badge--numeric">${position}º</div>`;
+}
+
+const RANKING_MONTHS_PT = [
+  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+];
+
+function escapeRankingHtml(text){
+  const el = document.createElement("div");
+  el.textContent = text == null ? "" : String(text);
+  return el.innerHTML;
+}
+
+function saoPauloCalendarYearMonth(d = new Date()){
+  const fmt = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "numeric",
+  });
+  let y;
+  let m;
+  for(const p of fmt.formatToParts(d)){
+    if(p.type === "year") y = Number(p.value);
+    if(p.type === "month") m = Number(p.value);
+  }
+  return { year: y, month: m };
+}
+
+function previousCalendarMonth(year, month){
+  if(month <= 1) return { year: year - 1, month: 12 };
+  return { year, month: month - 1 };
+}
+
+function updateHero(allRows, lastMonthChampion){
+  if(!rankingHeroStatus || !rankingHeroSubtitle) return;
+
+  const hasLive = Array.isArray(allRows) && allRows.length > 0;
+  const hasChamp = Boolean(
+    lastMonthChampion?.teamName && Number(lastMonthChampion.totalPoints) > 0
+  );
+
+  if(!hasLive && !hasChamp){
+    rankingHeroStatus.textContent = "Aguardando nova competição";
+    rankingHeroStatus.classList.remove("is-active");
+    rankingHeroSubtitle.textContent = "Busque sua equipe e acompanhe a disputa do mês.";
+    return;
+  }
+
+  if(hasLive){
+    rankingHeroStatus.textContent = "Competição ativa";
+    rankingHeroStatus.classList.add("is-active");
+  }else{
+    rankingHeroStatus.textContent = "Último mês encerrado";
+    rankingHeroStatus.classList.remove("is-active");
+  }
+
+  const lines = [];
+  if(hasChamp){
+    const mo = lastMonthChampion.month;
+    const labelMonth = mo >= 1 && mo <= 12 ? RANKING_MONTHS_PT[mo - 1] : String(mo);
+    lines.push(
+      `Campeão de ${labelMonth} de ${lastMonthChampion.year}: ${lastMonthChampion.teamName} com ${lastMonthChampion.totalPoints} pontos.`
+    );
+  }else if(hasLive){
+    const top = allRows[0];
+    lines.push(
+      `No topo neste mês: ${top.teamName || "Equipe"} com ${top.total ?? 0} pontos.`
+    );
+  }
+
+  rankingHeroSubtitle.innerHTML = lines.map(escapeRankingHtml).join("<br>");
+}
+
+async function openTeamEntry(teamId){
+  currentTeamEntryId = teamId;
+
+  if(teamEntryStatus) teamEntryStatus.textContent = "Carregando equipe...";
+  if(teamEntryName) teamEntryName.textContent = "Equipe";
+  if(teamEntryMeta) teamEntryMeta.textContent = "Cidade • Região";
+  if(teamEntryFounder) teamEntryFounder.textContent = "Fundador";
+  if(teamEntryFoundedAt) teamEntryFoundedAt.textContent = "Fundação";
+
+  if(teamEntryLogo && teamEntryLogoPlaceholder){
+    teamEntryLogo.src = "";
+    teamEntryLogo.style.display = "none";
+    teamEntryLogoPlaceholder.style.display = "block";
+  }
+
+  openTeamEntryModal();
+
+  try {
+    const teamData = await loadTeam(teamId);
+
+    if(!teamData){
+      if(teamEntryStatus) teamEntryStatus.textContent = "Equipe não encontrada.";
+      return;
+    }
+
+    if(teamEntryName) teamEntryName.textContent = teamData.name || "Equipe";
+    if(teamEntryMeta) teamEntryMeta.textContent = [teamData.city, teamData.region].filter(Boolean).join(" • ") || "Sem localização definida";
+    if(teamEntryFounder) teamEntryFounder.textContent = teamData.founderName || "Fundador não informado";
+    if(teamEntryFoundedAt) teamEntryFoundedAt.textContent = teamData.foundedAt ? `Fundada em ${teamData.foundedAt}` : "Fundação não informada";
+
+    if(teamEntryLogo && teamEntryLogoPlaceholder){
+      if(teamData.logoUrl){
+        teamEntryLogo.src = teamData.logoUrl;
+        teamEntryLogo.style.display = "block";
+        teamEntryLogoPlaceholder.style.display = "none";
+      }else{
+        teamEntryLogo.src = "";
+        teamEntryLogo.style.display = "none";
+        teamEntryLogoPlaceholder.style.display = "block";
+      }
+    }
+
+    const myTeamData = await getMyTeam();
+
+    if(requestTeamJoinButton){
+      requestTeamJoinButton.disabled = false;
+      requestTeamJoinButton.style.opacity = "1";
+      requestTeamJoinButton.textContent = "Solicitar entrada";
+    }
+
+    if(!myTeamData || myTeamData.state === "no_team"){
+      if(teamEntryStatus) teamEntryStatus.textContent = "Veja os dados da equipe e solicite sua entrada.";
+      return;
+    }
+
+    if(myTeamData.state === "pending"){
+      if(teamEntryStatus) teamEntryStatus.textContent = `Você já possui um pedido pendente para ${myTeamData.teamName || "outra equipe"}.`;
+      if(requestTeamJoinButton){
+        requestTeamJoinButton.disabled = true;
+        requestTeamJoinButton.style.opacity = ".55";
+        requestTeamJoinButton.textContent = "Pedido pendente";
+      }
+      return;
+    }
+
+    if(myTeamData.state === "team_pending_approval"){
+      if(teamEntryStatus){
+        teamEntryStatus.textContent = `Sua equipe ${myTeamData.teamName || ""} está aguardando aprovação do administrador. Você poderá solicitar entrada em outras equipes depois que isso for resolvido.`;
+      }
+      if(requestTeamJoinButton){
+        requestTeamJoinButton.disabled = true;
+        requestTeamJoinButton.style.opacity = ".55";
+        requestTeamJoinButton.textContent = "Equipe em aprovação";
+      }
+      return;
+    }
+
+    if(myTeamData.state === "team_rejected"){
+      if(teamEntryStatus){
+        teamEntryStatus.textContent = "O registro da sua equipe não foi aprovado. Entre em contato com o suporte se precisar de ajuda.";
+      }
+      if(requestTeamJoinButton){
+        requestTeamJoinButton.disabled = true;
+        requestTeamJoinButton.style.opacity = ".55";
+        requestTeamJoinButton.textContent = "Indisponível";
+      }
+      return;
+    }
+
+    if(myTeamData.state === "member" || myTeamData.state === "owner" || myTeamData.state === "moderator"){
+      if(myTeamData.teamId === teamId){
+        if(teamEntryStatus) teamEntryStatus.textContent = `Você já faz parte da equipe ${myTeamData.teamName || ""}.`;
+        if(requestTeamJoinButton){
+          requestTeamJoinButton.disabled = true;
+          requestTeamJoinButton.style.opacity = ".55";
+          requestTeamJoinButton.textContent = "Já participa";
+        }
+      }else{
+        if(teamEntryStatus) teamEntryStatus.textContent = `Você já está vinculado à equipe ${myTeamData.teamName || ""}.`;
+        if(requestTeamJoinButton){
+          requestTeamJoinButton.disabled = true;
+          requestTeamJoinButton.style.opacity = ".55";
+          requestTeamJoinButton.textContent = "Indisponível";
+        }
+      }
+    }
+  } catch (error) {
+    console.error(error);
+    if(teamEntryStatus) teamEntryStatus.textContent = "Erro ao carregar a equipe.";
+  }
+}
+
+async function loadRanking(){
+  const rowsEl = document.getElementById("ranking-rows");
+  const searchInput = document.getElementById("team-search-input");
+  const searchTerm = searchInput?.value?.trim() || "";
+
+  try {
+    const { allRows, listRows } = await loadRankingPageData(searchTerm);
+    const { year: cy, month: cm } = saoPauloCalendarYearMonth();
+    const prev = previousCalendarMonth(cy, cm);
+    let lastMonthChampion = null;
+    try{
+      lastMonthChampion = await loadRankingMonthChampion(prev.year, prev.month);
+    }catch(chErr){
+      console.warn(chErr);
+    }
+
+    setRankingFeedback("");
+    updateHero(allRows, lastMonthChampion);
+
+    const data = listRows;
+
+    if(!rowsEl) return;
+
+    if(!data || data.length === 0){
+      rowsEl.innerHTML = `
+        <div class="ranking-message-card">
+          Nenhuma equipe encontrada no ranking deste mês.
+        </div>
+      `;
+      return;
+    }
+
+    rowsEl.innerHTML = data.map((team, index) => {
+      const accentClass = getAccentClass(team.position);
+      const badge = getPositionBadge(team.position);
+
+      return `
+        <div class="ranking-card ${accentClass}" data-team-id="${team.teamId}">
+          <div class="ranking-card-top">
+            ${badge}
+            <div class="ranking-card-copy">
+              <div class="ranking-card-name">${team.teamName || ""}</div>
+              <div class="ranking-card-hint">Toque para ver a equipe</div>
+            </div>
+            <div class="ranking-total-pill ${accentClass}">
+              <div class="ranking-total-pill-label">TOTAL</div>
+              <div class="ranking-total-pill-value">${team.total ?? 0}</div>
+            </div>
+          </div>
+          <div class="ranking-card-stats">
+            <div class="ranking-stat-chip"><span>MB</span><strong>${team.mb ?? 0}</strong></div>
+            <div class="ranking-stat-chip"><span>EV</span><strong>${team.ev ?? 0}</strong></div>
+            <div class="ranking-stat-chip"><span>INT</span><strong>${team.intPoints ?? 0}</strong></div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    rowsEl.querySelectorAll(".ranking-card").forEach((row)=>{
+      row.addEventListener("click", ()=>{
+        const teamId = row.getAttribute("data-team-id");
+        if(teamId) openTeamEntry(teamId);
+      });
+    });
+  } catch (error) {
+    console.error("Erro ao carregar ranking:", error);
+    updateHero([], null);
+    if(rowsEl){
+      rowsEl.innerHTML = `
+        <div class="ranking-message-card emphasized">
+          Erro ao carregar ranking.
+        </div>
+      `;
+    }
+  }
+}
+
+async function loadMonthlyPrize(){
+  const monthLabel = document.getElementById("prize-month-label");
+  const titleEl = document.getElementById("prize-title");
+  const descriptionEl = document.getElementById("prize-description");
+  const imageEl = document.getElementById("prize-image");
+  const fallbackIcon = document.getElementById("prize-fallback-icon");
+
+  const now = new Date();
+  const monthName = now.toLocaleDateString("pt-BR", { month: "long" });
+
+  if(monthLabel){
+    monthLabel.textContent = `Prêmio de ${monthName}`;
+  }
+
+  const showWaitingPrize = ()=>{
+    if(titleEl) titleEl.textContent = "Aguardando prêmio do mês";
+    if(descriptionEl) descriptionEl.textContent = "Assim que o novo prêmio for cadastrado no painel admin, ele aparecerá aqui.";
+    if(imageEl){
+      imageEl.src = "";
+      imageEl.style.display = "none";
+    }
+    if(fallbackIcon) fallbackIcon.style.display = "block";
+  };
+
+  try {
+    const data = await loadRankingMonthlyPrize();
+
+    if(!data){
+      showWaitingPrize();
+      return;
+    }
+
+    if(titleEl) titleEl.textContent = data.title || "Aguardando prêmio do mês";
+    if(descriptionEl) descriptionEl.textContent = data.description || "Assim que o novo prêmio for cadastrado no painel admin, ele aparecerá aqui.";
+
+    if(imageEl && data.imageUrl){
+      imageEl.src = data.imageUrl;
+      imageEl.style.display = "block";
+      if(fallbackIcon) fallbackIcon.style.display = "none";
+    }else{
+      if(imageEl){
+        imageEl.src = "";
+        imageEl.style.display = "none";
+      }
+      if(fallbackIcon) fallbackIcon.style.display = "block";
+    }
+  } catch (error) {
+    console.error("Erro ao carregar prêmio do mês:", error);
+    showWaitingPrize();
+  }
+}
+
+try {
+  await Promise.all([loadRanking(), loadMonthlyPrize(), initHomeAdBanner()]);
+} finally {
+  finishPageLoad();
+}
+
+const teamSearchButton = document.getElementById("team-search-button");
+const teamSearchInput = document.getElementById("team-search-input");
+
+if(teamSearchButton){
+  teamSearchButton.addEventListener("click", loadRanking);
+}
+
+if(teamSearchInput){
+  teamSearchInput.addEventListener("keydown", (event)=>{
+    if(event.key === "Enter"){
+      event.preventDefault();
+      loadRanking();
+    }
+  });
+}
+
+if(closeTeamEntryModalBtn) closeTeamEntryModalBtn.addEventListener("click", closeTeamEntryModal);
+if(cancelTeamEntryBtn) cancelTeamEntryBtn.addEventListener("click", closeTeamEntryModal);
+
+if(teamEntryModal){
+  teamEntryModal.addEventListener("click", (event)=>{
+    if(event.target === teamEntryModal) closeTeamEntryModal();
+  });
+}
+
+if(requestTeamJoinButton){
+  requestTeamJoinButton.addEventListener("click", async ()=>{
+    if(!currentTeamEntryId) return;
+
+    try {
+      const user = await ensureRankingLoggedUser();
+      if(!user) return;
+      const message = await requestRankingTeamJoin(currentTeamEntryId);
+      closeTeamEntryModal();
+      showMessagePopup({ message });
+    } catch (error) {
+      console.error(error);
+      showMessagePopup({ title: "Erro", message: "Erro ao solicitar entrada na equipe." });
+    }
+  });
+}
 </script>
 
 <div id="app-footer"></div>
 
 <script type="module">
-import { loadFooter } from "../js/footer.js";
+import { loadFooter } from "../js/footer.js?v=1";
 loadFooter("ranking");
 </script>
+  <script type="module" src="../js/pwa.js?v=5"></script>
 
 </body>
 </html>

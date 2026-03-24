@@ -1,4 +1,8 @@
 import { supabase } from "./supabase.js";
+import { initHomeAdBanner } from "./ui/homeAdBanner.js?v=2";
+import { loadHomeEvents } from "./services/home.js?v=2";
+import { isHighlightActiveEvent } from "./services/highlightLifecycle.js?v=1";
+import { beginPageLoad, finishPageLoad } from "./ui/page-loader.js?v=2";
 
 function showPopup(message){
 
@@ -19,6 +23,166 @@ function showPopup(message){
   };
 }
 
+let deferredPrompt = null;
+let installPopupShown = false;
+let highlightTimer = null;
+let storyPointerStart = null;
+let initialHomeLoadComplete = false;
+const highlightSection = document.querySelector(".home-highlight");
+
+function formatShortEventDate(rawDate) {
+  if (!rawDate || !String(rawDate).trim()) return "";
+  const date = new Date(rawDate);
+  if (Number.isNaN(date.getTime())) return "";
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day}/${month}/${year}`;
+}
+
+const HERO_CAL_MONTHS_PT = [
+  "jan", "fev", "mar", "abr", "mai", "jun",
+  "jul", "ago", "set", "out", "nov", "dez",
+];
+
+/** Mini-calendário: dia em cima, mês abreviado em baixo (sem adornos). */
+function getHeroCalendarParts(rawDate) {
+  if (!rawDate || !String(rawDate).trim()) return null;
+  const date = new Date(rawDate);
+  if (Number.isNaN(date.getTime())) return null;
+  const d = date.getDate();
+  return {
+    day: String(d).padStart(2, "0"),
+    monthShort: HERO_CAL_MONTHS_PT[date.getMonth()] || "",
+  };
+}
+
+function buildHeroDateBadgeHtml(parts) {
+  const safeDay = escapeHtml(parts.day);
+  const safeMonth = escapeHtml(parts.monthShort);
+  const label = `Data do evento: ${parts.day} ${parts.monthShort}`;
+  return `<div class="home-hero-date-badge" role="img" aria-label="${escapeAttr(label)}">
+    <div class="home-hero-date-badge__top">${safeDay}</div>
+    <div class="home-hero-date-badge__divider" aria-hidden="true"></div>
+    <div class="home-hero-date-badge__bottom">${safeMonth}</div>
+  </div>`;
+}
+
+function shortLocation(location) {
+  const trimmed = String(location || "").trim();
+  if (!trimmed) return "";
+  return trimmed.split(",")[0].trim();
+}
+
+function getHeroChipLabel(event) {
+  const team = String(event.team || "").trim();
+  const city = String(event.city || "").trim();
+  return [team, city].filter(Boolean).join(" • ");
+}
+
+function getPlanChipLabel(event) {
+  const label = getHeroChipLabel(event);
+  if (label) return label;
+
+  const normalized = String(event.plan_type || "").trim().toLowerCase();
+  if (normalized === "7") return "7 DIAS";
+  if (normalized === "15") return "15 DIAS";
+  if (normalized === "30") return "30 DIAS";
+  if (normalized === "highlight") return "DESTAQUE";
+  return "PRÓXIMO";
+}
+
+function openEventDetail(event) {
+  window.location.href = `event.html?id=${event.id}`;
+}
+
+function escapeAttr(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/'/g, "&#39;");
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function ensureInstallPopup(){
+  let popup = document.getElementById("install-popup");
+  if (popup) return popup;
+
+  popup = document.createElement("div");
+  popup.id = "install-popup";
+  popup.style.display = "none";
+  popup.style.position = "fixed";
+  popup.style.inset = "0";
+  popup.style.background = "rgba(0,0,0,.65)";
+  popup.style.zIndex = "9999";
+  popup.style.alignItems = "center";
+  popup.style.justifyContent = "center";
+  popup.style.padding = "20px";
+
+  popup.innerHTML = `
+    <div style="width:100%;max-width:360px;background:#111;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px;color:#fff;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px;">Instalar WebPipa</div>
+      <div style="font-size:14px;line-height:1.45;opacity:.88;margin-bottom:16px;">
+        Acesse mais rapido e sem a barra do navegador.
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button id="install-popup-close" style="flex:1;height:44px;border:none;border-radius:12px;background:#2a2a2a;color:#fff;cursor:pointer;">
+          Agora não
+        </button>
+        <button id="install-popup-confirm" style="flex:1;height:44px;border:none;border-radius:12px;background:#19c37d;color:#000;font-weight:700;cursor:pointer;">
+          Instalar
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+  popup.querySelector("#install-popup-close")?.addEventListener("click", () => {
+    popup.style.display = "none";
+  });
+
+  popup.querySelector("#install-popup-confirm")?.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    popup.style.display = "none";
+  });
+
+  return popup;
+}
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  console.log("✅ Evento beforeinstallprompt capturado e pronto.");
+
+  setTimeout(() => {
+    if (!deferredPrompt || installPopupShown) return;
+
+    const popup = ensureInstallPopup();
+    popup.style.display = "flex";
+    installPopupShown = true;
+  }, 1000);
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredPrompt = null;
+
+  const popup = document.getElementById("install-popup");
+  if (popup) popup.style.display = "none";
+});
+
 async function init() {
 
   /* navegação para página do mapa */
@@ -30,83 +194,38 @@ async function init() {
     });
   }
 
-  /* buscar eventos do banco */
-  const { data: eventsRaw, error } = await supabase
-    .from("events")
-    .select("*")
-    .order("date", { ascending: true });
+  let events = [];
 
-  // apenas eventos aprovados aparecem na home
-  let events = (eventsRaw || []).filter(ev => ev.payment_status === "paid");
-
-  /* remover eventos que já passaram */
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
-  events = events.filter(ev => {
-    if(!ev.date) return false;
-
-    const eventDate = new Date(ev.date);
-    eventDate.setHours(0,0,0,0);
-
-    return eventDate >= today;
-  });
-
-  /* remover destaques expirados (7,15,30 dias) */
-  events = events.filter(ev => {
-    if(!ev.plan_type) return true;
-
-    const days = parseInt(ev.plan_type);
-    if(!days || !ev.created_at) return true;
-
-    const created = new Date(ev.created_at);
-    const now = new Date();
-    const diffDays = (now - created) / (1000 * 60 * 60 * 24);
-
-    return diffDays <= days;
-  });
-
-  /* ordenar prioridade: destaque primeiro (30,15,7) depois gratuitos, sempre por data mais próxima */
-
-  const planPriority = {
-    "30": 3,
-    "15": 2,
-    "7": 1,
-    "highlight": 1,
-    "free": 0
-  };
-
-  events.sort((a,b)=>{
-
-    const pa = planPriority[a.plan_type] || 0;
-    const pb = planPriority[b.plan_type] || 0;
-
-    // primeiro prioridade do plano
-    if(pb !== pa) return pb - pa;
-
-    // depois ordenar pela data do evento
-    return new Date(a.date) - new Date(b.date);
-
-  });
-
-  if (error) {
-    console.error("Erro ao buscar eventos:", error);
-    return;
+  try {
+    await initHomeAdBanner();
+  } catch (bannerErr) {
+    console.warn("Banner publicitário:", bannerErr);
   }
 
-/* separar eventos para home */
-const stories = events.slice(0, 10);
+  try {
+    events = await loadHomeEvents();
+  } catch (error) {
+    console.error("Erro ao buscar eventos:", error);
+    return;
+  } finally {
+    if (!initialHomeLoadComplete) {
+      initialHomeLoadComplete = true;
+      finishPageLoad();
+    }
+  }
 
-// eventos pagos (planos 7,15,30 dias) aparecem no destaque
-const featuredEvents = events
-  .filter(ev => ev.plan_type === "7" || ev.plan_type === "15" || ev.plan_type === "30" || ev.plan_type === "highlight")
-  .slice(0, 5);
+/* separar eventos para home — cards horizontais sem limite */
+const stories = events;
+
+// eventos pagos (planos 7,15,30 dias) no destaque grande — sem limite artificial
+const featuredEvents = events.filter((ev) => isHighlightActiveEvent(ev));
 
 /* -------------------------
-   STORIES (abre Instagram)
+   STORIES
 --------------------------*/
   
 const storiesContainer = document.querySelector(".stories-container");
+const heroDots = document.querySelector(".home-hero-dots");
 
 if (!storiesContainer) {
   console.error("Elemento .stories-container não encontrado no HTML");
@@ -144,15 +263,24 @@ storiesContainer.addEventListener("mousemove", (e) => {
   storiesContainer.scrollLeft = startScroll - dx;
 });
 
-/* permitir arrastar com mouse e touch */
+storiesContainer.addEventListener("touchstart", (e) => {
+  const touch = e.touches[0];
+  storyPointerStart = touch ? { x: touch.clientX, y: touch.clientY } : null;
+});
+
+storiesContainer.addEventListener("touchend", () => {
+  storyPointerStart = null;
+});
 
 stories.forEach(event => {
-
   const card = document.createElement("div");
   card.classList.add("story-card");
-  // eventos pagos recebem borda dourada
-  if(event.plan_type === "7" || event.plan_type === "15" || event.plan_type === "30" || event.plan_type === "highlight"){
+  const isPremium = isHighlightActiveEvent(event);
+
+  if (isPremium) {
     card.classList.add("premium");
+  } else {
+    card.classList.add("free");
   }
 
   if (event.image) {
@@ -162,29 +290,32 @@ stories.forEach(event => {
   }
 
   card.innerHTML = `
+    ${isPremium ? `<div class="story-premium-badge">★</div>` : ``}
+    ${event.city ? `<div class="story-city-pill">${event.city}</div>` : ``}
     <div class="story-overlay">
-      <div class="story-title">
-        ${event.title}
-      </div>
-      <div class="story-location">
-        ${event.city || ""}
-      </div>
-      <div class="story-button">
-        Ver mais
-      </div>
+      <div class="story-title">${event.title}</div>
+      <div class="story-location">${formatShortEventDate(event.date)}</div>
     </div>
   `;
 
-  const btn = card.querySelector(".story-button");
-
-  if (btn) {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-
+  if (isPremium) {
+    card.addEventListener("click", () => {
       if (dragMoved) return;
+      openEventDetail(event);
+    });
 
-      if (event.instagram) {
-        window.open(event.instagram, "_blank");
+    card.addEventListener("touchend", (e) => {
+      const touch = e.changedTouches[0];
+      if (!touch || !storyPointerStart) {
+        openEventDetail(event);
+        return;
+      }
+
+      const dx = Math.abs(touch.clientX - storyPointerStart.x);
+      const dy = Math.abs(touch.clientY - storyPointerStart.y);
+
+      if (dx < 12 && dy < 12) {
+        openEventDetail(event);
       }
     });
   }
@@ -208,10 +339,19 @@ if (!highlightCard) {
 highlightCard.style.cursor = "grab";
 
 let currentSlide = 0;
-let touchStartX = 0;
-let touchEndX = 0;
-let isSwiping = false;
-let isDraggingHighlight = false;
+let dragDistance = 0;
+
+function renderHeroDots() {
+  if (!heroDots) return;
+  if (featuredEvents.length <= 1) {
+    heroDots.innerHTML = "";
+    return;
+  }
+
+  heroDots.innerHTML = featuredEvents
+    .map((_, index) => `<span class="home-hero-dot${index === currentSlide ? " active" : ""}"></span>`)
+    .join("");
+}
 
 function prevSlide() {
   currentSlide = (currentSlide - 1 + featuredEvents.length) % featuredEvents.length;
@@ -220,41 +360,58 @@ function prevSlide() {
 
 function renderFeatured() {
 
-  if (!featuredEvents.length) return;
+  if (!featuredEvents.length) {
+    if (highlightSection) {
+      highlightSection.hidden = true;
+    }
+    return;
+  }
+
+  if (highlightSection) {
+    highlightSection.hidden = false;
+  }
 
   const event = featuredEvents[currentSlide];
+  const location = shortLocation(event.location);
+  const calParts = getHeroCalendarParts(event.date);
+  const chipLabel = getPlanChipLabel(event);
+  const safeTitle = escapeHtml(event.title);
+  const safeChip = escapeHtml(chipLabel);
+  const safeLoc = location ? escapeHtml(location) : "";
 
   highlightCard.style.opacity = "0";
+  highlightCard.classList.remove("is-ready");
 
   setTimeout(() => {
 
     highlightCard.innerHTML = `
+      <div class="home-hero-border-sweep"></div>
       <div class="highlight-overlay">
-        <h2 class="highlight-title">${event.title}</h2>
-        <p class="highlight-meta">${(event.location || "").split(',')[0]} • ${event.city || ""} • ${event.date ? (()=>{ const d = event.date.slice(0,10).split('-'); return d[2] + '/' + d[1] + '/' + d[0].slice(2); })() : ""}</p>
-
-        <div class="highlight-button">
-          Ver mais
+        <div class="home-hero-top-row">
+          <span class="home-plan-chip">${safeChip}</span>
+          ${calParts ? buildHeroDateBadgeHtml(calParts) : ""}
+        </div>
+        <div class="home-hero-copy">
+          <h2 class="highlight-title">${safeTitle}</h2>
+          ${safeLoc ? `<div class="home-hero-addr-chip"><span class="home-hero-addr-chip__text">${safeLoc}</span></div>` : ""}
         </div>
       </div>
     `;
 
-    const btn = highlightCard.querySelector(".highlight-button");
-    if (btn) {
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        window.location.href = `event.html?id=${event.id}`;
-      });
+    if (event.image) {
+      highlightCard.innerHTML = `<div class="home-hero-image" style="background-image:url('${event.image.replace(/'/g, "\\'")}')"></div>${highlightCard.innerHTML}`;
+    } else {
+      highlightCard.innerHTML = `<div class="home-hero-image"></div>${highlightCard.innerHTML}`;
     }
 
-    if (event.image) {
-      highlightCard.style.backgroundImage = `url(${event.image})`;
-    } else {
-      highlightCard.style.background = "linear-gradient(135deg,#2b2b2b,#111)";
-      highlightCard.style.backgroundImage = "";
-    }
+    highlightCard.onclick = () => {
+      if (Math.abs(dragDistance) > 30) return;
+      openEventDetail(event);
+    };
 
     highlightCard.style.opacity = "1";
+    highlightCard.classList.add("is-ready");
+    renderHeroDots();
 
   }, 150);
 
@@ -266,45 +423,71 @@ function nextSlide() {
   renderFeatured();
 }
 
+function restartHighlightTimer() {
+  if (highlightTimer) {
+    clearInterval(highlightTimer);
+    highlightTimer = null;
+  }
+
+  if (featuredEvents.length <= 1) return;
+  highlightTimer = setInterval(nextSlide, 5000);
+}
+
 /* arrastar com mouse */
 let dragStartX = 0;
 
 highlightCard.addEventListener("mousedown", (e) => {
   dragStartX = e.clientX;
+  dragDistance = 0;
   highlightCard.style.cursor = "grabbing";
+  if (highlightTimer) {
+    clearInterval(highlightTimer);
+    highlightTimer = null;
+  }
 });
 
 highlightCard.addEventListener("mouseup", (e) => {
   highlightCard.style.cursor = "grab";
 
   const diff = dragStartX - e.clientX;
+  dragDistance = diff;
 
   if (Math.abs(diff) < 40) return;
 
   if (diff > 0) nextSlide();
   else prevSlide();
+
+  restartHighlightTimer();
 });
 
 /* swipe no celular */
 highlightCard.addEventListener("touchstart", (e) => {
   dragStartX = e.touches[0].clientX;
+  dragDistance = 0;
+  if (highlightTimer) {
+    clearInterval(highlightTimer);
+    highlightTimer = null;
+  }
 });
 
 highlightCard.addEventListener("touchend", (e) => {
   const diff = dragStartX - e.changedTouches[0].clientX;
+  dragDistance = diff;
 
   if (Math.abs(diff) < 40) return;
 
   if (diff > 0) nextSlide();
   else prevSlide();
+
+  restartHighlightTimer();
 });
 
 /* iniciar slider */
 renderFeatured();
-
-setInterval(nextSlide, 5000);
+restartHighlightTimer();
 }
 
+beginPageLoad();
 init();
 
 /* realtime updates for events */

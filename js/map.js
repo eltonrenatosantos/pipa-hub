@@ -1,57 +1,251 @@
 import { supabase } from "./supabase.js";
+import { isHighlightActiveEvent } from "./services/highlightLifecycle.js?v=1";
+import { loadMapEvents } from "./services/map.js";
+import { showMessagePopup } from "./ui/popup.js";
+import { beginPageLoad, finishPageLoad } from "./ui/page-loader.js?v=2";
+import { initHomeAdBanner } from "./ui/homeAdBanner.js?v=2";
 
 function showPopup(message){
+  showMessagePopup({ message });
+}
 
-  const overlay = document.createElement("div");
-  overlay.className = "app-popup-overlay";
+function formatShortEventDate(value){
+  if(!value) return "";
 
-  overlay.innerHTML = `
-    <div class="app-popup">
-      <div class="app-popup-text">${message}</div>
-      <button class="app-popup-button">OK</button>
-    </div>
-  `;
+  const raw = String(value).slice(0,10);
+  const parts = raw.split("-");
 
-  document.body.appendChild(overlay);
+  if(parts.length !== 3) return value;
 
-  overlay.querySelector(".app-popup-button").onclick = () => {
-    overlay.remove();
-  };
+  const [year, month, day] = parts;
+  return `${day}/${month}/${year.slice(2)}`;
+}
+
+function formatMapCardAddress(location, city){
+  const normalizedCity = String(city || "").trim();
+  const parts = String(location || "")
+    .split(",")
+    .map((part) => part.trim())
+    .map((part) => part.replace(/\b\d{5}-?\d{3}\b/g, "").trim())
+    .map((part) => (part.includes(" - ") ? part.split(" - ")[0].trim() : part))
+    .filter(Boolean)
+    .filter((part) => {
+      if (!normalizedCity) return true;
+      return part.toLowerCase() !== normalizedCity.toLowerCase();
+    })
+    .slice(0, 3);
+
+  if (normalizedCity) {
+    parts.push(normalizedCity);
+  }
+
+  return parts.join(", ");
+}
+
+function escapeHTML(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 let map;
 let markersGroup;
 const markersById = {};
 let lastInsertedEventId = null;
+let mapEventCard;
+let activeCardMarker = null;
+/** Coordenadas do evento (endereço); com spiderfy o marker.getLatLng() fica offset até o cluster fechar. */
+let activeCardLatLng = null;
+let initialMapLoadComplete = false;
+let userLocationMarker = null;
 
-async function loadEvents(term = "") {
+function getEventLatLng(event) {
+  if (!event) return null;
+  const lat = typeof event.lat === "number" ? event.lat : parseFloat(String(event.lat ?? event.latitude).replace(",", "."));
+  const lng = typeof event.lng === "number" ? event.lng : parseFloat(String(event.lng ?? event.longitude).replace(",", "."));
+  if (Number.isNaN(lat) || Number.isNaN(lng)) return null;
+  return L.latLng(lat, lng);
+}
+
+function focusMarker(marker, preferredZoom = 18, focusLatLng) {
+  if (!map || !marker) return;
+
+  const latlng = focusLatLng || marker.getLatLng();
+  map.closePopup();
+  const size = map.getSize();
+  const targetScreenY = size.y * 0.72;
+  const centerScreenY = size.y / 2;
+  const projectedMarker = map.project(latlng, preferredZoom);
+  const centerProjected = L.point(
+    projectedMarker.x,
+    projectedMarker.y - (targetScreenY - centerScreenY)
+  );
+  const targetCenter = map.unproject(centerProjected, preferredZoom);
+  // Sem animação: o card usa latLngToContainerPoint na hora; com animate:true o mapa ainda
+  // estava no frame anterior (pior com cluster/spiderfy e até pin único).
+  map.setView(targetCenter, preferredZoom, { animate: false });
+}
+
+function hideMapEventCard() {
+  if (!mapEventCard) return;
+  mapEventCard.style.display = "none";
+  activeCardMarker = null;
+  activeCardLatLng = null;
+}
+
+function setUserLocationMarker(latlng) {
+  if (!map) return;
+
+  if (userLocationMarker) {
+    map.removeLayer(userLocationMarker);
+    userLocationMarker = null;
+  }
+
+  userLocationMarker = L.marker(latlng, {
+    interactive: false
+  })
+    .addTo(map)
+    .bindPopup("Você está aqui");
+}
+
+function centerMapOnUserLocation({ zoom = 13, showFeedback = false } = {}) {
+  if (!navigator.geolocation) {
+    if (showFeedback) {
+      showPopup("Não foi possível obter sua localização agora.");
+    }
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+
+      map.setView([lat, lng], zoom);
+      setUserLocationMarker([lat, lng]);
+    },
+    () => {
+      if (showFeedback) {
+        showPopup("Não foi possível obter sua localização agora.");
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 8000,
+      maximumAge: 30000
+    }
+  );
+}
+
+function updateMapEventCardPosition() {
+  if (!mapEventCard || !map || !activeCardMarker) return;
+
+  const latlng = activeCardLatLng || activeCardMarker.getLatLng();
+  const point = map.latLngToContainerPoint(latlng);
+  const cardWidth = mapEventCard.offsetWidth;
+  const cardHeight = mapEventCard.offsetHeight;
+  const mapSize = map.getSize();
+  const gap = typeof window !== "undefined" && window.innerWidth <= 768 ? 20 : 28;
+  const minMargin = 10;
+  const iconOptions = activeCardMarker.options?.icon?.options || {};
+  const iconSize = Array.isArray(iconOptions.iconSize) ? iconOptions.iconSize : [0, 0];
+  const iconAnchor = Array.isArray(iconOptions.iconAnchor) ? iconOptions.iconAnchor : [0, iconSize[1] || 0];
+  const topOffset = Math.max(0, iconAnchor[1] || 0);
+
+  let left = point.x - (cardWidth / 2);
+  let top = point.y - topOffset - gap - cardHeight;
+
+  left = Math.max(minMargin, Math.min(left, mapSize.x - cardWidth - minMargin));
+  top = Math.max(minMargin, top);
+
+  mapEventCard.style.left = `${left}px`;
+  mapEventCard.style.top = `${top}px`;
+}
+
+/** Card acima, pin/estrela abaixo (~72% da altura), rua visível — mesmo efeito do clique no marcador. */
+function openMapEventWithFocus(event, marker) {
+  if (!event || !marker) return;
+  const focusLL = getEventLatLng(event) || marker.getLatLng();
+  focusMarker(marker, 18, focusLL);
+  showMapEventCard(event, marker);
+  requestAnimationFrame(() => updateMapEventCardPosition());
+}
+
+function showMapEventCard(event, marker) {
+  if (!mapEventCard || !event || !marker) return;
+
+  const title = event.title || "Evento";
+  const image = (event.image || "").trim();
+  const location = event.location || event.address || "";
+  const city = event.city || "";
+  const formattedDate = formatShortEventDate(event.date);
+  const addressText = formatMapCardAddress(location, city);
+  const isPremium = isHighlightActiveEvent(event);
+
+  let eventLink = null;
+
+  if (isPremium) {
+    eventLink = `event.html?id=${event.id}`;
+  }
+
+  mapEventCard.className = `map-event-card${isPremium ? " is-premium" : " is-free"}`;
+  mapEventCard.innerHTML = `
+    <div class="map-event-card-shell">
+      <div class="map-event-card-media">
+        <div class="map-event-card-image"${image ? ` style="background-image:url('${escapeHTML(image)}')"` : ""}>
+          ${!image ? `<div class="map-event-card-image-placeholder" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="31" height="31" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="5" width="16" height="14" rx="3" stroke="currentColor" stroke-width="1.8"/>
+              <path d="M8 14l2.5-2.5L13 14l2.5-2.5L18 14.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="9" cy="9" r="1.4" fill="currentColor"/>
+            </svg>
+          </div>` : ""}
+          ${isPremium ? `<div class="map-event-card-badge">Destaque</div>` : ""}
+          ${eventLink ? `<a class="map-event-card-open" href="${escapeHTML(eventLink)}" aria-label="Abrir evento">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="11" cy="11" r="5.5" stroke="currentColor" stroke-width="2"/>
+              <path d="m16 16 3.5 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </a>` : ""}
+        </div>
+      </div>
+      <div class="map-event-card-body">
+        <div class="map-event-card-title">${escapeHTML(title)}</div>
+        ${formattedDate ? `<div class="map-event-card-date">${escapeHTML(formattedDate)}</div>` : ""}
+        ${addressText ? `<div class="map-event-card-meta">${escapeHTML(addressText)}</div>` : ""}
+      </div>
+    </div>
+  `;
+
+  activeCardMarker = marker;
+  activeCardLatLng = getEventLatLng(event);
+  mapEventCard.style.display = "block";
+  updateMapEventCardPosition();
+}
+
+async function loadEvents(term = "", options = {}) {
+  const { initial = false } = options;
   const params = new URLSearchParams(window.location.search);
   const eventIdFromURL = params.get("event");
 
-  let query = supabase
-    .from("events")
-    .select("*")
-    .in("payment_status", ["paid", "approved"]);
+  let events = [];
 
-  // quando abrimos via "Ver meu evento", buscar somente esse evento
-  if (eventIdFromURL) {
-    // quando abrimos um evento específico, também garantir que esteja aprovado
-    query = supabase
-      .from("events")
-      .select("*")
-      .eq("id", eventIdFromURL)
-      .in("payment_status", ["paid", "approved"]);
-  }
-
-  if (term) {
-    query = query.or(`title.ilike.%${term}%,city.ilike.%${term}%,location.ilike.%${term}%`);
-  }
-
-  const { data: events, error } = await query;
-
-  if (error) {
+  try {
+    events = await loadMapEvents({
+      term,
+      eventId: eventIdFromURL || ""
+    });
+  } catch (error) {
     console.error("Erro ao buscar eventos:", error);
     return;
+  } finally {
+    if (initial && !initialMapLoadComplete) {
+      initialMapLoadComplete = true;
+      finishPageLoad();
+    }
   }
 
   // se foi busca e não encontrou nada, manter eventos atuais no mapa
@@ -59,22 +253,28 @@ async function loadEvents(term = "") {
     return;
   }
 
+  const searchTermActive = Boolean(term && String(term).trim());
+
   if (markersGroup && markersGroup.clearLayers) {
     markersGroup.clearLayers();
   }
 
+  Object.keys(markersById).forEach((id) => {
+    delete markersById[id];
+  });
+
   const bounds = [];
   let lastMarker = null;
   let targetMarker = null;
+  let targetEvent = null;
 
   events.forEach((event) => {
+    const ll = getEventLatLng(event);
+    if (!ll) return;
+    const lat = ll.lat;
+    const lng = ll.lng;
 
-    const lat = event.lat;
-    const lng = event.lng ?? event.lng;
-
-    if (!lat || !lng) return;
-
-    const isPremiumEvent = (event.plan_type && event.plan_type !== "free");
+    const isPremiumEvent = isHighlightActiveEvent(event);
 
     let marker;
 
@@ -110,48 +310,15 @@ async function loadEvents(term = "") {
     }
 
     // identificar se evento é premium
-    const isPremium = isPremiumEvent;
-
     bounds.push([lat, lng]);
     lastMarker = marker;
 
-    marker.bindPopup(`
-      <div style="width:200px;position:relative;${isPremium ? 'background:#1a1a1a;border:2px solid #d4af37;padding:8px;border-radius:10px;color:#ffffff;' : ''}">
-        ${isPremium ? `<div style="position:absolute;top:6px;left:6px;background:#d4af37;color:#000;font-size:10px;font-weight:700;padding:3px 6px;border-radius:6px;">DESTAQUE</div>` : ""}
-        ${event.image ? `<img src="${event.image}" style="width:100%;border-radius:8px;margin-bottom:6px;">` : ""}
-        <div style="font-size:12px;font-weight:600;opacity:0.9;${isPremium ? 'color:#ffffff;' : ''}">${event.team || ''}</div>
-        <strong style="${isPremium ? 'color:#ffffff;' : ''}">${event.title}</strong><br>
-        <small style="${isPremium ? 'color:#e5e5e5;' : ''}">${(event.location || '').split(',')[0]}${event.city ? ', ' + event.city : ''} • ${event.date}</small>
-        <div style="margin-top:8px;text-align:right;">
-          <button style="
-            background:#d4af37;
-            border:none;
-            padding:8px 12px;
-            border-radius:8px;
-            font-size:13px;
-            cursor:pointer;
-          " onclick="window.location.href='event.html?id=${event.id}'">
-            Ver mais
-          </button>
-        </div>
-      </div>
-    `);
-    // when clicking a marker, center it on the screen so popup is not cut
     marker.on("click", () => {
-
-  const latlng = marker.getLatLng();
-
-  // centraliza no marcador
-  map.setView([latlng.lat, latlng.lng], map.getZoom(), { animate: true });
-
-  // move o mapa um pouco para cima para o card aparecer no meio
-  setTimeout(() => {
-    map.panBy([0, -180], { animate: true });
-  }, 200);
-
-});
+      openMapEventWithFocus(event, marker);
+    });
     if (eventIdFromURL && event.id == eventIdFromURL) {
       targetMarker = marker;
+      targetEvent = event;
     }
 
     markersById[event.id] = marker;
@@ -168,37 +335,32 @@ async function loadEvents(term = "") {
 
   });
 
-  if (targetMarker) {
-  const latlng = targetMarker.getLatLng();
-
-  // center event on map
-  map.setView([latlng.lat, latlng.lng], 18);
-
-  setTimeout(() => {
-    targetMarker.openPopup();
-
-    // shift map upward so popup is centered
-    map.panBy([0, -8], { animate: true });
-  }, 200);
-
-} else if (bounds.length === 1) {
-  map.setView(bounds[0], 14);
-
-  if (lastMarker) {
-    lastMarker.openPopup();
-
-    // shift map upward so popup is centered like marker click behavior
-    setTimeout(() => {
-      map.panBy([0, -260], { animate: true });
-    }, 200);
+  if (targetMarker && targetEvent) {
+    openMapEventWithFocus(targetEvent, targetMarker);
+  } else if (bounds.length === 1) {
+    if (searchTermActive && events.length === 1) {
+      const only = events[0];
+      const marker = markersById[only.id];
+      if (marker) {
+        openMapEventWithFocus(only, marker);
+      }
+    } else {
+      map.setView(bounds[0], 16.5);
+    }
+  } else if (bounds.length > 1) {
+    map.fitBounds(bounds, { padding: [50, 50] });
   }
-} else if (bounds.length > 1) {
-  map.fitBounds(bounds, { padding: [50, 50] });
-}
 
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  beginPageLoad();
+
+  try {
+    await initHomeAdBanner();
+  } catch (bannerErr) {
+    console.warn("Banner publicitário:", bannerErr);
+  }
 
   const style = document.createElement("style");
   style.innerHTML = `
@@ -226,11 +388,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const params = new URLSearchParams(window.location.search);
   const eventIdFromURL = params.get("event");
+  mapEventCard = document.getElementById("mapEventCard");
+  hideMapEventCard();
 
   map = L.map("map", { zoomControl: false }).setView([-23.5505, -46.6333], 11);
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap"
+  L.tileLayer("https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    subdomains: "abcd",
+    attribution: "© OpenStreetMap contributors © CARTO"
   }).addTo(map);
 
   if (L.markerClusterGroup) {
@@ -277,23 +442,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   map.addLayer(markersGroup);
 
+  requestAnimationFrame(() => {
+    if (map) map.invalidateSize();
+  });
+
+  map.on("move zoom resize moveend zoomend", updateMapEventCardPosition);
+  map.on("click", () => {
+    hideMapEventCard();
+    const si = document.getElementById("map-search");
+    if (si && document.activeElement === si) {
+      si.blur();
+    }
+  });
+
   // geolocalização só roda quando NÃO estamos abrindo um evento específico
-  if (!eventIdFromURL && navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((pos) => {
-
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-
-      map.setView([lat, lng], 13);
-
-      L.marker([lat, lng])
-        .addTo(map)
-        .bindPopup("Você está aqui");
-
-    });
+  if (!eventIdFromURL) {
+    centerMapOnUserLocation({ zoom: 13 });
   }
 
-  loadEvents();
+  loadEvents("", { initial: true });
 
   /* smarter realtime updates for events on map */
   supabase
@@ -348,6 +515,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const searchInput = document.getElementById("map-search");
   const searchButton = document.getElementById("map-search-btn");
+  const locateButton = document.getElementById("map-locate-btn");
 
   function runSearch() {
 
@@ -368,11 +536,21 @@ document.addEventListener("DOMContentLoaded", () => {
     searchButton.addEventListener("click", runSearch);
   }
 
+  if (locateButton) {
+    locateButton.addEventListener("click", () => {
+      centerMapOnUserLocation({ zoom: 14.5, showFeedback: true });
+    });
+  }
+
   if (searchInput) {
     searchInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         runSearch();
       }
+    });
+
+    searchInput.addEventListener("focus", () => {
+      hideMapEventCard();
     });
   }
 
@@ -390,18 +568,11 @@ document.addEventListener("DOMContentLoaded", () => {
       parent.appendChild(clearBtn);
     }
 
-    // mostrar ou esconder X conforme texto
+    // Só atualiza o X: não chama loadEvents ao apagar/digitar — senão o mapa recentraliza
+    // a cada backspace e a tela “pula” até você sair do campo ou buscar de novo.
     searchInput.addEventListener("input", () => {
-
       const value = searchInput.value.trim();
-
-      if (value === "") {
-        clearBtn.style.display = "none";
-        loadEvents();
-      } else {
-        clearBtn.style.display = "flex";
-      }
-
+      clearBtn.style.display = value === "" ? "none" : "flex";
     });
 
     // clicar no X limpa busca

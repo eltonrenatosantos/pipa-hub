@@ -3,10 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>document.documentElement.classList.add('app-preload');</script>
 
 <title>Perfil</title>
 
-<link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../assets/css/global.css?v=9" />
+  <link rel="stylesheet" href="../assets/css/components.css?v=3" />
+  <link rel="stylesheet" href="../assets/css/pages.css?v=20" />
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="WebPipa">
 
 </head>
 
@@ -15,45 +23,2066 @@
 
 <div id="app-header"></div>
 
-<section style="padding:20px">
+<section class="profile-page">
+  <div class="profile-page-head">
+    <div class="profile-page-title">Perfil</div>
+    <button id="profile-notifications-button" type="button" class="profile-notifications-button" aria-label="Notificações" hidden></button>
+  </div>
+  <div class="profile-stack">
 
-<button>Login com Google</button>
+    <div class="profile-panel profile-summary-panel">
+      <div id="profile-summary" class="profile-summary">
+        <div class="profile-summary-copy">
+          <div id="profile-name" class="profile-name">Seu perfil</div>
+          <div id="profile-secondary" class="profile-secondary"></div>
+        </div>
+        <div class="profile-summary-side">
+          <div id="profile-avatar" class="profile-avatar profile-avatar--guest-login">
+            <span id="profile-avatar-placeholder" class="profile-avatar-placeholder"><span class="profile-avatar-guest-stack" aria-hidden="true"><svg class="profile-avatar-google-icon" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg></span></span>
+            <img id="profile-avatar-image" class="profile-avatar-image" alt="Foto do perfil ou logo da equipe">
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <div class="profile-panel">
+      <div class="profile-panel-title">Minha atividade</div>
+
+      <div class="profile-grid profile-grid-activity">
+        <div id="liked-events-card" class="profile-activity-card">
+          <div class="profile-activity-top">
+            <div class="profile-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M7 10V20M7 20H4C3.44772 20 3 19.5523 3 19V11C3 10.4477 3.44772 10 4 10H7ZM7 20H17.2604C17.7266 20 18.1372 19.6779 18.2494 19.2253L20.2246 11.2574C20.3815 10.6246 19.9025 10 19.2505 10H14V6.76393C14 5.79055 13.2104 5 12.2361 5C11.7754 5 11.3329 5.18189 11.0059 5.50595L7 10Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <strong id="liked-count" class="profile-stat-value">0</strong>
+          </div>
+          <div class="profile-stat-label">Eventos curtidos</div>
+        </div>
+
+        <div id="published-events-link" class="profile-activity-card">
+          <div class="profile-activity-top">
+            <div class="profile-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M7 4V7M17 4V7M4 10H20M6 6H18C19.1046 6 20 6.89543 20 8V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V8C4 6.89543 4.89543 6 6 6Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <strong id="published-count" class="profile-stat-value">0</strong>
+          </div>
+          <div class="profile-stat-label">Eventos criados</div>
+        </div>
+
+        <div id="saved-events-card" class="profile-activity-card">
+          <div class="profile-activity-top">
+            <div class="profile-icon-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 21L12 17.5L7 21V6C7 4.89543 7.89543 4 9 4H15C16.1046 4 17 4.89543 17 6V21Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <strong id="saved-count" class="profile-stat-value">0</strong>
+          </div>
+          <div class="profile-stat-label">Eventos salvos</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-panel">
+      <div class="profile-panel-title">Conta</div>
+
+      <div class="profile-grid profile-grid-account">
+        <div id="my-reports-card" class="profile-activity-card profile-action-card">
+          <div class="profile-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 8.2V12.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <circle cx="12" cy="16.2" r="1" fill="currentColor"/>
+              <path d="M10.44 4.52L3.54 16.46C3.18 17.09 3 17.4 3.03 17.66C3.05 17.89 3.17 18.1 3.35 18.26C3.55 18.42 3.91 18.42 4.64 18.42H19.36C20.09 18.42 20.45 18.42 20.65 18.26C20.83 18.1 20.95 17.89 20.97 17.66C21 17.4 20.82 17.09 20.46 16.46L13.56 4.52C13.2 3.89 13.02 3.58 12.78 3.47C12.58 3.38 12.42 3.38 12.22 3.47C11.98 3.58 11.8 3.89 10.44 4.52Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="profile-action-copy">
+            <div class="profile-row-title">Minhas denúncias</div>
+            <div class="profile-row-subtitle">Acompanhe o andamento das denúncias.</div>
+          </div>
+        </div>
+
+        <button id="team-action-button" type="button" class="profile-activity-card profile-action-card profile-activity-card--button">
+          <div class="profile-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <circle cx="9" cy="8" r="2.4" stroke="currentColor" stroke-width="1.7"/>
+              <circle cx="15.8" cy="9.2" r="1.95" stroke="currentColor" stroke-width="1.7"/>
+              <path d="M4.8 18.2c0-2.42 2.02-4.2 4.2-4.2s4.2 1.78 4.2 4.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+              <path d="M12.9 17.7c.18-1.67 1.55-2.9 3.22-2.9 1.86 0 3.38 1.41 3.38 3.25" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="profile-action-copy">
+            <div id="team-action-title" class="profile-row-title">Cadastrar equipe</div>
+            <div id="team-action-subtitle" class="profile-row-subtitle">Criar base da sua equipe</div>
+          </div>
+        </button>
+      </div>
+
+      <div id="support-card" class="profile-row-card">
+        <div class="profile-row-main">
+          <div class="profile-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M6.6 7.4h10.8c1.44 0 2.6 1.16 2.6 2.6v5c0 1.44-1.16 2.6-2.6 2.6H11.8l-3.8 2.7v-2.7H6.6C5.16 17.6 4 16.44 4 15v-5c0-1.44 1.16-2.6 2.6-2.6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M8.1 11.4h7.8M8.1 14.2h5.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="profile-row-copy">
+            <div class="profile-row-title">Suporte e ajuda</div>
+            <div class="profile-row-subtitle">Dúvidas sobre uso do aplicativo</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="admin-panel-card" class="profile-row-card hidden">
+        <div class="profile-row-main">
+          <div class="profile-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 3L18.5 5.4V11.7C18.5 15.95 15.76 19.73 12 21C8.24 19.73 5.5 15.95 5.5 11.7V5.4L12 3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+              <path d="M9.6 12.1L11.2 13.7L14.8 10.1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="profile-row-copy">
+            <div class="profile-row-title">Painel admin</div>
+            <div class="profile-row-subtitle">Acessar revisão de eventos e denúncias</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </section>
 
 
-<script type="module">
-import { loadHeader } from "../js/header.js";
-loadHeader("Perfil");
-</script>
+
+<div id="team-modal" class="app-sheet">
+  <div class="app-sheet-card">
+    <div class="app-sheet-header">
+      <div>
+        <div class="app-sheet-title">Cadastrar equipe</div>
+        <div class="app-sheet-subtitle">Preencha os dados básicos da sua equipe.</div>
+      </div>
+      <button id="close-team-modal" type="button" class="app-sheet-close">×</button>
+    </div>
+
+    <form id="team-form" class="app-form-stack">
+      <div class="app-form-group">
+        <label for="team-name" class="app-form-label">Nome da equipe</label>
+        <input id="team-name" name="team_name" type="text" placeholder="Ex.: Equipe Falcão" class="ui-input">
+      </div>
+
+      <div class="app-form-grid">
+        <div class="app-form-group">
+          <label for="team-founded-at" class="app-form-label">Data de fundação</label>
+          <input id="team-founded-at" name="founded_at" type="date" class="ui-input">
+        </div>
+        <div class="app-form-group">
+          <label for="team-founder" class="app-form-label">Fundador</label>
+          <input id="team-founder" name="founder" type="text" placeholder="Nome do fundador" class="ui-input">
+        </div>
+      </div>
+
+      <div class="app-form-grid">
+        <div class="app-form-group">
+          <label for="team-region" class="app-form-label">Região</label>
+          <input id="team-region" name="region" type="text" placeholder="Ex.: Zona Leste" class="ui-input">
+        </div>
+        <div class="app-form-group">
+          <label for="team-city" class="app-form-label">Cidade</label>
+          <input id="team-city" name="city" type="text" placeholder="Ex.: São Paulo" class="ui-input">
+        </div>
+      </div>
+
+      <div class="profile-team-upload">
+        <label for="team-logo" class="app-form-label">Logo da equipe</label>
+        <div class="profile-team-upload-row">
+          <input id="team-logo" name="logo" type="file" accept="image/*" class="profile-team-file">
+          <div id="team-logo-preview" class="profile-team-logo-preview">
+            <span id="team-logo-preview-placeholder" class="profile-team-logo-placeholder">logo</span>
+            <img id="team-logo-preview-image" class="profile-team-logo-image" alt="Preview da logo">
+          </div>
+        </div>
+        <div class="profile-team-upload-hint">Envie a logo da equipe em PNG ou JPG.</div>
+      </div>
+
+      <div class="app-form-actions">
+        <button id="cancel-team-modal" type="button" class="ui-button ui-button-secondary">Cancelar</button>
+        <button type="submit" class="ui-button ui-button-primary">Salvar equipe</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="manage-team-modal" class="app-sheet">
+  <div class="app-sheet-card">
+    <div class="app-sheet-header">
+      <div>
+        <div class="app-sheet-title">Gerenciar equipe</div>
+        <div id="manage-team-subtitle" class="app-sheet-subtitle">Carregando informações da equipe...</div>
+      </div>
+      <button id="close-manage-team-modal" type="button" class="app-sheet-close">×</button>
+    </div>
+
+    <div class="profile-sheet-stack">
+      <div id="manage-team-pending-edit-banner" class="profile-manage-pending-banner" style="display:none;" role="status">
+        Suas alterações estão em análise. Até aprovarem, todos continuam vendo os dados atuais da equipe. Quando aprovadas, as mudanças aparecem para todos.
+      </div>
+      <div id="manage-team-info-card" class="profile-manage-hero">
+        <div class="profile-manage-logo-shell">
+          <span id="manage-team-logo-placeholder" class="profile-manage-logo-placeholder">equipe</span>
+          <img id="manage-team-logo" class="profile-manage-logo-image" alt="Logo da equipe">
+        </div>
+        <div class="profile-manage-copy">
+          <div id="manage-team-name" class="profile-manage-title">Equipe</div>
+          <div class="profile-manage-meta-row">
+            <div id="manage-team-meta" class="profile-manage-meta">Cidade • Região</div>
+            <div class="profile-manage-hero-actions">
+              <button type="button" id="edit-team-profile-btn" class="profile-manage-edit-btn" aria-label="Editar dados da equipe" style="display:none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M12 20h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  <path d="M16.5 3.5a2.1 2.1 0 013 3L8 18l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button type="button" id="delete-team-profile-btn" class="profile-manage-delete-btn" aria-label="Apagar equipe" style="display:none;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M9 3h6l1 2h4v2H4V5h4l1-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  <path d="M6 9h12l-1 12H7L6 9z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                  <path d="M10 13v5M14 13v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="profile-sheet-block">
+        <div class="profile-sheet-block-title">Pedidos pendentes</div>
+        <div id="pending-requests-list" class="profile-sheet-list">
+          <div class="profile-sheet-empty">Nenhum pedido pendente.</div>
+        </div>
+      </div>
+
+      <div class="profile-sheet-block">
+        <div class="profile-sheet-block-title">Membros aprovados</div>
+        <div id="approved-members-list" class="profile-sheet-list">
+          <div class="profile-sheet-empty">Nenhum membro aprovado.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="edit-team-profile-modal" class="app-sheet">
+  <div class="app-sheet-card">
+    <div class="app-sheet-header">
+      <div>
+        <div class="app-sheet-title">Editar equipe</div>
+        <div class="app-sheet-subtitle">Alterações passam por aprovação antes de aparecerem para todos. Nome, região e data de fundação: <strong>apenas uma alteração</strong> desse conjunto após a aprovação; cidade e logo podem ser pedidos outras vezes.</div>
+      </div>
+      <button id="close-edit-team-profile-modal" type="button" class="app-sheet-close">×</button>
+    </div>
+
+    <form id="edit-team-profile-form" class="app-form-stack">
+      <div class="app-form-group">
+        <label for="team-edit-name" class="app-form-label">Nome da equipe</label>
+        <input id="team-edit-name" name="team_name" type="text" class="ui-input" required>
+      </div>
+
+      <div class="app-form-grid">
+        <div class="app-form-group">
+          <label for="team-edit-region" class="app-form-label">Região (zona)</label>
+          <input id="team-edit-region" name="region" type="text" placeholder="Ex.: Zona Norte" class="ui-input">
+        </div>
+        <div class="app-form-group">
+          <label for="team-edit-city" class="app-form-label">Cidade</label>
+          <input id="team-edit-city" name="city" type="text" placeholder="Ex.: São Paulo" class="ui-input">
+        </div>
+      </div>
+
+      <div class="app-form-group">
+        <label for="team-edit-founded" class="app-form-label">Data de fundação</label>
+        <input id="team-edit-founded" name="founded_at" type="date" class="ui-input">
+      </div>
+
+      <div class="profile-team-upload">
+        <label for="team-edit-logo" class="app-form-label">Logo da equipe</label>
+        <div class="profile-team-upload-row">
+          <input id="team-edit-logo" name="logo" type="file" accept="image/*" class="profile-team-file">
+          <div id="team-edit-logo-preview" class="profile-team-logo-preview">
+            <span id="team-edit-logo-preview-placeholder" class="profile-team-logo-placeholder">logo</span>
+            <img id="team-edit-logo-preview-image" class="profile-team-logo-image" alt="Preview da logo">
+          </div>
+        </div>
+        <div class="profile-team-upload-hint">PNG ou JPG. Se não escolher arquivo, mantemos a logo atual.</div>
+      </div>
+
+      <div class="app-form-actions">
+        <button id="cancel-edit-team-profile" type="button" class="ui-button ui-button-secondary">Cancelar</button>
+        <button type="submit" class="ui-button ui-button-primary">Enviar para análise</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="my-reports-modal" class="app-sheet">
+  <div class="app-sheet-card">
+    <div class="app-sheet-header">
+      <div>
+        <div class="app-sheet-title">Minhas denúncias</div>
+        <div id="my-reports-subtitle" class="app-sheet-subtitle">Acompanhe o andamento das denúncias e os retornos.</div>
+      </div>
+      <button id="close-my-reports-modal" type="button" class="app-sheet-close">×</button>
+    </div>
+
+    <div id="my-reports-list" class="profile-sheet-list">
+      <div class="profile-sheet-empty">Carregando denúncias...</div>
+    </div>
+  </div>
+</div>
+<div id="activity-events-modal" class="app-sheet">
+  <div class="app-sheet-card">
+    <div class="app-sheet-header">
+      <div class="app-sheet-header-copy">
+        <div id="activity-events-title" class="app-sheet-title">Eventos Criados</div>
+        <div id="activity-events-subtitle" class="app-sheet-subtitle">Últimos eventos publicados.</div>
+      </div>
+      <button id="close-activity-events-modal" type="button" class="app-sheet-close">×</button>
+    </div>
+
+    <div id="activity-events-list" class="profile-sheet-list">
+      <div class="profile-sheet-empty">Carregando eventos...</div>
+    </div>
+  </div>
+</div>
 
 <div id="app-footer"></div>
 
 <script type="module">
-import { loadFooter } from "../js/footer.js";
+import { loadHeader } from "../js/header.js?v=4";
+import { loadFooter } from "../js/footer.js?v=3";
+import { beginPageLoad, finishPageLoad } from "../js/ui/page-loader.js?v=7";
+import { supabase } from "../js/supabase.js?v=3";
+import { closePopup, showConfirmPopup, showMessagePopup, showPopup } from "../js/ui/popup.js?v=5";
+import { getAuthRedirectUrl, storeAuthReturnUrl } from "../js/auth-redirect.js?v=1";
+import { createProfileNotificationsController } from "../js/ui/profile-notifications.js?v=4";
+import { isHighlightActiveEvent } from "../js/services/highlightLifecycle.js?v=1";
+import {
+  loadProfileActivityEvents,
+  loadProfileSummary,
+  loadPublishedProfileEvents
+} from "../js/services/profile.js?v=7";
+import { runHighlightUpgradeFlow } from "../js/profile-event-upgrade.js?v=8";
+import { mergeTeamMembersMonthlyScores } from "../js/team-members-scores.js?v=3";
+
+await loadHeader("Perfil");
 loadFooter("profile");
-</script>
+beginPageLoad();
 
-<script type="module">
-import { supabase } from "../js/supabase.js";
+const teamModal = document.getElementById("team-modal");
+const teamActionButton = document.getElementById("team-action-button");
+const teamActionTitle = document.getElementById("team-action-title");
+const teamActionSubtitle = document.getElementById("team-action-subtitle");
+const closeTeamModalBtn = document.getElementById("close-team-modal");
+const cancelTeamModalBtn = document.getElementById("cancel-team-modal");
+const teamForm = document.getElementById("team-form");
+const teamLogoInput = document.getElementById("team-logo");
+const teamLogoPreviewImage = document.getElementById("team-logo-preview-image");
+const teamLogoPreviewPlaceholder = document.getElementById("team-logo-preview-placeholder");
+const profileNotificationsButton = document.getElementById("profile-notifications-button");
 
-const ADMIN_EMAILS = [
-  "duckcreativesolutions@gmail.com"
-  // adicione novos admins aqui
-];
+const manageTeamModal = document.getElementById("manage-team-modal");
+const closeManageTeamModalBtn = document.getElementById("close-manage-team-modal");
+const manageTeamSubtitle = document.getElementById("manage-team-subtitle");
+const manageTeamName = document.getElementById("manage-team-name");
+const manageTeamMeta = document.getElementById("manage-team-meta");
+const manageTeamLogo = document.getElementById("manage-team-logo");
+const manageTeamLogoPlaceholder = document.getElementById("manage-team-logo-placeholder");
+const manageTeamInfoCard = document.getElementById("manage-team-info-card");
+const pendingRequestsList = document.getElementById("pending-requests-list");
+const approvedMembersList = document.getElementById("approved-members-list");
+const manageTeamPendingBanner = document.getElementById("manage-team-pending-edit-banner");
+const editTeamProfileBtn = document.getElementById("edit-team-profile-btn");
+const deleteTeamProfileBtn = document.getElementById("delete-team-profile-btn");
+const editTeamProfileModal = document.getElementById("edit-team-profile-modal");
+const closeEditTeamProfileModalBtn = document.getElementById("close-edit-team-profile-modal");
+const cancelEditTeamProfileBtn = document.getElementById("cancel-edit-team-profile");
+const editTeamProfileForm = document.getElementById("edit-team-profile-form");
+const teamEditLogoInput = document.getElementById("team-edit-logo");
+const teamEditLogoPreviewImage = document.getElementById("team-edit-logo-preview-image");
+const teamEditLogoPreviewPlaceholder = document.getElementById("team-edit-logo-preview-placeholder");
 
-async function checkAdmin(){
+const myReportsCard = document.getElementById("my-reports-card");
+const myReportsModal = document.getElementById("my-reports-modal");
+const closeMyReportsModalBtn = document.getElementById("close-my-reports-modal");
+const myReportsList = document.getElementById("my-reports-list");
+const myReportsSubtitle = document.getElementById("my-reports-subtitle");
+const likedEventsCard = document.getElementById("liked-events-card");
+const supportCard = document.getElementById("support-card");
+const activityEventsModal = document.getElementById("activity-events-modal");
+const closeActivityEventsModalBtn = document.getElementById("close-activity-events-modal");
+const activityEventsTitle = document.getElementById("activity-events-title");
+const activityEventsSubtitle = document.getElementById("activity-events-subtitle");
+const activityEventsList = document.getElementById("activity-events-list");
+let activityEventsListType = "published";
 
-  const { data: { user } } = await supabase.auth.getUser();
+let currentTeamState = null;
+let currentTeamId = null;
+let currentTeamSummary = null;
+let lastManageTeamForEdit = null;
 
-  if(user && ADMIN_EMAILS.includes(user.email)){
-    window.location.href = "/pages/admin.html";
-  }
+const profileNotificationsController = createProfileNotificationsController({
+  buttonEl: profileNotificationsButton,
+  onOpenTeamAction: ()=> {
+    teamActionButton?.click();
+  },
+  onOpenEvent: (eventId)=>{
+    if(!eventId) return;
+    window.location.href = `/pages/event.html?id=${eventId}`;
+  },
+});
 
+function showProfileConfirmPopup(message, confirmLabel = "Confirmar"){
+  return showConfirmPopup({
+    message,
+    confirmLabel,
+    cancelLabel: "Cancelar",
+    bottomSheet: true,
+    compact: true
+  });
 }
 
-checkAdmin();
+function openTeamModal(){
+  if(teamModal) teamModal.style.display = "flex";
+}
+
+function closeTeamModal(){
+  if(teamModal) teamModal.style.display = "none";
+  if(teamForm) teamForm.reset();
+  if(teamLogoPreviewImage && teamLogoPreviewPlaceholder){
+    teamLogoPreviewImage.src = "";
+    teamLogoPreviewImage.style.display = "none";
+    teamLogoPreviewPlaceholder.style.display = "block";
+  }
+}
+
+function openManageTeamModal(){
+  if(manageTeamModal) manageTeamModal.style.display = "flex";
+}
+
+function closeManageTeamModal(){
+  if(manageTeamModal) manageTeamModal.style.display = "none";
+}
+
+function openEditTeamProfileModal(){
+  if(editTeamProfileModal) editTeamProfileModal.style.display = "flex";
+}
+
+function closeEditTeamProfileModal(){
+  if(editTeamProfileModal) editTeamProfileModal.style.display = "none";
+  if(editTeamProfileForm) editTeamProfileForm.reset();
+  if(teamEditLogoPreviewImage && teamEditLogoPreviewPlaceholder){
+    teamEditLogoPreviewImage.src = "";
+    teamEditLogoPreviewImage.style.display = "none";
+    teamEditLogoPreviewPlaceholder.style.display = "block";
+  }
+}
+
+function teamHasPendingProfileEdit(team){
+  const p = team?.pending_profile;
+  if(p == null) return false;
+  if(typeof p === "string"){
+    try{
+      const o = JSON.parse(p);
+      return o && typeof o === "object";
+    }catch(_e){
+      return false;
+    }
+  }
+  return typeof p === "object";
+}
+
+function openMyReportsModal(){
+  if(myReportsModal) myReportsModal.style.display = "flex";
+}
+
+function closeMyReportsModal(){
+  if(myReportsModal) myReportsModal.style.display = "none";
+}
+
+function openActivityEventsModal(){
+  if(activityEventsModal) activityEventsModal.style.display = "flex";
+}
+
+function closeActivityEventsModal(){
+  if(activityEventsModal) activityEventsModal.style.display = "none";
+}
+
+function formatEventDateShort(dateValue){
+  if(!dateValue) return "";
+  const base = String(dateValue).slice(0, 10);
+  const parts = base.split("-");
+  if(parts.length !== 3) return "";
+  return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`;
+}
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function escapeHtmlAttr(value){
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll("'", "&#39;");
+}
+
+const PROFILE_GUEST_AVATAR_HTML = `
+<span class="profile-avatar-guest-stack" aria-hidden="true">
+  <svg class="profile-avatar-google-icon" viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+  </svg>
+</span>`;
+
+async function signInWithGoogleFromProfile(){
+  storeAuthReturnUrl("/pages/profile.html");
+  await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: { redirectTo: getAuthRedirectUrl("/pages/profile.html") },
+  });
+}
+
+/** Visitante: abre login Google; logado devolve o user. */
+async function requireUserSignInWithGoogle(){
+  const { data: { user } } = await supabase.auth.getUser();
+  if(user) return user;
+  await signInWithGoogleFromProfile();
+  return null;
+}
+
+/**
+ * Visitante: só o círculo do avatar (G do Google) → OAuth. Texto à esquerda não é clicável.
+ * Logado: toque no avatar → sheet com Sair.
+ */
+function wireProfileAccountControls(user){
+  const summary = document.getElementById("profile-summary");
+  const avatar = document.getElementById("profile-avatar");
+  if(!summary || !avatar) return;
+
+  summary.onclick = null;
+  avatar.onclick = null;
+  avatar.onkeydown = null;
+  summary.classList.remove("profile-summary--guest-login");
+
+  avatar.classList.toggle("profile-avatar--account-trigger", !!user);
+  avatar.classList.toggle("profile-avatar--guest-login", !user);
+
+  if(!user){
+    avatar.setAttribute("role", "button");
+    avatar.setAttribute("tabindex", "0");
+    avatar.setAttribute("aria-label", "Entrar com Google");
+
+    avatar.onclick = async ()=>{
+      await signInWithGoogleFromProfile();
+    };
+
+    avatar.onkeydown = async (e)=>{
+      if(e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      await signInWithGoogleFromProfile();
+    };
+    return;
+  }
+
+  avatar.classList.remove("profile-avatar--guest-login");
+  avatar.setAttribute("role", "button");
+  avatar.setAttribute("tabindex", "0");
+  avatar.setAttribute("aria-label", "Conta: sair da sessão");
+
+  const openAccountMenu = ()=>{
+    const email = user.email || "Usuário conectado";
+    const { overlay } = showPopup({
+      title: "Sua conta",
+      message: email,
+      bottomSheet: true,
+      align: "left",
+      actions: `<button class="app-popup-button app-popup-secondary" type="button" data-role="logout">Sair</button>`,
+    });
+
+    overlay.querySelector('[data-role="logout"]')?.addEventListener("click", async ()=>{
+      closePopup(overlay);
+      await supabase.auth.signOut();
+      window.location.reload();
+    });
+  };
+
+  avatar.onclick = (e)=>{
+    e.stopPropagation();
+    openAccountMenu();
+  };
+
+  avatar.onkeydown = (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      openAccountMenu();
+    }
+  };
+}
+
+function renderGuestProfileShell(){
+  const nameEl = document.getElementById("profile-name");
+  const secondaryEl = document.getElementById("profile-secondary");
+  const profileAvatarImage = document.getElementById("profile-avatar-image");
+  const profileAvatarPlaceholder = document.getElementById("profile-avatar-placeholder");
+  const teamActionButtonEl = document.getElementById("team-action-button");
+  const adminPanelCard = document.getElementById("admin-panel-card");
+
+  currentTeamSummary = null;
+  if(nameEl) nameEl.textContent = "Seu perfil";
+  if(secondaryEl) secondaryEl.textContent = "Toque no círculo à direita (ícone do Google) para entrar.";
+  if(profileAvatarImage){
+    profileAvatarImage.src = "";
+    profileAvatarImage.style.display = "none";
+  }
+  if(profileAvatarPlaceholder){
+    profileAvatarPlaceholder.style.display = "flex";
+    profileAvatarPlaceholder.innerHTML = PROFILE_GUEST_AVATAR_HTML;
+  }
+  if(profileNotificationsController){
+    profileNotificationsController.setUser(null, false);
+  }
+  if(teamActionTitle) teamActionTitle.textContent = "Cadastrar equipe";
+  if(teamActionSubtitle) teamActionSubtitle.textContent = "Criar base da sua equipe";
+  if(teamActionButtonEl) teamActionButtonEl.style.display = "flex";
+  if(adminPanelCard) adminPanelCard.classList.add("hidden");
+}
+
+function looksLikeUuidLabel(value){
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value || "").trim());
+}
+
+function pickTeamMemberDisplayName(item, profileNames = {}){
+  const candidates = [
+    item.display_name,
+    item.user_name,
+    profileNames[item.user_id],
+  ];
+  for(const c of candidates){
+    const s = String(c ?? "").trim();
+    if(s && !looksLikeUuidLabel(s) && !/^[0-9a-f]{8}-/i.test(s)) return s;
+  }
+  return "";
+}
+
+function profileMemberAvatarHtml(item, displayName, roleClass){
+  const url = String(item.avatar_url || "").trim();
+  if(url){
+    return `<div class="profile-member-avatar ${roleClass} has-photo"><img src="${escapeHtmlAttr(url)}" alt="" loading="lazy" decoding="async" /></div>`;
+  }
+  return `<div class="profile-member-avatar ${roleClass}">${escapeHtml(getMemberInitials(displayName))}</div>`;
+}
+
+function formatMemberSince(dateValue){
+  if(!dateValue) return "";
+  const date = new Date(dateValue);
+  if(Number.isNaN(date.getTime())) return "";
+  return date.toLocaleDateString("pt-BR");
+}
+
+function resolveTeamMemberDisplayName(item, profileNames = {}){
+  const rawName = pickTeamMemberDisplayName(item, profileNames);
+  if(rawName) return rawName;
+
+  const email = String(item.email || "").trim();
+  if(email){
+    const localPart = email.split("@")[0].trim();
+    if(localPart){
+      return localPart
+        .split(/[._-]+/)
+        .filter(Boolean)
+        .map(part => `${part[0].toUpperCase()}${part.slice(1).toLowerCase()}`)
+        .join(" ");
+    }
+  }
+
+  const role = String(item.role || "").trim().toLowerCase();
+  if(role === "owner") return "Líder da equipe";
+  if(role === "moderator" || role === "admin") return "Moderador";
+  return "Membro da equipe";
+}
+
+function getTeamRoleLabel(role){
+  const normalized = String(role || "").trim().toLowerCase();
+  if(normalized === "owner") return "Líder da equipe";
+  if(normalized === "moderator" || normalized === "admin") return "Moderador";
+  return "Membro da equipe";
+}
+
+function getTeamRoleVisualClass(role){
+  const normalized = String(role || "").trim().toLowerCase();
+  if(normalized === "owner") return "is-owner";
+  if(normalized === "moderator" || normalized === "admin") return "is-moderator";
+  return "is-member";
+}
+
+function getMemberInitials(label){
+  const cleaned = String(label || "").trim();
+  if(!cleaned) return "PF";
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  if(parts.length >= 2){
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }
+  return cleaned.slice(0, 2).toUpperCase();
+}
+
+function isPremiumEventPlan(eventOrPlan){
+  if(eventOrPlan && typeof eventOrPlan === "object"){
+    return isHighlightActiveEvent(eventOrPlan);
+  }
+  return false;
+}
+
+function isFreeEventPlan(eventOrPlan){
+  return !isPremiumEventPlan(eventOrPlan);
+}
+
+function formatProfileErrorMessage(error){
+  if(!error) return "Erro desconhecido.";
+  if(typeof error === "string") return error;
+
+  const parts = [
+    error.message,
+    error.details,
+    error.hint,
+    error.code ? `Código: ${error.code}` : ""
+  ].filter(Boolean);
+
+  return parts.join(" | ") || "Erro desconhecido.";
+}
+
+function showProfileMessage(message, options = {}){
+  showMessagePopup({
+    message,
+    bottomSheet: true,
+    compact: true,
+    ...options,
+  });
+}
+
+function showProfileError(error, fallbackMessage, options = {}){
+  showMessagePopup({
+    title: options.title || "Atenção",
+    message: formatProfileErrorMessage(error) || fallbackMessage,
+    bottomSheet: true,
+    compact: true,
+    ...options,
+  });
+}
+
+function getActivityItemIcon(type, event = null){
+  if(type === "published"){
+    if(!isPremiumEventPlan(event)) return "";
+
+    return `
+      <svg viewBox="0 0 24 24" width="13" height="13" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path fill="currentColor" d="M12 5.5l1.4 4.1h4.4l-3.5 2.6 1.3 4.2-3.6-2.2-3.6 2.2 1.3-4.2-3.5-2.6h4.4L12 5.5z"/>
+      </svg>
+    `;
+  }
+
+  if(type === "like"){
+    return `
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 20.2c-.24 0-.48-.08-.67-.24-1.55-1.36-2.75-2.34-3.72-3.14C4.73 14.43 3 12.98 3 10.16 3 7.92 4.74 6.2 6.93 6.2c1.33 0 2.61.64 3.42 1.66.81-1.02 2.09-1.66 3.42-1.66 2.19 0 3.93 1.72 3.93 3.96 0 2.82-1.73 4.27-4.61 6.66-.97.8-2.17 1.78-3.72 3.14-.19.16-.43.24-.67.24Z" fill="currentColor"/>
+      </svg>
+    `;
+  }
+
+  return `
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M7 4H17C17.5523 4 18 4.44772 18 5V20L12 16L6 20V5C6 4.44772 6.44772 4 7 4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+  `;
+}
+
+function renderActivityEventTrail(type, event){
+  if(type === "published"){
+    const ps = String(event.payment_status || "").trim().toLowerCase();
+    if(ps === "rejected"){
+      return `
+      <div class="activity-event-icon activity-event-icon--rejected" role="status" aria-live="polite">
+        <svg class="activity-event-rejected-x" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+        <span class="activity-event-rejected-label">Rejeitado</span>
+      </div>`;
+    }
+    const awaiting = String(event.payment_status || "") === "awaiting_payment";
+    if(awaiting){
+      return `
+      <div class="activity-event-icon is-highlight-btn activity-event-icon--awaiting" role="status" aria-live="polite">
+        <span class="activity-event-awaiting-label">Aguardando aprovação</span>
+      </div>`;
+    }
+    if(isFreeEventPlan(event)){
+      const id = event.id || "";
+      return `
+      <div class="activity-event-icon is-highlight-btn">
+        <button type="button" class="activity-event-destacar-btn app-button app-button-primary app-button-mini" data-event-id="${id}" aria-label="Destacar evento com plano pago">Destacar</button>
+      </div>`;
+    }
+  }
+
+  const premium = type === "published" && isPremiumEventPlan(event);
+  return `
+    <div class="activity-event-icon${premium ? " activity-event-icon--destaque" : ""}" aria-hidden="true">
+      ${getActivityItemIcon(type, event)}
+    </div>
+  `;
+}
+
+async function loadActivityEvents(type){
+  activityEventsListType = type;
+  const isLike = type === "like";
+
+  if(type !== "like" && type !== "save" && type !== "published"){
+    if(activityEventsList) activityEventsList.innerHTML = `<div class="profile-sheet-empty">Você precisa estar logado para ver esta lista.</div>`;
+    return;
+  }
+
+  const isPublished = type === "published";
+  if(activityEventsTitle) activityEventsTitle.textContent = isPublished ? "Eventos Criados" : isLike ? "Eventos que gostei" : "Eventos salvos";
+  if(activityEventsSubtitle) activityEventsSubtitle.textContent = isPublished ? "Últimos eventos publicados." : isLike ? "Eventos em que você deixou gostei." : "Eventos que você marcou para ver depois.";
+  if(activityEventsList) activityEventsList.innerHTML = `<div class="profile-sheet-empty">Carregando eventos...</div>`;
+
+  let orderedEvents = null;
+
+  try {
+    orderedEvents = isPublished
+      ? await loadPublishedProfileEvents()
+      : await loadProfileActivityEvents(type);
+  } catch (error) {
+    console.error(error);
+    const errorMessage = formatProfileErrorMessage(error);
+    if(activityEventsList) activityEventsList.innerHTML = `
+      <div class="profile-sheet-empty">Não foi possível carregar os eventos.</div>
+      <div class="profile-sheet-detail">${errorMessage}</div>
+    `;
+    return;
+  }
+
+  if(orderedEvents === null){
+    if(activityEventsList) activityEventsList.innerHTML = `<div class="profile-sheet-empty">Você precisa estar logado para ver esta lista.</div>`;
+    return;
+  }
+
+  if(!orderedEvents.length){
+    const emptyMessage = isPublished
+      ? "Você ainda não publicou eventos."
+      : isLike
+        ? "Você ainda não curtiu eventos."
+        : "Você ainda não salvou eventos.";
+    if(activityEventsList) activityEventsList.innerHTML = `<div class="profile-sheet-empty">${emptyMessage}</div>`;
+    return;
+  }
+
+  if(activityEventsList){
+    activityEventsList.innerHTML = orderedEvents.map((event)=>{
+      const formattedDate = formatEventDateShort(event.date);
+      const awaitingPay = String(event.payment_status || "") === "awaiting_payment";
+      const isRejected = String(event.payment_status || "").trim().toLowerCase() === "rejected";
+      const isPremium = isPremiumEventPlan(event);
+      const isClickable = isPremium;
+      const tagName = isClickable ? "button" : "div";
+      const locationLabel = (event.city || event.location || "Local não informado");
+      const isRowGold = isPremium && !awaitingPay;
+      return `
+        <${tagName} ${isClickable ? 'type="button"' : ""} class="activity-event-item${isClickable ? "" : " is-static"}${isRowGold ? " activity-event-item--highlighted" : ""}${isRejected ? " activity-event-item--rejected" : ""}" data-event-id="${event.id || ""}">
+          <div class="activity-event-thumb">${event.image ? `<img src="${event.image}" alt="${event.title || "Evento"}">` : ``}</div>
+          <div class="activity-event-copy">
+            <div class="activity-event-title">${event.title || "Evento"}</div>
+            <div class="activity-event-location">${locationLabel}</div>
+            <div class="activity-event-meta">${formattedDate || "Data não informada"}</div>
+          </div>
+          ${renderActivityEventTrail(type, event)}
+        </${tagName}>
+      `;
+    }).join("");
+
+    const activityEventButtons = activityEventsList.querySelectorAll(".activity-event-item");
+    activityEventButtons.forEach((button)=>{
+      button.addEventListener("click", ()=>{
+        if(button.classList.contains("is-static")) return;
+        const eventId = button.dataset.eventId;
+        if(!eventId) return;
+        window.location.href = `/pages/event.html?id=${eventId}`;
+      });
+    });
+
+    activityEventsList.querySelectorAll(".activity-event-destacar-btn").forEach((btn)=>{
+      btn.addEventListener("click", async (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        const id = btn.dataset.eventId;
+        if(!id) return;
+        btn.disabled = true;
+        try{
+          await runHighlightUpgradeFlow(id);
+          await loadActivityEvents(activityEventsListType);
+        }catch(err){
+          console.error(err);
+          showProfileError(err, "Não foi possível iniciar o destaque.");
+        }finally{
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+}
+
+function getReportStatusLabel(status){
+  if(status === "accepted") return "Recebida";
+  if(status === "rejected") return "Não recebida";
+  return "Em análise";
+}
+
+
+function getReportStatusColor(status){
+  if(status === "accepted") return "#d4af37";
+  if(status === "rejected") return "rgba(255,255,255,.7)";
+  return "#fff";
+}
+
+function getReportReasonLabel(report){
+  const reason = report?.reason;
+
+  const reasonLabel = reason === "evento_falso"
+    ? "Evento fake"
+    : reason === "endereco_incorreto"
+      ? "Informações incorretas"
+      : reason === "data_errada"
+        ? "Data errada"
+        : reason === "conteudo_improprio"
+          ? "Conteúdo impróprio"
+          : reason === "golpe_fraude"
+            ? "Golpe ou fraude"
+            : reason === "duplicado"
+              ? "Evento duplicado"
+              : reason === "outro"
+                ? "Outro motivo"
+                : (reason || "Não informado");
+
+  if(!report?.custom_reason) return reasonLabel;
+  return `${reasonLabel} • ${report.custom_reason}`;
+}
+
+function getTeamRolePriority(role){
+  if(role === "owner") return 3;
+  if(role === "moderator") return 2;
+  return 1;
+}
+
+function dedupeTeamEntries(entries){
+  const map = new Map();
+
+  for(const item of entries || []){
+    const key = item.team_member_id || item.user_id || `${item.display_name || ""}-${item.role || ""}`;
+    const existing = map.get(key);
+
+    if(!existing){
+      map.set(key, item);
+      continue;
+    }
+
+    const currentPriority = getTeamRolePriority(item.role);
+    const existingPriority = getTeamRolePriority(existing.role);
+
+    if(currentPriority > existingPriority){
+      map.set(key, item);
+    }
+  }
+
+  const byUser = new Map();
+
+  for(const item of map.values()){
+    const key = item.user_id || item.team_member_id || item.display_name || item.email || Math.random().toString(36);
+    const existing = byUser.get(key);
+
+    if(!existing){
+      byUser.set(key, item);
+      continue;
+    }
+
+    const currentPriority = getTeamRolePriority(item.role);
+    const existingPriority = getTeamRolePriority(existing.role);
+
+    if(currentPriority > existingPriority){
+      byUser.set(key, item);
+    }
+  }
+
+  return [...byUser.values()];
+}
+
+async function resolveProfileNames(userIds){
+  return {};
+}
+
+async function loadMyReports(){
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if(!user){
+    if(myReportsList) myReportsList.innerHTML = `<div class="profile-sheet-empty">Você precisa estar logado para ver suas denúncias.</div>`;
+    return;
+  }
+
+  if(myReportsSubtitle){
+    myReportsSubtitle.textContent =
+      "Acompanhe o andamento das denúncias.";
+  }
+  if(myReportsList) myReportsList.innerHTML = `<div class="profile-sheet-empty">Carregando denúncias...</div>`;
+
+  const threeDaysAgo = new Date();
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+  const { data: reports, error } = await supabase
+    .from("event_reports")
+    .select("id,event_id,reason,custom_reason,status,admin_feedback,admin_response,created_at,reviewed_at")
+    .eq("user_id", user.id)
+    .is("hidden_from_user_at", null)
+    .or(`status.eq.pending,reviewed_at.gte.${threeDaysAgo.toISOString()}`)
+    .order("created_at", { ascending: false });
+
+  if(error){
+    console.error(error);
+    if(myReportsList) myReportsList.innerHTML = `<div class="profile-sheet-empty">Não foi possível carregar suas denúncias.</div>`;
+    return;
+  }
+
+  const eventIds = [...new Set((reports || []).map(item => item.event_id).filter(Boolean))];
+  let eventsById = {};
+
+  if(eventIds.length){
+    const { data: relatedEvents, error: eventsError } = await supabase
+      .from("events")
+      .select("id,title,team,city,date,image")
+      .in("id", eventIds);
+
+    if(eventsError){
+      console.error(eventsError);
+    }else{
+      eventsById = Object.fromEntries((relatedEvents || []).map(event => [event.id, event]));
+    }
+  }
+
+  if(!reports || !reports.length){
+    if(myReportsList) myReportsList.innerHTML = `<div class="profile-sheet-empty">Você ainda não enviou denúncias.</div>`;
+    return;
+  }
+
+  if(myReportsList){
+    myReportsList.innerHTML = reports.map((report)=>{
+      const relatedEvent = eventsById[report.event_id] || {};
+      const formattedDate = relatedEvent.date ? (()=>{ const d = relatedEvent.date.slice(0,10).split('-'); return d[2] + '/' + d[1] + '/' + d[0].slice(2); })() : "";
+      const statusLabel = getReportStatusLabel(report.status);
+      const statusColor = getReportStatusColor(report.status);
+      const reportReasonLabel = getReportReasonLabel(report);
+      const adminFeedback = report.admin_feedback || report.admin_response || "Sua denúncia está em análise no momento.";
+
+      return `
+        <div class="profile-report-card">
+          <div class="profile-report-top">
+            <div class="profile-thumb">${relatedEvent.image ? `<img src="${relatedEvent.image}" alt="${relatedEvent.title || "Evento"}">` : ``}</div>
+            <div class="profile-report-copy">
+              <div class="profile-kicker">${relatedEvent.team || "Equipe não informada"}</div>
+              <div class="profile-title-sm">${relatedEvent.title || "Evento não encontrado"}</div>
+              <div class="profile-meta-sm">Status: <strong style="color:${statusColor}">${statusLabel}</strong></div>
+            </div>
+            <button type="button" class="profile-report-delete" data-delete-report data-report-id="${report.id}" aria-label="Apagar da lista" title="Apagar da lista">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            </button>
+          </div>
+
+          <div class="profile-info-block">
+            <div class="profile-info-label">Motivo enviado</div>
+            <div class="profile-info-value">${reportReasonLabel}</div>
+          </div>
+
+          <div class="profile-info-block">
+            <div class="profile-info-label">Retorno</div>
+            <div class="profile-info-value">${adminFeedback}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+}
+
+async function loadManageTeamData(teamId){
+  if(!teamId) return;
+
+  if(manageTeamSubtitle) manageTeamSubtitle.textContent = "Carregando informações da equipe...";
+  if(manageTeamName) manageTeamName.textContent = "Equipe";
+  if(manageTeamMeta) manageTeamMeta.textContent = "Cidade • Região";
+
+  const { data, error } = await supabase.rpc("get_my_team_management");
+
+  if(error){
+    console.error(error);
+    if(manageTeamSubtitle) manageTeamSubtitle.textContent = "Erro ao carregar equipe.";
+    if(pendingRequestsList) pendingRequestsList.innerHTML = `<div class="profile-sheet-empty">Não foi possível carregar os pedidos pendentes.</div>`;
+    if(approvedMembersList) approvedMembersList.innerHTML = `<div class="profile-sheet-empty">Não foi possível carregar os membros aprovados.</div>`;
+    return;
+  }
+
+  if(!data){
+    if(manageTeamSubtitle) manageTeamSubtitle.textContent = "Você ainda não tem equipe ativa.";
+    if(pendingRequestsList) pendingRequestsList.innerHTML = `<div class="profile-sheet-empty">Nenhum pedido pendente.</div>`;
+    if(approvedMembersList) approvedMembersList.innerHTML = `<div class="profile-sheet-empty">Nenhum membro aprovado.</div>`;
+    return;
+  }
+
+  const team = data.team || {};
+  const pending = dedupeTeamEntries(data.pending_requests || []);
+  let members = dedupeTeamEntries(data.approved_members || []);
+  if(team.id){
+    try{
+      members = await mergeTeamMembersMonthlyScores(supabase, team.id, members);
+    }catch(e){
+      console.warn("mergeTeamMembersMonthlyScores", e);
+    }
+  }
+  const teamRole = (team.role || data.state || currentTeamSummary?.role || "").toString();
+  const canManageTeam = data.can_manage === true;
+  const isOwnerTeam = teamRole === "owner";
+  currentTeamId = team.id || currentTeamId;
+  currentTeamState = teamRole || currentTeamState;
+  const profileNames = await resolveProfileNames([
+    ...pending.map(item => item.user_id),
+    ...members.map(item => item.user_id)
+  ]);
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+  const currentUserId = currentUser?.id || null;
+
+  if(manageTeamSubtitle) manageTeamSubtitle.textContent = canManageTeam
+    ? "Acompanhe pedidos pendentes e membros da equipe."
+    : "Veja os membros aprovados da sua equipe.";
+  if(manageTeamName) manageTeamName.textContent = team.name || "Equipe";
+  if(manageTeamMeta) {
+    const metaLabel = [
+      team.city || currentTeamSummary?.city || "",
+      team.region || currentTeamSummary?.region || ""
+    ].filter(Boolean).join(" • ");
+    manageTeamMeta.textContent = metaLabel || "Sem localização definida";
+  }
+  if(manageTeamLogo && manageTeamLogoPlaceholder){
+    const teamLogoUrl = team.logo_url || currentTeamSummary?.logoUrl || "";
+    if(teamLogoUrl){
+      manageTeamLogo.src = teamLogoUrl;
+      manageTeamLogo.style.display = "block";
+      manageTeamLogoPlaceholder.style.display = "none";
+    }else{
+      manageTeamLogo.src = "";
+      manageTeamLogo.style.display = "none";
+      manageTeamLogoPlaceholder.style.display = "block";
+    }
+  }
+
+  lastManageTeamForEdit = team;
+
+  if(manageTeamPendingBanner){
+    manageTeamPendingBanner.style.display = teamHasPendingProfileEdit(team) ? "block" : "none";
+  }
+  if(editTeamProfileBtn){
+    editTeamProfileBtn.style.display = isOwnerTeam ? "inline-flex" : "none";
+  }
+  if(deleteTeamProfileBtn){
+    deleteTeamProfileBtn.style.display = isOwnerTeam ? "inline-flex" : "none";
+  }
+
+  if(pendingRequestsList){
+    if(!pending.length){
+      pendingRequestsList.innerHTML = `<div class="profile-sheet-empty">Nenhum pedido pendente.</div>`;
+    }else{
+      pendingRequestsList.innerHTML = pending.map((item)=>{
+        const roleClass = getTeamRoleVisualClass(item.role);
+        const displayName = resolveTeamMemberDisplayName(item, profileNames);
+        return `
+        <div class="profile-list-card profile-member-row ${roleClass}">
+          ${profileMemberAvatarHtml(item, displayName, roleClass)}
+          <div class="profile-member-copy">
+            <div class="profile-member-title">${escapeHtml(displayName)}</div>
+            <div class="profile-member-subtitle">Pedido pendente</div>
+            <div class="profile-member-actions" style="display:${canManageTeam ? "flex" : "none"};">
+              <button class="approve-request profile-mini-button profile-mini-button-primary" data-user="${item.user_id}" type="button">Aprovar</button>
+              <button class="reject-request profile-mini-button profile-mini-button-secondary" data-user="${item.user_id}" type="button">Recusar</button>
+            </div>
+          </div>
+        </div>
+      `;
+      }).join("");
+    }
+
+    // ativar botões de aprovação
+    const approveButtons = document.querySelectorAll(".approve-request");
+    approveButtons.forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const teamMemberId = pending.find(item => item.user_id === btn.dataset.user)?.team_member_id;
+        if(!teamMemberId || !canManageTeam) return;
+
+        const { error } = await supabase.rpc("review_team_join_request", {
+          p_team_member_id: teamMemberId,
+          p_decision: "approved"
+        });
+
+        if(error){
+          console.error(error);
+          showProfileMessage("Erro ao aprovar membro.");
+          return;
+        }
+
+        await loadManageTeamData(currentTeamId);
+      });
+    });
+
+    // ativar botões de recusa
+    const rejectButtons = document.querySelectorAll(".reject-request");
+    rejectButtons.forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const teamMemberId = pending.find(item => item.user_id === btn.dataset.user)?.team_member_id;
+        if(!teamMemberId || !canManageTeam) return;
+
+        const { error } = await supabase.rpc("review_team_join_request", {
+          p_team_member_id: teamMemberId,
+          p_decision: "rejected"
+        });
+
+        if(error){
+          console.error(error);
+          showProfileMessage("Erro ao recusar membro.");
+          return;
+        }
+
+        await loadManageTeamData(currentTeamId);
+      });
+    });
+  }
+
+  if(approvedMembersList){
+    if(!members.length){
+      approvedMembersList.innerHTML = `<div class="profile-sheet-empty">Nenhum membro aprovado.</div>`;
+    }else{
+      approvedMembersList.innerHTML = members.map((item)=>{
+        const displayName = resolveTeamMemberDisplayName(item, profileNames);
+        const roleLabel = getTeamRoleLabel(item.role);
+        const canOwnerManage = isOwnerTeam;
+        const isOwnerRow = item.role === "owner";
+        const isModeratorRow = item.role === "moderator";
+        const memberSince = formatMemberSince(item.created_at || item.createdAt);
+
+        let actionButtons = "";
+
+        const rowRoleEditable = canOwnerManage && !isOwnerRow;
+        if(rowRoleEditable){
+          actionButtons = `
+            <div class="profile-member-role-actions">
+              ${isModeratorRow
+                ? `<button class="demote-member profile-role-action-btn profile-role-action-btn--secondary" data-user="${item.user_id}" type="button">Rebaixar</button>`
+                : `<button class="promote-member profile-role-action-btn profile-role-action-btn--primary" data-user="${item.user_id}" type="button">Promover</button>`}
+            </div>
+          `;
+        }
+
+        const hasScores =
+          item.total_points != null ||
+          item.event_points != null ||
+          item.interaction_points != null ||
+          item.report_reward_points != null;
+        const denPts = Number(item.report_reward_points ?? 0) || 0;
+        const scoreLine = hasScores
+          ? `<div class="profile-member-scores" style="font-size:12px;opacity:.85;margin-top:6px;line-height:1.35;">EV ${item.event_points ?? 0} · INT ${item.interaction_points ?? 0}${
+              denPts ? ` · Den +${denPts}` : ""
+            } · Total ${item.total_points ?? 0}</div>`
+          : "";
+
+        const roleClass = getTeamRoleVisualClass(item.role);
+        return `
+          <div class="profile-list-card profile-member-row ${roleClass}${rowRoleEditable ? " profile-member-row--role-editable" : ""}">
+            ${actionButtons}
+            ${profileMemberAvatarHtml(item, displayName, roleClass)}
+            <div class="profile-member-copy">
+              <div class="profile-member-title">${escapeHtml(displayName)}</div>
+              <div class="profile-member-subtitle ${roleClass}">${escapeHtml(memberSince ? `Membro desde ${memberSince}` : roleLabel)}</div>
+              ${scoreLine}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    const promoteButtons = document.querySelectorAll(".promote-member");
+    promoteButtons.forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        if(!isOwnerTeam || !currentTeamId) return;
+        const teamMemberId = members.find(item => item.user_id === btn.dataset.user)?.team_member_id;
+        if(!teamMemberId) return;
+
+        const { error } = await supabase.rpc("update_team_member_role", {
+          p_team_member_id: teamMemberId,
+          p_next_role: "moderator"
+        });
+
+        if(error){
+          console.error(error);
+          showProfileMessage("Erro ao promover membro.");
+          return;
+        }
+
+        await loadManageTeamData(currentTeamId);
+      });
+    });
+
+    const demoteButtons = document.querySelectorAll(".demote-member");
+    demoteButtons.forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        if(!isOwnerTeam || !currentTeamId) return;
+        const teamMemberId = members.find(item => item.user_id === btn.dataset.user)?.team_member_id;
+        if(!teamMemberId) return;
+
+        const { error } = await supabase.rpc("update_team_member_role", {
+          p_team_member_id: teamMemberId,
+          p_next_role: "member"
+        });
+
+        if(error){
+          console.error(error);
+          showProfileMessage("Erro ao rebaixar moderador.");
+          return;
+        }
+
+        await loadManageTeamData(currentTeamId);
+      });
+    });
+  }
+}
+
+if(teamActionButton){
+  teamActionButton.addEventListener("click", async ()=>{
+    const user = await requireUserSignInWithGoogle();
+    if(!user) return;
+
+    const { data, error } = await supabase.rpc("get_my_team");
+
+    if(error){
+      console.error(error);
+      openTeamModal();
+      return;
+    }
+
+    if(!data || data.state === "no_team"){
+      openTeamModal();
+      return;
+    }
+
+    if(data.state === "team_pending_approval"){
+      showMessagePopup({
+        title: "Equipe em aprovação",
+        message: "Aguarde a análise. Quando aprovada, você gerencia a equipe por aqui.",
+        buttonLabel: "Entendi",
+        bottomSheet: true,
+        compact: true
+      });
+      return;
+    }
+
+    if(data.state === "team_rejected"){
+      showMessagePopup({
+        title: "Equipe não aprovada",
+        message: "O cadastro não foi aprovado. Contate o suporte se precisar de detalhes.",
+        buttonLabel: "Entendi",
+        bottomSheet: true,
+        compact: true
+      });
+      return;
+    }
+
+    if(data.state === "owner"){
+      await loadManageTeamData(data.team_id);
+      openManageTeamModal();
+      return;
+    }
+
+    if(data.state === "member" || data.state === "moderator"){
+      await loadManageTeamData(data.team_id);
+      openManageTeamModal();
+      return;
+    }
+
+    if(data.state === "pending"){
+      showProfileMessage(`Seu pedido para entrar na equipe ${data.team_name || ""} ainda está pendente.`);
+      return;
+    }
+
+    openTeamModal();
+  });
+}
+if(closeTeamModalBtn) closeTeamModalBtn.addEventListener("click", closeTeamModal);
+if(cancelTeamModalBtn) cancelTeamModalBtn.addEventListener("click", closeTeamModal);
+if(closeManageTeamModalBtn) closeManageTeamModalBtn.addEventListener("click", closeManageTeamModal);
+
+if(deleteTeamProfileBtn){
+  deleteTeamProfileBtn.addEventListener("click", ()=>{
+    if(!currentTeamId || !lastManageTeamForEdit) return;
+
+    showConfirmPopup({
+      title: "Apagar equipe?",
+      message: "Todos os membros ficam sem equipe. Não dá para desfazer.",
+      confirmLabel: "Apagar",
+      cancelLabel: "Cancelar",
+      bottomSheet: true,
+      compact: true,
+      onConfirm: async ()=>{
+        const { data: rpcData, error } = await supabase.rpc("delete_team_completely", {
+          p_team_id: currentTeamId
+        });
+
+        if(error){
+          console.error(error);
+          const detail = [error.message, error.details, error.hint].filter(Boolean).join("\n\n");
+          showMessagePopup({
+            title: "Erro ao apagar equipe",
+            message: detail || "Confirma que executaste sql/admin_delete_team.sql no Supabase.",
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+        if(rpcData && rpcData.success === false){
+          showMessagePopup({
+            title: "Não foi possível apagar",
+            message: String(rpcData.message || "Erro desconhecido."),
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+
+        showMessagePopup({
+          title: "Equipe removida",
+          message: "A equipe foi apagada. Os membros podem criar ou entrar noutra equipe.",
+          buttonLabel: "Entendi",
+          bottomSheet: true,
+          compact: true
+        });
+
+        closeManageTeamModal();
+        loadProfile();
+      }
+    });
+  });
+}
+
+function formatTeamFoundedInputValue(team){
+  const fa = team?.founded_at;
+  if(!fa) return "";
+  return String(fa).slice(0, 10);
+}
+
+function applyTeamEditIdentityLocks(team){
+  const rem = Number(team?.identity_profile_changes_remaining ?? 1);
+  const locked = rem <= 0;
+  ["team-edit-name", "team-edit-region", "team-edit-founded"].forEach((id)=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.readOnly = locked;
+    el.style.opacity = locked ? "0.75" : "";
+  });
+}
+
+function teamIdentityFieldsChanged(team, name, region, foundedVal){
+  const n0 = (name || "").trim();
+  const n1 = (team?.name || "").trim();
+  const r0 = (region || "").trim();
+  const r1 = (team?.region || "").trim();
+  const f0 = (foundedVal || "").trim();
+  const f1 = formatTeamFoundedInputValue(team);
+  return n0 !== n1 || r0 !== r1 || f0 !== f1;
+}
+
+if(editTeamProfileBtn){
+  editTeamProfileBtn.addEventListener("click", ()=>{
+    if(!lastManageTeamForEdit) return;
+    const n = document.getElementById("team-edit-name");
+    const c = document.getElementById("team-edit-city");
+    const r = document.getElementById("team-edit-region");
+    const f = document.getElementById("team-edit-founded");
+    if(n) n.value = lastManageTeamForEdit.name || "";
+    if(c) c.value = lastManageTeamForEdit.city || "";
+    if(r) r.value = lastManageTeamForEdit.region || "";
+    if(f) f.value = formatTeamFoundedInputValue(lastManageTeamForEdit);
+    applyTeamEditIdentityLocks(lastManageTeamForEdit);
+    openEditTeamProfileModal();
+  });
+}
+if(closeEditTeamProfileModalBtn) closeEditTeamProfileModalBtn.addEventListener("click", closeEditTeamProfileModal);
+if(cancelEditTeamProfileBtn) cancelEditTeamProfileBtn.addEventListener("click", closeEditTeamProfileModal);
+if(editTeamProfileModal){
+  editTeamProfileModal.addEventListener("click", (event)=>{
+    if(event.target === editTeamProfileModal) closeEditTeamProfileModal();
+  });
+}
+
+if(teamEditLogoInput && teamEditLogoPreviewImage && teamEditLogoPreviewPlaceholder){
+  teamEditLogoInput.addEventListener("change", ()=>{
+    const file = teamEditLogoInput.files?.[0];
+
+    if(!file){
+      teamEditLogoPreviewImage.src = "";
+      teamEditLogoPreviewImage.style.display = "none";
+      teamEditLogoPreviewPlaceholder.style.display = "block";
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+    teamEditLogoPreviewImage.src = imageUrl;
+    teamEditLogoPreviewImage.style.display = "block";
+    teamEditLogoPreviewPlaceholder.style.display = "none";
+  });
+}
+
+async function submitTeamProfileEditRequest(){
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if(!user){
+    showProfileMessage("Você precisa estar logado.");
+    return;
+  }
+
+  const name = document.getElementById("team-edit-name")?.value?.trim();
+  const city = document.getElementById("team-edit-city")?.value?.trim() || "";
+  const region = document.getElementById("team-edit-region")?.value?.trim() || "";
+  const foundedRaw = document.getElementById("team-edit-founded")?.value?.trim() || "";
+
+  if(!name){
+    showProfileMessage("Informe o nome da equipe.");
+    return;
+  }
+
+  let logo_url = lastManageTeamForEdit?.logo_url ? String(lastManageTeamForEdit.logo_url) : "";
+
+  const file = teamEditLogoInput?.files?.[0];
+
+  if(file){
+    const fileExt = file.name.split(".").pop();
+    const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("team-logos")
+      .upload(filePath, file);
+
+    if(uploadError){
+      console.error(uploadError);
+      showProfileMessage("Erro ao enviar logo da equipe.");
+      return;
+    }
+
+    const { data: pub } = supabase.storage
+      .from("team-logos")
+      .getPublicUrl(filePath);
+
+    logo_url = pub?.publicUrl || logo_url;
+  }
+
+  const { data: rpcData, error } = await supabase.rpc("request_team_profile_change", {
+    p_name: name,
+    p_city: city,
+    p_region: region,
+    p_logo_url: logo_url,
+    p_founded_at: foundedRaw || null
+  });
+
+  if(error){
+    console.error(error);
+    showProfileMessage("Erro ao enviar alterações. Confirme no Supabase as funções (sql/team_profile_identity_and_events_sync.sql).");
+    return;
+  }
+
+  if(rpcData && rpcData.success === false){
+    showProfileMessage(rpcData.message || "Não foi possível enviar.");
+    return;
+  }
+
+  showMessagePopup({
+    title: "Alterações enviadas",
+    message: "Sua solicitação foi enviada para análise. Até aprovarem, todos continuam vendo os dados atuais. Quando forem aprovadas, as mudanças aparecem para todos.",
+    buttonLabel: "Entendi",
+    bottomSheet: true,
+    compact: true,
+    popupClass: "team-flow-popup"
+  });
+
+  closeEditTeamProfileModal();
+  await loadManageTeamData(currentTeamId);
+  loadProfile();
+}
+
+if(editTeamProfileForm){
+  editTeamProfileForm.addEventListener("submit", async (event)=>{
+    event.preventDefault();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if(!user) return;
+
+    const name = document.getElementById("team-edit-name")?.value?.trim();
+    const region = document.getElementById("team-edit-region")?.value?.trim() || "";
+    const foundedVal = document.getElementById("team-edit-founded")?.value?.trim() || "";
+    const team = lastManageTeamForEdit;
+    const rem = Number(team?.identity_profile_changes_remaining ?? 1);
+
+    if(!name){
+      showProfileMessage("Informe o nome da equipe.");
+      return;
+    }
+
+    const idChanged = teamIdentityFieldsChanged(team, name, region, foundedVal);
+
+    if(idChanged && rem <= 0){
+      showProfileMessage("Você já usou a alteração permitida de nome, região e data de fundação. Ainda pode alterar cidade e logo.");
+      return;
+    }
+
+    if(idChanged && rem > 0){
+      showConfirmPopup({
+        title: "Alterar identidade da equipe?",
+        message: "Você só pode alterar essas informações uma vez! Deseja alterar?",
+        confirmLabel: "Sim, enviar",
+        cancelLabel: "Cancelar",
+        bottomSheet: true,
+        compact: true,
+        popupClass: "team-flow-popup",
+        onConfirm: async () => {
+          await submitTeamProfileEditRequest();
+        }
+      });
+      return;
+    }
+
+    await submitTeamProfileEditRequest();
+  });
+}
+
+if(teamModal){
+  teamModal.addEventListener("click", (event)=>{
+    if(event.target === teamModal) closeTeamModal();
+  });
+}
+
+if(manageTeamModal){
+  manageTeamModal.addEventListener("click", (event)=>{
+    if(event.target === manageTeamModal) closeManageTeamModal();
+  });
+}
+
+if(closeMyReportsModalBtn) closeMyReportsModalBtn.addEventListener("click", closeMyReportsModal);
+
+if(myReportsModal){
+  myReportsModal.addEventListener("click", (event)=>{
+    if(event.target === myReportsModal) closeMyReportsModal();
+  });
+
+  if(!myReportsModal.dataset.deleteReportWired){
+    myReportsModal.dataset.deleteReportWired = "1";
+    myReportsModal.addEventListener("click", async (event)=>{
+      const btn = event.target.closest("[data-delete-report]");
+      if(!btn) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const reportId = btn.getAttribute("data-report-id");
+      if(!reportId) return;
+
+      const { data: { user: delUser } } = await supabase.auth.getUser();
+      if(!delUser) return;
+
+      showConfirmPopup({
+        title: "Ocultar da lista",
+        message:
+          "Remove da sua lista aqui no app. O registo continua no sistema para moderação e para o histórico de denúncias (incluindo avisos por reincidência).",
+        confirmLabel: "Ocultar",
+        cancelLabel: "Cancelar",
+        bottomSheet: true,
+        align: "left",
+        onConfirm: async ()=>{
+          const { data: rpcOk, error: rpcErr } = await supabase.rpc("hide_my_event_report", {
+            p_report_id: reportId,
+          });
+
+          if(rpcErr){
+            console.error(rpcErr);
+            const hint = String(rpcErr.message || "").includes("function") || String(rpcErr.message || "").includes("column")
+              ? " Execute no Supabase o SQL em sql/event_reports_soft_hide_from_user.sql."
+              : "";
+            showMessagePopup({
+              message: "Não foi possível ocultar." + hint,
+            });
+            return;
+          }
+          if(!rpcOk){
+            showMessagePopup({ message: "Denúncia não encontrada ou já oculta." });
+            return;
+          }
+          await loadMyReports();
+        }
+      });
+    });
+  }
+}
+
+if(closeActivityEventsModalBtn) closeActivityEventsModalBtn.addEventListener("click", closeActivityEventsModal);
+
+if(activityEventsModal){
+  activityEventsModal.addEventListener("click", (event)=>{
+    if(event.target === activityEventsModal) closeActivityEventsModal();
+  });
+}
+
+if(teamLogoInput && teamLogoPreviewImage && teamLogoPreviewPlaceholder){
+  teamLogoInput.addEventListener("change", ()=>{
+    const file = teamLogoInput.files?.[0];
+
+    if(!file){
+      teamLogoPreviewImage.src = "";
+      teamLogoPreviewImage.style.display = "none";
+      teamLogoPreviewPlaceholder.style.display = "block";
+      return;
+    }
+
+    const imageUrl = URL.createObjectURL(file);
+    teamLogoPreviewImage.src = imageUrl;
+    teamLogoPreviewImage.style.display = "block";
+    teamLogoPreviewPlaceholder.style.display = "none";
+  });
+}
+
+if(teamForm){
+  teamForm.addEventListener("submit", async (event)=>{
+    event.preventDefault();
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if(!user){
+      showProfileMessage("Você precisa estar logado para criar uma equipe.");
+      return;
+    }
+
+    const name = document.getElementById("team-name")?.value?.trim();
+    const founded_at = document.getElementById("team-founded-at")?.value || null;
+    const founder = document.getElementById("team-founder")?.value?.trim() || null;
+    const region = document.getElementById("team-region")?.value?.trim() || null;
+    const city = document.getElementById("team-city")?.value?.trim() || null;
+
+    if(!name){
+      showProfileMessage("Informe o nome da equipe.");
+      return;
+    }
+
+    let logo_url = null;
+
+    const file = teamLogoInput?.files?.[0];
+
+    if(file){
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("team-logos")
+        .upload(filePath, file);
+
+      if(uploadError){
+        console.error(uploadError);
+        showProfileMessage("Erro ao enviar logo da equipe.");
+        return;
+      }
+
+      const { data } = supabase.storage
+        .from("team-logos")
+        .getPublicUrl(filePath);
+
+      logo_url = data?.publicUrl || null;
+    }
+
+    const { data: team, error: teamError } = await supabase
+      .from("teams")
+      .insert({
+        name,
+        founded_at,
+        region,
+        city,
+        founder_name: founder,
+        logo_url,
+        owner_user_id: user.id,
+        approval_status: "pending"
+      })
+      .select()
+      .single();
+
+    if(teamError){
+      console.error(teamError);
+      showProfileMessage("Erro ao criar equipe.");
+      return;
+    }
+
+    const { error: memberError } = await supabase
+      .from("team_members")
+      .insert({
+        team_id: team.id,
+        user_id: user.id,
+        role: "owner",
+        status: "approved"
+      });
+
+    if(memberError){
+      console.error(memberError);
+      showProfileMessage("Equipe criada, mas houve erro ao registrar o membro.");
+    }
+
+    showMessagePopup({
+      title: "Equipe enviada",
+      message: "Registro em análise. Avisamos quando for aprovado.",
+      buttonLabel: "Entendi",
+      bottomSheet: true,
+      compact: true
+    });
+
+    if(teamLogoPreviewImage && teamLogoPreviewPlaceholder){
+      teamLogoPreviewImage.src = "";
+      teamLogoPreviewImage.style.display = "none";
+      teamLogoPreviewPlaceholder.style.display = "block";
+    }
+
+    closeTeamModal();
+
+    loadProfile();
+  });
+}
+
+async function loadProfile(){
+  let summary;
+
+  try {
+    summary = await loadProfileSummary();
+  } catch (error) {
+    console.error("loadProfileSummary", error);
+    let sessionUser = null;
+    try{
+      const { data: { user: u } } = await supabase.auth.getUser();
+      sessionUser = u || null;
+    }catch(_e){
+      sessionUser = null;
+    }
+    if(!sessionUser){
+      renderGuestProfileShell();
+      wireProfileAccountControls(null);
+    }else{
+      if(profileNotificationsController){
+        await profileNotificationsController.setUser(sessionUser.id, true);
+      }
+      showMessagePopup({
+        message: "Não foi possível carregar seu perfil. Atualize a página ou tente de novo em instantes.",
+        bottomSheet: true,
+        compact: true
+      });
+    }
+    return;
+  }
+
+  const user = summary.user;
+
+  const nameEl = document.getElementById("profile-name");
+  const secondaryEl = document.getElementById("profile-secondary");
+  const publishedCountEl = document.getElementById("published-count");
+  const profileAvatarImage = document.getElementById("profile-avatar-image");
+  const profileAvatarPlaceholder = document.getElementById("profile-avatar-placeholder");
+  const teamActionButtonEl = document.getElementById("team-action-button");
+  const likedCountEl = document.getElementById("liked-count");
+  const savedCountEl = document.getElementById("saved-count");
+  const adminPanelCard = document.getElementById("admin-panel-card");
+
+  if(!user){
+    renderGuestProfileShell();
+    wireProfileAccountControls(null);
+    return;
+  }
+
+  const displayName = user.fullName || "Usuário";
+
+  if(nameEl) nameEl.textContent = displayName;
+
+  const myTeamData = summary.team;
+  const teamName = myTeamData?.teamName || "";
+  const teamState = myTeamData?.state || "";
+
+  if(secondaryEl){
+    if(teamState === "team_pending_approval" && teamName){
+      secondaryEl.textContent = `Equipe ${teamName} aguarda aprovação do administrador.`;
+    }else if(teamState === "team_rejected" && teamName){
+      secondaryEl.textContent = `Registro da equipe ${teamName} não foi aprovado.`;
+    }else if(teamState === "pending" && teamName){
+      secondaryEl.textContent = `Seu pedido para ${teamName} ainda está aguardando aprovação.`;
+    }else if(teamName){
+      secondaryEl.textContent = `Equipe: ${teamName}`;
+    }else{
+      secondaryEl.textContent = user.email || "";
+    }
+  }
+
+  const profileImageUrl = user.avatarUrl || "";
+  if(profileAvatarPlaceholder){
+    profileAvatarPlaceholder.innerHTML = "";
+    profileAvatarPlaceholder.textContent = teamName || "perfil";
+  }
+
+  if(profileAvatarImage && profileAvatarPlaceholder){
+    if(profileImageUrl){
+      profileAvatarImage.src = profileImageUrl;
+      profileAvatarImage.style.display = "block";
+      profileAvatarPlaceholder.style.display = "none";
+    }else{
+      profileAvatarImage.src = "";
+      profileAvatarImage.style.display = "none";
+      profileAvatarPlaceholder.style.display = "flex";
+    }
+  }
+
+  if(profileNotificationsController){
+    await profileNotificationsController.setUser(user.id, true);
+  }
+
+  if(myTeamData){
+    currentTeamSummary = myTeamData;
+    currentTeamState = myTeamData.state || null;
+    currentTeamId = myTeamData.teamId || null;
+    if(myTeamData.state === "owner"){
+      if(teamActionTitle) teamActionTitle.textContent = "Gerenciar equipe";
+      if(teamActionSubtitle) teamActionSubtitle.textContent = myTeamData.teamName || "Ver situação atual da sua equipe";
+    }else if(myTeamData.state === "moderator"){
+      if(teamActionTitle) teamActionTitle.textContent = "Gerenciar equipe";
+      if(teamActionSubtitle) teamActionSubtitle.textContent = myTeamData.teamName || "Ver situação atual da sua equipe";
+    }else if(myTeamData.state === "member"){
+      if(teamActionTitle) teamActionTitle.textContent = "Minha equipe";
+      if(teamActionSubtitle) teamActionSubtitle.textContent = myTeamData.teamName || "Ver situação atual da sua equipe";
+    }else if(myTeamData.state === "team_pending_approval"){
+      if(teamActionTitle) teamActionTitle.textContent = "Equipe em aprovação";
+      if(teamActionSubtitle) teamActionSubtitle.textContent = myTeamData.teamName
+        ? `${myTeamData.teamName} — aguardando o administrador`
+        : "Cadastro da equipe em análise";
+    }else if(myTeamData.state === "team_rejected"){
+      if(teamActionTitle) teamActionTitle.textContent = "Equipe não aprovada";
+      if(teamActionSubtitle) teamActionSubtitle.textContent = myTeamData.teamName
+        ? `${myTeamData.teamName} — registro recusado`
+        : "Entre em contato com o suporte";
+    }else if(myTeamData.state === "pending"){
+      if(teamActionTitle) teamActionTitle.textContent = "Pedido em análise";
+      if(teamActionSubtitle) teamActionSubtitle.textContent = myTeamData.teamName
+        ? `Aguardando resposta da equipe ${myTeamData.teamName}`
+        : "Seu pedido ainda está em análise";
+    }else{
+      if(teamActionTitle) teamActionTitle.textContent = "Cadastrar equipe";
+      if(teamActionSubtitle) teamActionSubtitle.textContent = "Criar base da sua equipe";
+    }
+  }
+
+  if(publishedCountEl) publishedCountEl.textContent = String(summary.counts.published || 0);
+  if(likedCountEl) likedCountEl.textContent = String(summary.counts.liked || 0);
+  if(savedCountEl) savedCountEl.textContent = String(summary.counts.saved || 0);
+  if(adminPanelCard) adminPanelCard.classList.toggle("hidden", !summary.isAdmin);
+
+  wireProfileAccountControls(user);
+}
+
+const savedEventsCard = document.getElementById("saved-events-card");
+const publishedEventsLink = document.getElementById("published-events-link");
+const adminPanelCard = document.getElementById("admin-panel-card");
+let publishedEventsOpening = false;
+
+async function openPublishedEvents(){
+  if(publishedEventsOpening) return;
+  const user = await requireUserSignInWithGoogle();
+  if(!user) return;
+  publishedEventsOpening = true;
+
+  try {
+    openActivityEventsModal();
+    await loadActivityEvents("published");
+  } finally {
+    publishedEventsOpening = false;
+  }
+}
+
+if(likedEventsCard){
+  likedEventsCard.addEventListener("click", async ()=>{
+    const user = await requireUserSignInWithGoogle();
+    if(!user) return;
+    openActivityEventsModal();
+    await loadActivityEvents("like");
+  });
+}
+
+if(savedEventsCard){
+  savedEventsCard.addEventListener("click", async ()=>{
+    const user = await requireUserSignInWithGoogle();
+    if(!user) return;
+    openActivityEventsModal();
+    await loadActivityEvents("save");
+  });
+}
+
+if(publishedEventsLink){
+  publishedEventsLink.addEventListener("click", openPublishedEvents);
+}
+
+if(myReportsCard){
+  myReportsCard.addEventListener("click", async ()=>{
+    const user = await requireUserSignInWithGoogle();
+    if(!user) return;
+    await loadMyReports();
+    openMyReportsModal();
+  });
+}
+
+if(supportCard){
+  supportCard.addEventListener("click", ()=>{
+    window.open("https://instagram.com/webpipa", "_blank");
+  });
+}
+
+if(adminPanelCard){
+  adminPanelCard.addEventListener("click", async ()=>{
+    const user = await requireUserSignInWithGoogle();
+    if(!user) return;
+    window.location.href = "/pages/admin.html";
+  });
+}
+
+try {
+  await loadProfile();
+} finally {
+  finishPageLoad();
+}
 </script>
+
+<script type="module" src="../js/pwa.js?v=5"></script>
 
 </body>
 </html>

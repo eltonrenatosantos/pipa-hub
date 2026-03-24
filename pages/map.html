@@ -2,12 +2,20 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<script>document.documentElement.classList.add('app-preload');</script>
 
 <title>Mapa de Eventos</title>
 
 
-<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../assets/css/global.css?v=9" />
+  <link rel="stylesheet" href="../assets/css/components.css?v=11" />
+  <link rel="stylesheet" href="../assets/css/pages.css?v=1" />
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="WebPipa">
 
 <style>
 /* Ensure header dropdown stays above map search bar */
@@ -25,17 +33,35 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
 </head>
 
-<body>
+<body class="layout-map-page">
 
 <div id="app-header"></div>
 
+<section id="home-ad-slot" class="home-ad-slot" hidden aria-label="Publicidade"></section>
+
 <section class="map-container">
 <div class="map-search-wrapper">
-  <input id="map-search" class="map-search" placeholder="Buscar evento, equipe ou cidade">
-  <button id="map-search-btn" class="map-search-btn">BUSCAR</button>
+  <div class="map-search-field">
+    <span class="map-search-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="17" height="17" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11 5.5a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="m15 15 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <input id="map-search" class="map-search" placeholder="Buscar evento">
+  </div>
+  <button id="map-search-btn" class="map-search-btn">Buscar</button>
 </div>
 
 <div id="map"></div>
+
+<button id="map-locate-btn" class="map-locate-btn" type="button" aria-label="Centralizar minha localização">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="12" cy="12" r="7" stroke="currentColor" stroke-width="2"/>
+    <path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="12" cy="12" r="2" fill="currentColor"/>
+  </svg>
+</button>
 
 <div class="map-event-card" id="mapEventCard">
   Evento selecionado
@@ -47,14 +73,15 @@ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script type="module">
-import { loadHeader } from "../js/header.js";
-import { loadFooter } from "../js/footer.js";
+import { loadHeader } from "../js/header.js?v=4";
+import { loadFooter } from "../js/footer.js?v=1";
 
-loadHeader("Mapa");
+await loadHeader("Encontre eventos");
 loadFooter("map");
 </script>
 
-<script type="module" src="../js/map.js"></script>
+<script type="module" src="../js/map.js?v=15"></script>
+<script type="module" src="../js/pwa.js?v=5"></script>
 
 </body>
 </html>

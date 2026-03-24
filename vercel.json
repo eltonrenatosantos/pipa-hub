@@ -1,9 +1,17 @@
 {
   "rewrites": [
     { "source": "/", "destination": "/pages/home.html" },
+    { "source": "/home", "destination": "/pages/home.html" },
+    { "source": "/home.html", "destination": "/pages/home.html" },
     { "source": "/map", "destination": "/pages/map.html" },
+    { "source": "/map.html", "destination": "/pages/map.html" },
     { "source": "/publish", "destination": "/pages/publish.html" },
+    { "source": "/publish.html", "destination": "/pages/publish.html" },
     { "source": "/ranking", "destination": "/pages/ranking.html" },
-    { "source": "/profile", "destination": "/pages/profile.html" }
+    { "source": "/ranking.html", "destination": "/pages/ranking.html" },
+    { "source": "/profile", "destination": "/pages/profile.html" },
+    { "source": "/profile.html", "destination": "/pages/profile.html" },
+    { "source": "/event", "destination": "/pages/event.html" },
+    { "source": "/event.html", "destination": "/pages/event.html" }
   ]
 }

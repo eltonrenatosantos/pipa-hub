@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <script>document.documentElement.classList.add('app-preload');</script>
+  <title>Evento — WebPipa</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=9" />
+  <link rel="stylesheet" href="../assets/css/components.css?v=1" />
+  <link rel="stylesheet" href="../assets/css/pages.css?v=8" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0b0b0b" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="WebPipa" />
+</head>
+<body class="event-page-body">
+  <div class="event-page">
+    <a id="event-instagram" class="hidden" href="#" target="_blank" rel="noopener noreferrer">Instagram</a>
+    <section class="event-hero">
+      <div class="event-top-actions">
+        <a href="./home.html" class="event-back-btn" aria-label="Voltar">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <img id="event-image" class="event-hero-image hidden" alt="Arte do evento" />
+      <div id="event-image-placeholder" class="event-hero-placeholder">Carregando arte do evento...</div>
+
+      <div class="event-hero-overlay">
+        <h1 id="event-title" class="event-detail-title">Carregando evento...</h1>
+      </div>
+      <div class="event-side-actions">
+        <button id="like-button" class="event-action-btn event-action-like" type="button" title="Curtir evento" aria-label="Curtir evento">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path class="icon-fill" d="M12 20.2c-.24 0-.48-.08-.67-.24-1.55-1.36-2.75-2.34-3.72-3.14C4.73 14.43 3 12.98 3 10.16 3 7.92 4.74 6.2 6.93 6.2c1.33 0 2.61.64 3.42 1.66.81-1.02 2.09-1.66 3.42-1.66 2.19 0 3.93 1.72 3.93 3.96 0 2.82-1.73 4.27-4.61 6.66-.97.8-2.17 1.78-3.72 3.14-.19.16-.43.24-.67.24Z"/>
+          </svg>
+        </button>
+        <button id="going-button" class="event-action-btn event-action-go" type="button" title="Eu vou" aria-label="Eu vou">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path class="icon-stroke" d="M20 7L9 18L4 13" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="save-button" class="event-action-btn event-action-save" type="button" title="Salvar evento" aria-label="Salvar evento">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path class="icon-stroke" d="M7 4H17C17.5523 4 18 4.44772 18 5V20L12 16L6 20V5C6 4.44772 6.44772 4 7 4Z" stroke-width="1.9" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="instagram-button" class="event-action-btn event-action-instagram hidden" type="button" title="Abrir Instagram" aria-label="Abrir Instagram">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3.5" y="3.5" width="17" height="17" rx="5" class="icon-stroke" stroke-width="1.7"/>
+            <circle cx="12" cy="12" r="4" class="icon-stroke" stroke-width="1.7"/>
+            <circle cx="17.2" cy="6.8" r="1" class="icon-fill"/>
+          </svg>
+        </button>
+        <button id="report-button" class="event-action-btn event-action-report" type="button" title="Denunciar evento" aria-label="Denunciar evento">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path class="icon-stroke" d="M12 8.2V12.8" stroke-width="2" stroke-linecap="round"/>
+            <circle class="icon-fill" cx="12" cy="15.9" r="1.15"/>
+            <path class="icon-stroke" d="M10.44 4.52L3.54 16.46C3.18 17.09 3 17.4 3.03 17.66C3.05 17.89 3.17 18.1 3.35 18.26C3.55 18.42 3.91 18.42 4.64 18.42H19.36C20.09 18.42 20.45 18.42 20.65 18.26C20.83 18.1 20.95 17.89 20.97 17.66C21 17.4 20.82 17.09 20.46 16.46L13.56 4.52C13.2 3.89 13.02 3.58 12.78 3.47C12.58 3.38 12.42 3.38 12.22 3.47C11.98 3.58 11.8 3.89 10.44 4.52Z" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <div id="event-loading" class="event-loading">Carregando informações do evento...</div>
+    <div id="event-error" class="event-error-state hidden">Não foi possível carregar este evento.</div>
+
+    <main id="event-content" class="event-content hidden">
+      <section class="event-card">
+        <h2 class="event-section-title">Detalhes</h2>
+        <div class="event-info-list">
+          <div class="event-info-grid">
+          <div class="event-info-row event-info-row--card">
+            <div class="event-info-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M8 21H16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M12 17V21" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M7 4H17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M17 4V8C17 10.7614 14.7614 13 12 13C9.23858 13 7 10.7614 7 8V4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="event-info-label">Equipe</div>
+              <div id="event-team-info" class="event-info-value">—</div>
+            </div>
+          </div>
+
+          <div class="event-info-row event-info-row--card">
+            <div class="event-info-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M8 2V5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                <path d="M16 2V5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                <rect x="3" y="4" width="18" height="17" rx="4" stroke="currentColor" stroke-width="1.7"/>
+                <path d="M3 9H21" stroke="currentColor" stroke-width="1.7"/>
+              </svg>
+            </div>
+            <div>
+              <div class="event-info-label">Data</div>
+              <div id="event-date" class="event-info-value">—</div>
+            </div>
+          </div>
+          </div>
+
+          <div class="event-info-row event-info-row--card">
+            <div class="event-info-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M12 21C16 17 19 13.73 19 10A7 7 0 1 0 5 10C5 13.73 8 17 12 21Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/>
+              </svg>
+            </div>
+            <div>
+              <div class="event-info-label">Endereço</div>
+              <div id="event-location" class="event-info-value">—</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="event-about-card" class="event-card hidden">
+        <h2 class="event-section-title">Sobre este evento</h2>
+        <p id="event-description" class="event-about-text"></p>
+      </section>
+    </main>
+  </div>
+
+  <!-- Report modal -->
+  <div id="report-modal" class="app-sheet hidden">
+    <div class="app-sheet-card" style="max-width:680px;border-radius:20px 20px 0 0;">
+      <div class="app-sheet-header" style="margin-bottom:18px;">
+        <div class="app-sheet-title" style="font-size:18px;">Denunciar evento</div>
+        <button id="close-report-modal" class="app-sheet-close">×</button>
+      </div>
+
+      <div class="event-report-stack">
+
+        <label class="event-report-option">
+          <input type="radio" name="report-reason" value="duplicado" checked>
+          <span>Evento duplicado</span>
+        </label>
+
+        <label class="event-report-option">
+          <input type="radio" name="report-reason" value="outro" id="report-reason-custom">
+          <span>Outro motivo</span>
+        </label>
+
+        <textarea id="report-custom-reason"
+        placeholder="Descreva em poucas palavras..."
+        maxlength="80"
+        class="event-report-textarea"></textarea>
+
+        <button id="send-report-btn" class="ui-button ui-button-primary" style="margin-top:10px;">
+          Enviar denúncia
+        </button>
+
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { beginPageLoad, finishPageLoad } from "../js/ui/page-loader.js?v=7";
+    import { supabase } from "../js/supabase.js?v=1";
+    import { recordEventView } from "../js/services/appAnalytics.js?v=1";
+    import { isHighlightActiveEvent } from "../js/services/highlightLifecycle.js?v=1";
+    import { showConfirmPopup, showMessagePopup } from "../js/ui/popup.js?v=5";
+    import { loadFooter } from "../js/footer.js?v=1";
+    import { APP_SHOW_HEADER } from "../js/header.js?v=4";
+    beginPageLoad();
+    if (!APP_SHOW_HEADER) document.documentElement.classList.add("app-layout--no-header");
+    loadFooter("events");
+
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get("id");
+
+    const eventBackBtn = document.querySelector(".event-back-btn");
+    if(params.get("from") === "admin" && eventBackBtn){
+      eventBackBtn.href = "/pages/admin.html";
+      eventBackBtn.setAttribute("aria-label", "Voltar ao painel admin");
+      eventBackBtn.title = "Voltar ao painel admin";
+    }
+
+    const eventImage = document.getElementById("event-image");
+    const eventImagePlaceholder = document.getElementById("event-image-placeholder");
+    const eventTeamInfo = document.getElementById("event-team-info");
+    const eventTitle = document.getElementById("event-title");
+    const eventDate = document.getElementById("event-date");
+    const eventLocation = document.getElementById("event-location");
+    const eventInstagram = document.getElementById("event-instagram");
+    const eventAboutCard = document.getElementById("event-about-card");
+    const eventDescription = document.getElementById("event-description");
+    const eventLoading = document.getElementById("event-loading");
+    const eventError = document.getElementById("event-error");
+    const eventContent = document.getElementById("event-content");
+    const eventHeroOverlay = document.querySelector(".event-hero-overlay");
+    const eventSideActions = document.querySelector(".event-side-actions");
+    let eventOwnerUserId = null;
+    let eventTeamName = null;
+
+    const likeButton = document.getElementById("like-button");
+    const goingButton = document.getElementById("going-button");
+    const saveButton = document.getElementById("save-button");
+    const instagramButton = document.getElementById("instagram-button");
+    const reportButton = document.getElementById("report-button");
+
+    const instanteEntradaPagina = Date.now();
+    let interacoesClicadas = new Set();
+    let agendamentoEnvioInteracao = null;
+    let positiveInteractionsLocked = false;
+
+    function lockPositiveInteractionButtons(){
+      if(positiveInteractionsLocked) return;
+      positiveInteractionsLocked = true;
+      interacoesClicadas.clear();
+      if(agendamentoEnvioInteracao){
+        clearTimeout(agendamentoEnvioInteracao);
+        agendamentoEnvioInteracao = null;
+      }
+      [likeButton, goingButton, saveButton].forEach((btn)=>{
+        if(!btn) return;
+        btn.classList.remove("active");
+        /* Não usar disabled: em iOS/PWA o botão pode ficar invisível. Só “apagar” + bloquear clique. */
+        btn.setAttribute("aria-disabled", "true");
+        btn.setAttribute("tabindex", "-1");
+      });
+      eventSideActions?.classList.add("event-side-actions--positive-locked");
+    }
+
+    function formatDate(value){
+      if(!value) return "Data não informada";
+      const date = new Date(`${value}T12:00:00`);
+      if(Number.isNaN(date.getTime())) return value;
+      return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getFullYear()).slice(2)}`;
+    }
+
+    function sanitizeAddressPart(value){
+      const withoutCep = String(value || "").replace(/\b\d{5}-?\d{3}\b/g, "").trim();
+      if(withoutCep.includes(" - ")){
+        return withoutCep.split(" - ")[0].trim();
+      }
+      return withoutCep;
+    }
+
+    function formatEventAddress(location, city){
+      const normalizedCity = String(city || "").trim().toLowerCase();
+      const parts = String(location || "")
+        .split(",")
+        .map((part) => sanitizeAddressPart(part.trim()))
+        .filter(Boolean)
+        .filter((part) => part.toLowerCase() !== "brasil")
+        .filter((part) => !normalizedCity || part.toLowerCase() !== normalizedCity)
+        .slice(0, 3);
+
+      if(city && String(city).trim()){
+        parts.push(String(city).trim());
+      }
+
+      return parts.join(", ");
+    }
+
+    function normalizeInstagram(value){
+      if(!value) return { label: "Instagram não informado", href: "#" };
+      const clean = value.replace(/^@/, "").trim();
+      return {
+        label: `@${clean}`,
+        href: `https://instagram.com/${clean}`
+      };
+    }
+
+    function normalizeReportErrorMessage(rawMessage){
+      const lowerMessage = String(rawMessage || "").toLowerCase();
+
+      if(lowerMessage.includes("duplicate report")) return "Você já denunciou este evento.";
+      if(lowerMessage.includes("self report is not allowed")) return "Você não pode denunciar um evento publicado por você.";
+      if(lowerMessage.includes("same team report is not allowed")) return "Você não pode denunciar um evento da sua própria equipe.";
+      if(lowerMessage.includes("custom reason required")) return "Escreva o motivo da denúncia antes de enviar.";
+      if(lowerMessage.includes("event is not available for reports")) return "Este evento não está mais disponível para denúncia.";
+      if(lowerMessage.includes("event owner not found")) return "Não foi possível identificar o responsável por este evento.";
+      if(lowerMessage.includes("event not found")) return "Não foi possível identificar o evento para denúncia.";
+      if(lowerMessage.includes("not authenticated")) return "Você precisa entrar para denunciar um evento.";
+      if(lowerMessage.includes("invalid report reason")) return "Escolha um motivo válido para a denúncia.";
+
+      return rawMessage || "Não foi possível enviar sua denúncia agora.";
+    }
+
+    function showUnavailableState(message){
+      if(eventLoading) eventLoading.classList.add("hidden");
+      if(eventContent) eventContent.classList.add("hidden");
+      if(eventError){
+        eventError.textContent = message;
+        eventError.classList.remove("hidden");
+      }
+      if(eventHeroOverlay) eventHeroOverlay.classList.add("hidden");
+      if(eventSideActions) eventSideActions.classList.add("hidden");
+      if(eventImage) eventImage.classList.add("hidden");
+      if(eventImagePlaceholder){
+        eventImagePlaceholder.textContent = message;
+        eventImagePlaceholder.classList.remove("hidden");
+      }
+    }
+
+    async function loadEvent(){
+      if(!eventId){
+        showUnavailableState("Evento não encontrado.");
+        return;
+      }
+
+      const { data: isAdminRpc, error: adminRpcError } = await supabase.rpc("is_current_user_admin");
+      const isAdminViewer = Boolean(isAdminRpc) && !adminRpcError;
+
+      let query = supabase
+        .from("events")
+        .select("id,team,title,city,location,date,instagram,image,user_id,description,plan_type,payment_status,created_at,highlight_started_at")
+        .eq("id", eventId);
+
+      if(!isAdminViewer){
+        query = query.in("payment_status", ["paid", "approved"]);
+      }
+
+      const { data, error } = await query.maybeSingle();
+
+      if(error || !data){
+        console.error("Erro ao carregar evento:", error);
+        showUnavailableState("Não foi possível carregar este evento.");
+        return;
+      }
+
+      eventLoading.classList.add("hidden");
+      if(eventError) eventError.classList.add("hidden");
+      if(eventHeroOverlay) eventHeroOverlay.classList.remove("hidden");
+      if(eventSideActions) eventSideActions.classList.remove("hidden");
+
+      const instagram = normalizeInstagram(data.instagram || "");
+      const city = String(data.city || "").trim();
+      const locationText = formatEventAddress(data.location, city) || "Endereço não informado";
+      const descriptionText = (data.description || "").trim();
+      const isFeaturedEvent = isHighlightActiveEvent(data);
+      eventOwnerUserId = data.user_id || null;
+      eventTeamName = data.team || null;
+
+      if(eventAboutCard && eventDescription){
+        if(isFeaturedEvent && descriptionText){
+          eventDescription.textContent = descriptionText;
+          eventAboutCard.classList.remove("hidden");
+        }else{
+          eventDescription.textContent = "";
+          eventAboutCard.classList.add("hidden");
+        }
+      }
+
+      eventTeamInfo.textContent = data.team || "Equipe não informada";
+      eventTitle.textContent = data.title || "Evento";
+      eventDate.textContent = formatDate(data.date);
+      eventLocation.textContent = locationText;
+      eventInstagram.textContent = instagram.label;
+      eventInstagram.href = instagram.href;
+      if(instagramButton){
+        const hasInstagram = instagram.href && instagram.href !== "#";
+        instagramButton.classList.toggle("hidden", !hasInstagram);
+      }
+
+      if(data.image){
+        eventImage.src = data.image;
+        eventImage.classList.remove("hidden");
+        eventImagePlaceholder.classList.add("hidden");
+      }else{
+        eventImage.classList.add("hidden");
+        eventImagePlaceholder.classList.remove("hidden");
+      }
+
+      eventContent.classList.remove("hidden");
+      loadExistingInteractions();
+      recordEventView(eventId).catch(() => {});
+    }
+async function isUserFromEventTeam(userId){
+  if(!userId || !eventTeamName) return false;
+
+  try {
+    const normalizedEventTeamName = String(eventTeamName).trim().toLowerCase();
+
+    const { data: memberships, error: membershipsError } = await supabase
+      .from("team_members")
+      .select("team_id,status")
+      .eq("user_id", userId)
+      .eq("status", "approved");
+
+    if(membershipsError){
+      console.error("Erro ao verificar memberships do usuário:", membershipsError);
+      return false;
+    }
+
+    const teamIds = (memberships || []).map(item => item.team_id).filter(Boolean);
+    if(teamIds.length === 0) return false;
+
+    const { data: teamsData, error: teamsError } = await supabase
+      .from("teams")
+      .select("id,name")
+      .in("id", teamIds);
+
+    if(teamsError){
+      console.error("Erro ao verificar equipes do usuário:", teamsError);
+      return false;
+    }
+
+    return (teamsData || []).some(team => {
+      const normalizedTeamName = String(team.name || "").trim().toLowerCase();
+      return normalizedTeamName === normalizedEventTeamName;
+    });
+  } catch (error) {
+    console.error("Erro ao validar equipe da denúncia:", error);
+    return false;
+  }
+}
+
+async function getReportBlockReason(userId){
+  if(!userId) return null;
+
+  if(eventOwnerUserId && userId === eventOwnerUserId){
+    return "Você não pode denunciar um evento criado por você.";
+  }
+
+  if(await isUserFromEventTeam(userId)){
+    return "Você não pode denunciar um evento da sua própria equipe.";
+  }
+
+  return null;
+}
+
+
+
+async function loadExistingInteractions(){
+  const { data: { user } } = await supabase.auth.getUser();
+  if(!user) return;
+
+  const { data: existingReport } = await supabase
+    .from("event_reports")
+    .select("id")
+    .eq("event_id", eventId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if(existingReport){
+    reportButton.classList.add("active");
+    lockPositiveInteractionButtons();
+    return;
+  }
+
+  const { data } = await supabase
+    .from("event_interactions")
+    .select("type")
+    .eq("event_id", eventId)
+    .eq("user_id", user.id);
+
+  if(!data) return;
+
+  data.forEach((row) => {
+    if(row.type === "like") likeButton.classList.add("active");
+    if(row.type === "going") goingButton.classList.add("active");
+    if(row.type === "save") saveButton.classList.add("active");
+  });
+}
+// ===== Tempo mínimo na página antes de enviar interações =====
+
+async function enviarInteracoes(){
+  if(positiveInteractionsLocked) return;
+
+  const tempoNaPaginaSegundos = (Date.now() - instanteEntradaPagina) / 1000;
+  if(tempoNaPaginaSegundos < 8) return;
+
+  if(interacoesClicadas.size === 0) return;
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if(!user) return;
+
+  // INT (raw): no máximo +0,1 por usuário por evento (só na primeira interação nova).
+  // Curtir / vou / salvar continuam gravando para a UI; os tipos extras não chamam add_interaction_raw.
+  const { count: totalInteracoesEventoAntes, error: erroAoContarInteracoes } = await supabase
+    .from("event_interactions")
+    .select("*", { count: "exact", head: true })
+    .eq("event_id", eventId)
+    .eq("user_id", user.id);
+
+  if(erroAoContarInteracoes){
+    console.error("Erro ao contar interações do evento:", erroAoContarInteracoes);
+  }
+
+  const eventoJaTinhaAlgumaInteracao = (totalInteracoesEventoAntes ?? 0) > 0;
+  let pontosFracionadosJaEnviadosNesteEnvio = eventoJaTinhaAlgumaInteracao;
+
+  for(const tipo of interacoesClicadas){
+    const { data: jaExistia, error: erroBuscaExistente } = await supabase
+      .from("event_interactions")
+      .select("id")
+      .eq("event_id", eventId)
+      .eq("user_id", user.id)
+      .eq("type", tipo)
+      .maybeSingle();
+
+    if(erroBuscaExistente){
+      console.error("Erro ao verificar interação existente:", erroBuscaExistente);
+      continue;
+    }
+
+    if(jaExistia) continue;
+
+    const { error: erroInserir } = await supabase
+      .from("event_interactions")
+      .insert({
+        event_id: eventId,
+        user_id: user.id,
+        type: tipo
+      });
+
+    if(erroInserir){
+      console.error("Erro ao salvar interação:", erroInserir);
+      continue;
+    }
+
+    if(pontosFracionadosJaEnviadosNesteEnvio) continue;
+
+    pontosFracionadosJaEnviadosNesteEnvio = true;
+    const { error: erroInteracaoFracionada } = await supabase.rpc("add_interaction_raw", {
+      p_user_id: user.id,
+      p_raw_to_add: 0.1
+    });
+
+    if(erroInteracaoFracionada){
+      console.error("Erro ao somar interação fracionada:", erroInteracaoFracionada);
+    }
+  }
+}
+
+function agendarEnvioInteracoes(){
+  if(positiveInteractionsLocked) return;
+  if(interacoesClicadas.size === 0) return;
+
+  if(agendamentoEnvioInteracao){
+    clearTimeout(agendamentoEnvioInteracao);
+    agendamentoEnvioInteracao = null;
+  }
+
+  const milissegundosDecorridos = Date.now() - instanteEntradaPagina;
+  const esperaMinimaMs = 8000;
+
+  if(milissegundosDecorridos >= esperaMinimaMs){
+    enviarInteracoes();
+    return;
+  }
+
+  agendamentoEnvioInteracao = setTimeout(()=>{
+    enviarInteracoes();
+  }, esperaMinimaMs - milissegundosDecorridos);
+}
+
+function registrarInteracaoLocal(tipo){
+  if(interacoesClicadas.has(tipo)) return;
+  interacoesClicadas.add(tipo);
+}
+
+likeButton.addEventListener("click", ()=>{
+  if(positiveInteractionsLocked) return;
+  if(likeButton.classList.contains("active")) return;
+  likeButton.classList.add("active");
+  registrarInteracaoLocal("like");
+  agendarEnvioInteracoes();
+});
+
+goingButton.addEventListener("click", ()=>{
+  if(positiveInteractionsLocked) return;
+  if(goingButton.classList.contains("active")) return;
+  goingButton.classList.add("active");
+  registrarInteracaoLocal("going");
+  agendarEnvioInteracoes();
+});
+
+saveButton.addEventListener("click", ()=>{
+  if(positiveInteractionsLocked) return;
+  if(saveButton.classList.contains("active")) return;
+  saveButton.classList.add("active");
+  registrarInteracaoLocal("save");
+  agendarEnvioInteracoes();
+});
+
+const reportModal = document.getElementById("report-modal");
+const closeReportModal = document.getElementById("close-report-modal");
+const reasonInputs = document.querySelectorAll('input[name="report-reason"]');
+const customReason = document.getElementById("report-custom-reason");
+const customReasonRadio = document.getElementById("report-reason-custom");
+const sendReportBtn = document.getElementById("send-report-btn");
+
+reportButton.addEventListener("click", async ()=>{
+  const { data: { user } } = await supabase.auth.getUser();
+
+  const blockReason = await getReportBlockReason(user?.id || null);
+  if(blockReason){
+    showMessagePopup({ message: blockReason });
+    return;
+  }
+
+  if(reportButton.classList.contains("active")){
+    showMessagePopup({ message: "Este evento já foi denunciado por você." });
+    return;
+  }
+
+  reportModal.classList.remove("hidden");
+  reportModal.style.display = "flex";
+});
+
+if(instagramButton){
+  instagramButton.addEventListener("click", ()=>{
+    const href = eventInstagram?.href;
+    if(href && href !== "#"){
+      window.open(href, "_blank", "noopener,noreferrer");
+    }
+  });
+}
+
+closeReportModal.onclick = ()=>{
+  reportModal.classList.add("hidden");
+  reportModal.style.display = "none";
+};
+
+customReason.addEventListener("focus", ()=>{
+  if(customReasonRadio) customReasonRadio.checked = true;
+});
+
+async function countConsecutiveRejectedReports(userId){
+  const { data, error } = await supabase
+    .from("event_reports")
+    .select("status,reviewed_at")
+    .or(`reporter_user_id.eq.${userId},user_id.eq.${userId}`)
+    .in("status", ["accepted", "rejected"])
+    .not("reviewed_at", "is", null)
+    .order("reviewed_at", { ascending: false })
+    .limit(40);
+
+  if(error || !data?.length) return 0;
+
+  let streak = 0;
+  for(const row of data){
+    if(row.status === "rejected") streak++;
+    else break;
+  }
+  return streak;
+}
+
+sendReportBtn.onclick = async ()=>{
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if(!user) return;
+
+  const blockReason = await getReportBlockReason(user.id);
+  if(blockReason){
+    reportModal.classList.add("hidden");
+    reportModal.style.display = "none";
+    showMessagePopup({ message: blockReason });
+    return;
+  }
+
+  const { data: existingReport, error: existingReportError } = await supabase
+    .from("event_reports")
+    .select("id")
+    .eq("event_id", eventId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if(existingReportError){
+    console.error(existingReportError);
+    showMessagePopup({ message: "Erro ao verificar denúncia existente." });
+    return;
+  }
+
+  if(existingReport){
+    reportButton.classList.add("active");
+    lockPositiveInteractionButtons();
+    reportModal.classList.add("hidden");
+    reportModal.style.display = "none";
+    showMessagePopup({ message: "Este evento já foi denunciado por você." });
+    return;
+  }
+
+  let reason = null;
+
+  reasonInputs.forEach(r=>{
+    if(r.checked) reason = r.value;
+  });
+
+  const customReasonText = customReason.value.trim();
+
+  if(!reason){
+    showMessagePopup({ message: "Selecione ou escreva um motivo." });
+    return;
+  }
+
+  if(reason === "outro" && !customReasonText){
+    showMessagePopup({ message: "Escreva o motivo da denúncia antes de enviar." });
+    return;
+  }
+
+  const runSubmit = async ()=>{
+    const { error } = await supabase.rpc("submit_event_report", {
+      p_event_id: eventId,
+      p_reason: reason,
+      p_custom_reason: customReasonText
+    });
+
+    if(error){
+      console.error(error);
+      showMessagePopup({ message: normalizeReportErrorMessage(error.message || error.details || "Erro ao enviar denúncia.") });
+      return;
+    }
+
+    reportButton.classList.add("active");
+    lockPositiveInteractionButtons();
+    reportModal.classList.add("hidden");
+    reportModal.style.display = "none";
+    showMessagePopup({ message: "Denúncia enviada." });
+  };
+
+  const streak = await countConsecutiveRejectedReports(user.id);
+  if(streak >= 3){
+    showConfirmPopup({
+      title: "Atenção",
+      message:
+        "Suas últimas três denúncias foram recusadas. Esta denúncia será analisada com critério. Se for recusada, você sofrerá uma penalização.",
+      confirmLabel: "Enviar denúncia",
+      cancelLabel: "Cancelar",
+      bottomSheet: true,
+      align: "left",
+      onConfirm: runSubmit
+    });
+    return;
+  }
+
+  await runSubmit();
+};
+
+// Envio extra após 15 s se o usuário continuar na página
+setTimeout(()=>{
+  enviarInteracoes();
+},15000);
+
+// Envia ao esconder a aba ou sair da página
+window.addEventListener("pagehide", enviarInteracoes);
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden){
+    enviarInteracoes();
+  }
+});
+
+    try {
+      await loadEvent();
+    } finally {
+      finishPageLoad();
+    }
+  </script>
+  <script type="module" src="../js/pwa.js?v=5"></script>
+</body>
+</html>

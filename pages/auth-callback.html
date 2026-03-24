@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrando...</title>
+  <link rel="stylesheet" href="../assets/css/global.css?v=9" />
+  <link rel="stylesheet" href="../assets/css/components.css?v=1" />
+  <link rel="stylesheet" href="../assets/css/pages.css?v=1" />
+  <meta name="theme-color" content="#0b0b0b">
+</head>
+<body style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#0b0b0b;color:#fff;">
+  <div style="text-align:center;max-width:320px;">
+    <div style="font-size:24px;font-weight:800;">Entrando...</div>
+    <div id="auth-callback-status" style="margin-top:10px;font-size:14px;opacity:.72;">
+      Finalizando login.
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from "../js/supabase.js?v=1";
+    import { consumeAuthReturnUrl } from "../js/auth-redirect.js?v=1";
+
+    const status = document.getElementById("auth-callback-status");
+
+    function updateStatus(message) {
+      if (status) status.textContent = message;
+    }
+
+    async function waitForAuthSession(timeoutMs = 5000) {
+      return new Promise((resolve) => {
+        let settled = false;
+
+        const finish = async (session) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(timeoutId);
+          subscription?.unsubscribe();
+          resolve(session);
+        };
+
+        const timeoutId = setTimeout(async () => {
+          const { data } = await supabase.auth.getSession();
+          finish(data?.session || null);
+        }, timeoutMs);
+
+        const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+          if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
+            finish(session || null);
+          }
+        });
+
+        const subscription = authListener?.subscription || null;
+      });
+    }
+
+    async function completeAuthRedirect() {
+      try {
+        updateStatus("Confirmando sessao.");
+        await waitForAuthSession();
+      } catch (error) {
+        console.error("Erro ao finalizar login", error);
+      }
+
+      const nextUrl = consumeAuthReturnUrl("/pages/home.html");
+      updateStatus("Redirecionando.");
+      window.location.replace(nextUrl);
+    }
+
+    completeAuthRedirect();
+  </script>
+</body>
+</html>

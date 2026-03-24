@@ -7,7 +7,15 @@
 
 <title>Admin</title>
 
-<link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../assets/css/global.css?v=9" />
+  <link rel="stylesheet" href="../assets/css/components.css?v=1" />
+<link rel="stylesheet" href="../assets/css/pages.css?v=34" />
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="WebPipa">
+<script>document.documentElement.classList.add('app-preload');</script>
 
 </head>
 
@@ -15,86 +23,277 @@
 
 <div id="app-header"></div>
 
-<section id="admin-menu" style="padding:20px;">
+<section id="admin-menu" class="admin-page-shell">
 
-<h3 style="margin-bottom:14px">Painel administrativo</h3>
+<div class="profile-panel published-events-stack">
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+<div id="admin-access-banner" class="admin-access-banner" style="display:none;"></div>
 
-<div id="open-approvals" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;">
-<div style="margin-bottom:6px">
+<div class="profile-panel-title">Painel administrativo</div>
+
+<div class="admin-menu-grid">
+
+<div id="open-events" class="admin-menu-tile admin-menu-tile--compact-title" role="button" tabindex="0">
+<div class="admin-menu-tile__icon">
 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
 <circle cx="12" cy="12" r="9"></circle>
 <path d="M8 12l2.5 2.5L16 9"></path>
 </svg>
 </div>
-<div style="font-size:14px">Aprovações de eventos</div>
-<div id="count-approvals" style="margin-top:6px;font-size:12px;opacity:.7">...</div>
+<div class="admin-menu-tile__label">Eventos</div>
+<div class="admin-menu-tile__hint">Gerenciar eventos</div>
+<div id="count-approvals" class="admin-menu-tile__count">...</div>
 </div>
 
-<div id="open-events" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;">
-<div style="margin-bottom:6px">
-<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<path d="M12 20h9"></path>
-<path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"></path>
-</svg>
-</div>
-<div style="font-size:14px">Editar eventos</div>
-</div>
-
-<div id="open-today" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;">
-<div style="margin-bottom:6px">
-<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<rect x="3" y="4" width="18" height="18" rx="2"></rect>
-<line x1="16" y1="2" x2="16" y2="6"></line>
-<line x1="8" y1="2" x2="8" y2="6"></line>
-<line x1="3" y1="10" x2="21" y2="10"></line>
-</svg>
-</div>
-<div style="font-size:14px">Eventos do dia</div>
-<div id="count-today" style="margin-top:6px;font-size:12px;opacity:.7">...</div>
-</div>
-
-<div id="open-stats" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;">
-<div style="margin-bottom:6px">
+<div id="open-stats" class="admin-menu-tile admin-menu-tile--compact-title" role="button" tabindex="0">
+<div class="admin-menu-tile__icon">
 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
 <line x1="18" y1="20" x2="18" y2="10"></line>
 <line x1="12" y1="20" x2="12" y2="4"></line>
 <line x1="6" y1="20" x2="6" y2="14"></line>
 </svg>
 </div>
-<div style="font-size:14px">Estatísticas do app</div>
+<div class="admin-menu-tile__label">Estatísticas</div>
+<div class="admin-menu-tile__hint">Gerenciar dados</div>
 </div>
 
-<div id="open-database" style="background:#141414;border-radius:14px;padding:20px;text-align:center;cursor:pointer;grid-column:span 2;">
-<div style="margin-bottom:6px">
+<div id="open-users-admin" class="admin-menu-tile admin-menu-tile--compact-title" role="button" tabindex="0">
+<div class="admin-menu-tile__icon">
 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-<ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-<path d="M3 5v6c0 1.7 4 3 9 3s9-1.3 9-3V5"></path>
-<path d="M3 11v6c0 1.7 4 3 9 3s9-1.3 9-3v-6"></path>
+<circle cx="12" cy="8" r="3"></circle>
+<path d="M5.5 19v-1.1a6.5 6.5 0 0 1 13 0V19"></path>
 </svg>
 </div>
-<div style="font-size:14px">Banco de eventos</div>
-<div id="count-events" style="margin-top:6px;font-size:12px;opacity:.7">...</div>
+<div class="admin-menu-tile__label">Usuários</div>
+<div class="admin-menu-tile__hint">Gerenciar usuários</div>
+</div>
+
+<div id="open-prize" class="admin-menu-tile admin-menu-tile--compact-title" role="button" tabindex="0">
+<div class="admin-menu-tile__icon">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M8 21h8"></path>
+<path d="M12 17v4"></path>
+<path d="M7 4h10"></path>
+<path d="M17 4v4a5 5 0 01-10 0V4"></path>
+</svg>
+</div>
+<div class="admin-menu-tile__label">Prêmio</div>
+<div class="admin-menu-tile__hint">Editar prêmio do mês</div>
+</div>
+
+<div id="open-home-ad" class="admin-menu-tile admin-menu-tile--compact-title" role="button" tabindex="0">
+<div class="admin-menu-tile__icon">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<rect x="3" y="6" width="18" height="12" rx="2"></rect>
+<path d="M7 10h4"></path>
+<path d="M7 14h2"></path>
+<path d="M15 10l2 2-2 2"></path>
+</svg>
+</div>
+<div class="admin-menu-tile__label">Publicidade</div>
+<div class="admin-menu-tile__hint">Gerenciar publicidade</div>
+</div>
+
+<div id="open-reports" class="admin-menu-tile admin-menu-tile--compact-title" role="button" tabindex="0">
+<div class="admin-menu-tile__icon">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 8.2V12.8"></path>
+<circle cx="12" cy="16.2" r="1"></circle>
+<path d="M10.44 4.52L3.54 16.46C3.18 17.09 3 17.4 3.03 17.66C3.05 17.89 3.17 18.1 3.35 18.26C3.55 18.42 3.91 18.42 4.64 18.42H19.36C20.09 18.42 20.45 18.42 20.65 18.26C20.83 18.1 20.95 17.89 20.97 17.66C21 17.4 20.82 17.09 20.46 16.46L13.56 4.52C13.2 3.89 13.02 3.58 12.78 3.47C12.58 3.38 12.42 3.38 12.22 3.47C11.98 3.58 11.8 3.89 10.44 4.52Z"></path>
+</svg>
+</div>
+<div class="admin-menu-tile__label">Denúncias</div>
+<div class="admin-menu-tile__hint">Gerenciar denúncias</div>
+<div id="count-reports" class="admin-menu-tile__count">...</div>
+</div>
+<div id="open-teams-admin" class="admin-menu-tile admin-menu-tile--compact-title" role="button" tabindex="0">
+<div class="admin-menu-tile__icon">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="8" cy="9" r="2.6"></circle>
+<circle cx="16" cy="9" r="2.6"></circle>
+<path d="M3.5 19v-1.1a4.7 4.7 0 0 1 4.7-4.7"></path>
+<path d="M20.5 19v-1.1a4.7 4.7 0 0 0-4.7-4.7"></path>
+<path d="M8.5 19v-1.2a3.5 3.5 0 0 1 7 0V19"></path>
+</svg>
+</div>
+<div class="admin-menu-tile__label">Equipes</div>
+<div class="admin-menu-tile__hint">Gerenciar equipes</div>
+<div id="count-teams-admin" class="admin-menu-tile__count">...</div>
+</div>
+
+<div id="open-reset-system" class="admin-menu-tile admin-menu-tile--danger admin-menu-tile--compact-title" role="button" tabindex="0">
+<div class="admin-menu-tile__icon">
+<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+<path d="M3 6h18"></path>
+<path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"></path>
+<path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+<path d="M10 11v6"></path>
+<path d="M14 11v6"></path>
+</svg>
+</div>
+<div class="admin-menu-tile__label">Reset</div>
+<div class="admin-menu-tile__hint">Limpar teste em massa</div>
+</div>
+
 </div>
 
 </div>
 
 </section>
 
-<section id="approvals-section" style="padding:20px;display:none;">
+<section id="approvals-section" class="admin-page-shell" style="display:none;">
 
-<h3 style="margin-bottom:10px">Eventos aguardando aprovação</h3>
-<div id="events-list"></div>
+<div class="profile-panel published-events-stack published-events-stack--subnav">
+<button id="approvals-admin-back" type="button" class="admin-back-btn" aria-label="Voltar ao menu" title="Voltar ao menu">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div class="profile-panel-title">Eventos</div>
+<p class="published-events-intro admin-section-hint">Fila de aprovação no topo e catálogo completo abaixo.</p>
+<div class="profile-panel-title">Aprovações</div>
+<div id="events-pending-list" class="published-events-list"></div>
+<div class="profile-panel-title">Todos os eventos</div>
+<div id="events-all-list" class="published-events-list"></div>
+</div>
+
+</section>
+
+<section id="teams-admin-section" class="admin-page-shell" style="display:none;">
+
+<div class="profile-panel published-events-stack published-events-stack--subnav">
+
+<button id="teams-admin-back" type="button" class="admin-back-btn" aria-label="Voltar ao menu" title="Voltar ao menu">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<div class="profile-panel-title">Equipes aguardando aprovação</div>
+<div id="teams-pending-list" class="published-events-list admin-teams-block"></div>
+
+<div class="profile-panel-title">Todas as equipes</div>
+<div id="teams-all-list" class="published-events-list"></div>
+
+</div>
+
+</section>
+
+<section id="users-admin-section" class="admin-page-shell" style="display:none;">
+
+<div class="profile-panel published-events-stack published-events-stack--subnav">
+
+<button id="users-admin-back" type="button" class="admin-back-btn" aria-label="Voltar ao menu" title="Voltar ao menu">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<div class="profile-panel-title">Usuários</div>
+<p class="published-events-intro admin-section-hint">
+<strong>Advertência</strong>: zera todos os pontos do ranking (todos os meses com registro). Mantém equipe e eventos publicados.<br><br>
+<strong>Banimento</strong>: apaga login, eventos e dados ligados. Se for dono da equipe, outro membro (moderador ou o primeiro disponível) assume.
+</p>
+<div id="users-admin-list" class="published-events-list"></div>
+
+</div>
+
+</section>
+
+<section id="home-ad-section" class="admin-page-shell" style="display:none;">
+
+<div class="profile-panel published-events-stack published-events-stack--subnav">
+
+<button id="home-ad-back" type="button" class="admin-back-btn" aria-label="Voltar ao menu" title="Voltar ao menu">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<div class="profile-panel-title">Publicidade</div>
+
+<button id="home-ad-new-btn" type="button" class="admin-home-ad-new-btn">+ Nova publicidade</button>
+
+<div id="home-ad-list" class="published-events-list" aria-live="polite"></div>
+
+</div>
+
+</section>
+
+<section id="reset-system-section" class="admin-page-shell" style="display:none;">
+
+<div class="profile-panel published-events-stack published-events-stack--subnav">
+
+<button id="reset-system-back" type="button" class="admin-back-btn" aria-label="Voltar ao menu" title="Voltar ao menu">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<div class="profile-panel-title">Reset de teste em massa</div>
+
+<p class="published-events-intro admin-section-hint admin-reset-danger-zone">
+<strong>Isso limpa todos os usuários de teste:</strong> interações, denúncias e pontuação mensal de <strong>todos</strong> os usuários.<br><br>
+Contas, equipes e eventos permanecem. <strong>Não apaga Auth.</strong><br><br>
+Se quiser também remover todos os membros de equipe, isso pode ser feito na função SQL com a opção de expulsão em massa.
+</p>
+
+<button type="button" id="admin-reset-system-run" class="admin-reset-system-btn">
+  Reset de teste — limpar todos os usuários
+</button>
+
+</div>
 
 </section>
 
 <div id="app-footer"></div>
+
+<div id="manage-team-modal" class="app-popup-overlay bottom-sheet" style="display:none;">
+  <div class="app-popup bottom-sheet compact admin-manage-team-sheet">
+    <div class="admin-manage-team-header">
+      <div>
+        <div class="admin-manage-team-title">Gerenciar equipe</div>
+        <div id="manage-team-subtitle" class="admin-manage-team-subtitle">Carregando informações da equipe...</div>
+      </div>
+      <button id="close-manage-team-modal" type="button" class="admin-manage-team-close" aria-label="Fechar">×</button>
+    </div>
+
+    <div id="admin-team-approval-row" class="admin-team-approval-actions" style="display:none;">
+      <button id="admin-approve-team-btn" type="button" class="admin-btn-approve-team">Aprovar equipe</button>
+      <button id="admin-reject-team-btn" type="button" class="admin-btn-reject-team">Reprovar equipe</button>
+    </div>
+
+    <div id="manage-team-info-card" class="admin-manage-team-info">
+      <div id="manage-team-logo-shell" style="width:56px;height:56px;border-radius:14px;overflow:hidden;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <img id="manage-team-logo" src="" alt="Logo da equipe" style="width:100%;height:100%;object-fit:cover;display:none;">
+        <span id="manage-team-logo-placeholder" style="font-size:10px;opacity:.55;">logo</span>
+      </div>
+      <div style="min-width:0;flex:1;">
+        <div id="manage-team-name" style="font-size:16px;font-weight:700;line-height:1.2;">Equipe</div>
+        <div class="admin-manage-team-meta-row">
+          <div id="manage-team-meta" style="font-size:13px;opacity:.68;margin-top:4px;flex:1;min-width:0;">Cidade • Região</div>
+          <button type="button" id="admin-delete-team-btn" class="admin-delete-team-btn" title="Apagar equipe" aria-label="Apagar equipe" style="display:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M9 3h6l1 2h4v2H4V5h4l1-2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M6 9h12l-1 12H7L6 9z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M10 13v5M14 13v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div>
+        <div class="admin-manage-team-section-title">Pedidos pendentes</div>
+        <div id="pending-requests-list" class="published-events-list">
+          <div style="font-size:13px;color:var(--app-text-secondary);">Nenhum pedido pendente.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="admin-manage-team-section-title">Membros aprovados</div>
+        <div id="approved-members-list" class="published-events-list">
+          <div style="font-size:13px;color:var(--app-text-secondary);">Nenhum membro aprovado.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <script type="module">
-import { loadFooter } from "../js/footer.js";
+import { loadFooter } from "../js/footer.js?v=1";
 loadFooter("profile");
 </script>
-<script src="../js/footer.js"></script>
 <script>
 // make admin page behave like profile page in footer highlight
 window.addEventListener("DOMContentLoaded", ()=>{
@@ -110,142 +309,1865 @@ window.addEventListener("DOMContentLoaded", ()=>{
 
 <script type="module">
 
-import { supabase } from "../js/supabase.js";
+import { supabase } from "../js/supabase.js?v=1";
+import { beginPageLoad, finishPageLoad } from "../js/ui/page-loader.js?v=7";
+import { loadHeader } from "../js/header.js?v=4";
+import { mergeTeamMembersMonthlyScores } from "../js/team-members-scores.js?v=1";
+import { showConfirmPopup, showMessagePopup, showHomeAdStatsPopup, showUsageStatsPopup } from "../js/ui/popup.js?v=7";
+import { compressHomeAdImageFile } from "../js/utils/compressHomeAdImage.js?v=2";
+import { ensureUsageMonthlySnapshot, downloadUsageSnapshotPdf } from "../js/services/usageSnapshots.js?v=1";
+import { isHighlightActiveEvent } from "../js/services/highlightLifecycle.js?v=1";
 
+beginPageLoad();
+
+const { data: { user: adminRouteUser } } = await supabase.auth.getUser();
+
+if(!adminRouteUser){
+  finishPageLoad();
+  window.location.replace("/pages/profile.html");
+  throw new Error("Acesso admin bloqueado: sessão ausente.");
+}
+
+const { data: adminRouteIsAdmin, error: adminRouteAdminError } = await supabase.rpc("is_current_user_admin");
+if(adminRouteAdminError || !adminRouteIsAdmin){
+  finishPageLoad();
+  window.location.replace("/pages/profile.html");
+  throw new Error("Acesso admin bloqueado: usuário sem permissão.");
+}
+
+await loadHeader("Painel Admin");
+finishPageLoad();
 
 const menu = document.getElementById("admin-menu");
 const approvalsSection = document.getElementById("approvals-section");
+const teamsAdminSection = document.getElementById("teams-admin-section");
 
-const approvalsBtn = document.getElementById("open-approvals");
 const eventsBtn = document.getElementById("open-events");
-const todayBtn = document.getElementById("open-today");
 const statsBtn = document.getElementById("open-stats");
-const databaseBtn = document.getElementById("open-database");
+const prizeBtn = document.getElementById("open-prize");
+const homeAdBtn = document.getElementById("open-home-ad");
+const reportsBtn = document.getElementById("open-reports");
+const teamsAdminBtn = document.getElementById("open-teams-admin");
+const teamsAdminBack = document.getElementById("teams-admin-back");
+const resetSystemSection = document.getElementById("reset-system-section");
+const homeAdSection = document.getElementById("home-ad-section");
+const homeAdBack = document.getElementById("home-ad-back");
+const homeAdList = document.getElementById("home-ad-list");
+const homeAdNewBtn = document.getElementById("home-ad-new-btn");
+const openResetSystemBtn = document.getElementById("open-reset-system");
+const resetSystemBack = document.getElementById("reset-system-back");
+const adminResetSystemRun = document.getElementById("admin-reset-system-run");
+const approvalsAdminBack = document.getElementById("approvals-admin-back");
+const usersAdminSection = document.getElementById("users-admin-section");
+const usersAdminBtn = document.getElementById("open-users-admin");
+const usersAdminBack = document.getElementById("users-admin-back");
+const teamsPendingList = document.getElementById("teams-pending-list");
+const teamsAllList = document.getElementById("teams-all-list");
+const adminTeamApprovalRow = document.getElementById("admin-team-approval-row");
+const adminApproveTeamBtn = document.getElementById("admin-approve-team-btn");
+const adminRejectTeamBtn = document.getElementById("admin-reject-team-btn");
 
-// counters for admin dashboard
+const manageTeamModal = document.getElementById("manage-team-modal");
+const closeManageTeamModalBtn = document.getElementById("close-manage-team-modal");
+const manageTeamSubtitle = document.getElementById("manage-team-subtitle");
+const manageTeamName = document.getElementById("manage-team-name");
+const manageTeamMeta = document.getElementById("manage-team-meta");
+const manageTeamLogo = document.getElementById("manage-team-logo");
+const manageTeamLogoPlaceholder = document.getElementById("manage-team-logo-placeholder");
+const pendingRequestsList = document.getElementById("pending-requests-list");
+const approvedMembersList = document.getElementById("approved-members-list");
+const manageTeamInfoCard = document.getElementById("manage-team-info-card");
+const adminDeleteTeamBtn = document.getElementById("admin-delete-team-btn");
+let currentAdminManageTeamId = null;
+
+let manageTeamAdminMode = false;
+let adminTeamDetailContext = null;
+
+const popupOverlay = document.getElementById("admin-popup");
+const popupCard = document.querySelector("#admin-popup .app-popup");
+
+/** Fecha o popup do admin e volta ao estado neutro (sem classes de sheet). */
+function applyDefaultPopupStyles(){
+  if(!popupOverlay || !popupCard) return;
+
+  popupOverlay.classList.remove("bottom-sheet");
+  popupCard.classList.remove("bottom-sheet", "compact");
+}
+
+/**
+ * Mesmo padrão visual de `showPopup({ bottomSheet: true })` em js/ui/popup.js:
+ * gradiente, borda e sombra vêm só do CSS em pages.css (.app-popup.bottom-sheet).
+ */
+function applyBottomSheetPopupStyles(){
+  if(!popupOverlay || !popupCard) return;
+
+  popupOverlay.classList.add("bottom-sheet");
+  popupCard.classList.add("bottom-sheet", "compact");
+}
+
 async function loadAdminCounters(){
 
-  // pending approvals
-  const { data: pending } = await supabase
-    .from("events")
-    .select("id")
-    .in("payment_status", ["pending", "awaiting_payment"]);
+  const accessBanner = document.getElementById("admin-access-banner");
+  const statsRpc = await supabase.rpc("admin_events_dashboard_stats");
 
-  const approvalsCount = document.getElementById("count-approvals");
-  if(approvalsCount){
-    approvalsCount.textContent = (pending?.length || 0) + " aguardando";
+  if(!statsRpc.error && statsRpc.data && typeof statsRpc.data === "object"){
+    const s = statsRpc.data;
+    if(s.is_admin === false){
+      if(accessBanner){
+        accessBanner.style.display = "block";
+        accessBanner.innerHTML = `
+          <strong>Conta não reconhecida como administrador no banco.</strong><br>
+          <span style="opacity:.88;font-size:12px;margin-top:6px;display:inline-block;">
+            A função <code style="font-size:11px;">is_current_user_admin()</code> precisa devolver <strong>true</strong> para o teu utilizador. Até lá, o painel não mostra contagens nem a fila (RLS).
+          </span>
+        `;
+      }
+    }else if(accessBanner){
+      accessBanner.style.display = "none";
+      accessBanner.innerHTML = "";
+    }
+    const approvalsCount = document.getElementById("count-approvals");
+    if(approvalsCount){
+      const value = Number(s.pending ?? 0) || 0;
+      approvalsCount.textContent = value > 0 ? String(value) : "";
+    }
+  }else{
+    if(statsRpc.error){
+      console.warn("admin_events_dashboard_stats indisponível, usando select direto", statsRpc.error);
+    }
+    if(accessBanner){
+      accessBanner.style.display = "none";
+      accessBanner.innerHTML = "";
+    }
+
+    const { data: pending } = await supabase
+      .from("events")
+      .select("id")
+      .in("payment_status", ["pending", "awaiting_payment"]);
+
+    const approvalsCount = document.getElementById("count-approvals");
+    if(approvalsCount){
+      const value = pending?.length || 0;
+      approvalsCount.textContent = value > 0 ? String(value) : "";
+    }
   }
 
-  // today's events
-  const today = new Date().toISOString().split("T")[0];
-
-  const { data: todayEvents } = await supabase
-    .from("events")
+  // pending reports
+  const { data: pendingReports } = await supabase
+    .from("event_reports")
     .select("id")
-    .eq("date", today);
+    .eq("status", "pending");
 
-  const todayCount = document.getElementById("count-today");
-  if(todayCount){
-    todayCount.textContent = (todayEvents?.length || 0) + " hoje";
+  const reportsCount = document.getElementById("count-reports");
+  if(reportsCount){
+    const value = pendingReports?.length || 0;
+    reportsCount.textContent = value > 0 ? String(value) : "";
   }
 
-  // total events
-  const { data: allEvents } = await supabase
-    .from("events")
-    .select("id");
-
-  const eventsCount = document.getElementById("count-events");
-  if(eventsCount){
-    eventsCount.textContent = (allEvents?.length || 0) + " cadastrados";
+  const teamsCountEl = document.getElementById("count-teams-admin");
+  if(teamsCountEl){
+    const teamsDash = await supabase.rpc("admin_teams_dashboard_counts");
+    if(!teamsDash.error && teamsDash.data && typeof teamsDash.data === "object"){
+      const td = teamsDash.data;
+      if(td.is_admin === false){
+        teamsCountEl.textContent = "";
+      }else{
+        const pendingTeams = Number(td.pending_teams ?? 0) || 0;
+        teamsCountEl.textContent = pendingTeams > 0 ? String(pendingTeams) : "";
+      }
+    }else{
+      teamsCountEl.textContent = "";
+    }
   }
 }
 
 loadAdminCounters();
 
-if(approvalsBtn){
-  approvalsBtn.onclick = ()=>{
+function openManageTeamModal(){
+  if(manageTeamModal) manageTeamModal.style.display = "flex";
+}
+
+function closeManageTeamModal(){
+  if(manageTeamModal) manageTeamModal.style.display = "none";
+  manageTeamAdminMode = false;
+  adminTeamDetailContext = null;
+  currentAdminManageTeamId = null;
+  if(adminTeamApprovalRow) adminTeamApprovalRow.style.display = "none";
+  if(adminDeleteTeamBtn) adminDeleteTeamBtn.style.display = "none";
+}
+
+function renderTeamLogo(url){
+  if(!manageTeamLogo || !manageTeamLogoPlaceholder) return;
+
+  if(url){
+    manageTeamLogo.src = url;
+    manageTeamLogo.style.display = "block";
+    manageTeamLogoPlaceholder.style.display = "none";
+  }else{
+    manageTeamLogo.removeAttribute("src");
+    manageTeamLogo.style.display = "none";
+    manageTeamLogoPlaceholder.style.display = "flex";
+  }
+}
+
+function textToHtmlSafe(text){
+  const el = document.createElement("div");
+  el.textContent = text == null ? "" : String(text);
+  return el.innerHTML;
+}
+
+function escapeHtmlAttr(text){
+  return String(text ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;");
+}
+
+function adminTeamCardLogoHtml(logoUrl){
+  const url = String(logoUrl || "").trim();
+  if(!url){
+    return `<div class="admin-team-card__logo admin-team-card__logo--empty" aria-hidden="true"><span class="admin-team-card__logo-placeholder">Sem logo</span></div>`;
+  }
+  const urlEsc = escapeHtmlAttr(url);
+  return `<div class="admin-team-card__logo" aria-hidden="true"><img class="admin-team-card__logo-img" src="${urlEsc}" alt="" loading="lazy" decoding="async" /></div>`;
+}
+
+function wireAdminTeamCardLogoImages(scope){
+  const root = scope || document;
+  root.querySelectorAll(".admin-team-card__logo-img").forEach((img)=>{
+    img.addEventListener("error", ()=>{
+      const shell = img.closest(".admin-team-card__logo");
+      if(!shell) return;
+      img.remove();
+      shell.classList.add("admin-team-card__logo--failed");
+      shell.innerHTML = "<span class=\"admin-team-card__logo-fail\" title=\"URL inválida ou imagem indisponível\">!</span>";
+    }, { once: true });
+  });
+}
+
+function looksLikeUuid(value){
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value || "").trim());
+}
+
+function adminMemberInitials(label){
+  const cleaned = String(label || "").trim();
+  if(!cleaned) return "PF";
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  if(parts.length >= 2){
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+  }
+  return cleaned.slice(0, 2).toUpperCase();
+}
+
+function adminMemberAvatarBlock(item){
+  const role = item.role;
+  const roleClass = role === "owner" ? "is-owner" : role === "moderator" ? "is-moderator" : "is-member";
+  const label = String(item.displayLabel || item.user_name || "").trim();
+  const url = String(item.avatar_url || "").trim();
+  if(url){
+    return `<div class="admin-member-avatar ${roleClass} has-photo" aria-hidden="true"><img src="${escapeHtmlAttr(url)}" alt="" loading="lazy" decoding="async" /></div>`;
+  }
+  return `<div class="admin-member-avatar ${roleClass}" aria-hidden="true">${textToHtmlSafe(adminMemberInitials(label))}</div>`;
+}
+
+function formatAdminMemberDisplayName(item){
+  const raw = String(item.user_name || item.display_name || item.full_name || "").trim();
+  if(raw && !looksLikeUuid(raw)) return raw;
+  const email = String(item.email || "").trim();
+  if(email){
+    const local = email.split("@")[0];
+    if(local){
+      return local
+        .split(/[._-]+/)
+        .filter(Boolean)
+        .map((p)=>`${p[0].toUpperCase()}${p.slice(1).toLowerCase()}`)
+        .join(" ");
+    }
+  }
+  if(item.role === "owner") return "Dono da equipe";
+  if(item.role === "moderator") return "Moderador";
+  return "Membro";
+}
+
+/** Texto do motivo na moderação: duplicado = frase fixa; outro = texto livre do denunciante */
+function adminReportMotivoDetalheEscaped(report){
+  const r = String(report?.reason || "").trim().toLowerCase();
+  const custom = String(report?.custom_reason || "").trim();
+
+  if(r === "outro"){
+    return custom ? textToHtmlSafe(custom) : "—";
+  }
+  if(r === "duplicado"){
+    return "Evento duplicado";
+  }
+  const legacy = {
+    evento_falso: "Fake event",
+    data_errada: "Incorrect information",
+    endereco_incorreto: "Wrong location",
+    conteudo_improprio: "Inappropriate content",
+    golpe_fraude: "Scam or fraud"
+  };
+  if(legacy[r]) return legacy[r];
+  return textToHtmlSafe(String(report?.reason || "").trim() || "—");
+}
+
+async function loadReporterDisplayNamesByUserIds(userIds){
+  const ids = [...new Set((userIds || []).filter(Boolean))];
+  const map = {};
+  if(!ids.length) return map;
+
+  /* 1) RPC admin (auth.users) — RLS não expõe perfis de terceiros no cliente */
+  const { data: rpcData, error: rpcError } = await supabase.rpc("admin_get_user_labels", {
+    p_user_ids: ids
+  });
+
+  if(!rpcError && rpcData && typeof rpcData === "object"){
+    Object.entries(rpcData).forEach(([k, v])=>{
+      const n = String(v || "").trim();
+      if(n) map[k] = n;
+    });
+  }else if(rpcError){
+    console.warn("admin_get_user_labels indisponível — corre sql/admin_get_user_labels.sql no Supabase:", rpcError);
+  }
+
+  /* 2) Fallback: profiles só quando a política permitir */
+  const missing = ids.filter((id)=>!map[String(id)]);
+  if(missing.length){
+    const { data: profs, error: pe } = await supabase
+      .from("profiles")
+      .select("id, full_name, display_name, username, email")
+      .in("id", missing);
+
+    if(!pe && profs){
+      profs.forEach((p)=>{
+        const pid = String(p.id);
+        if(map[pid]) return;
+        const label = formatAdminMemberDisplayName({
+          user_name: p.display_name || p.full_name || p.username,
+          display_name: p.display_name,
+          full_name: p.full_name,
+          email: p.email
+        });
+        const resolved = (label && label.trim()) || p.full_name || p.display_name || p.username || (p.email ? p.email.split("@")[0] : "") || "";
+        if(resolved) map[pid] = resolved;
+      });
+    }else if(pe){
+      console.warn("Perfis dos denunciantes (fallback):", pe);
+    }
+  }
+
+  return map;
+}
+
+async function enrichAdminMemberRows(teamId, rows){
+  if(!Array.isArray(rows) || !rows.length) return rows || [];
+  const ids = [...new Set(rows.map((r)=>r.user_id).filter(Boolean))];
+  let profileById = {};
+  let labelMap = {};
+  if(ids.length){
+    const { data: rpcData, error: rpcError } = await supabase.rpc("admin_get_user_labels", {
+      p_user_ids: ids
+    });
+    if(!rpcError && rpcData && typeof rpcData === "object"){
+      Object.entries(rpcData).forEach(([k, v])=>{
+        const n = String(v || "").trim();
+        if(n) labelMap[k] = n;
+      });
+    }else if(rpcError){
+      console.warn("admin_get_user_labels (membros da equipe):", rpcError);
+    }
+
+    const { data: profs, error: pe } = await supabase
+      .from("profiles")
+      .select("id, full_name, display_name, username, email")
+      .in("id", ids);
+    if(!pe && profs){
+      profileById = Object.fromEntries(profs.map((p)=>[p.id, p]));
+    }
+  }
+
+  return rows.map((row)=>{
+    const pr = profileById[row.user_id];
+    const uid = String(row.user_id || "");
+    const rpcLabel = labelMap[uid];
+    const merged = {
+      ...row,
+      email: row.email || pr?.email,
+      display_name: row.display_name || pr?.display_name || pr?.full_name,
+      full_name: row.full_name || pr?.full_name,
+      user_name: row.user_name || rpcLabel || pr?.display_name || pr?.full_name || pr?.username || row.user_name,
+      avatar_url: row.avatar_url
+    };
+    merged.displayLabel = formatAdminMemberDisplayName(merged);
+    return merged;
+  });
+}
+
+async function loadManageTeamData(teamId, options = {}){
+  const adminMode = options.adminMode === true;
+  manageTeamAdminMode = adminMode;
+  adminTeamDetailContext = null;
+  if(adminTeamApprovalRow) adminTeamApprovalRow.style.display = "none";
+
+  if(!teamId) return;
+
+  if(adminDeleteTeamBtn) adminDeleteTeamBtn.style.display = "none";
+  currentAdminManageTeamId = null;
+
+  if(manageTeamSubtitle) manageTeamSubtitle.textContent = "Carregando informações da equipe...";
+  if(manageTeamName) manageTeamName.textContent = "Equipe";
+  if(manageTeamMeta) manageTeamMeta.textContent = "Cidade • Região";
+  renderTeamLogo("");
+
+  const rpcName = adminMode ? "admin_get_team_management_data" : "get_team_management_data";
+  const { data, error } = await supabase.rpc(rpcName, { p_team_id: teamId });
+
+  if(error){
+    console.error(error);
+    if(manageTeamSubtitle) manageTeamSubtitle.textContent = "Erro ao carregar equipe.";
+    if(pendingRequestsList) pendingRequestsList.innerHTML = `<div style="font-size:13px;opacity:.68;">Não foi possível carregar os pedidos pendentes.</div>`;
+    if(approvedMembersList) approvedMembersList.innerHTML = `<div style="font-size:13px;opacity:.68;">Não foi possível carregar os membros aprovados.</div>`;
+    if(adminDeleteTeamBtn) adminDeleteTeamBtn.style.display = "none";
+    currentAdminManageTeamId = null;
+    return;
+  }
+
+  if(!data?.success){
+    if(manageTeamSubtitle) manageTeamSubtitle.textContent = data?.message || "Não foi possível carregar a equipe.";
+    if(pendingRequestsList) pendingRequestsList.innerHTML = `<div style="font-size:13px;opacity:.68;">Nenhum pedido pendente.</div>`;
+    if(approvedMembersList) approvedMembersList.innerHTML = `<div style="font-size:13px;opacity:.68;">Nenhum membro aprovado.</div>`;
+    if(adminDeleteTeamBtn) adminDeleteTeamBtn.style.display = "none";
+    currentAdminManageTeamId = null;
+    return;
+  }
+
+  currentAdminManageTeamId = teamId;
+
+  const team = data.team || {};
+  let pending = data.pending_requests || [];
+  let members = data.members || [];
+
+  if(!adminMode && data?.success){
+    members = await mergeTeamMembersMonthlyScores(supabase, teamId, members);
+  }
+
+  members = await enrichAdminMemberRows(teamId, members);
+  pending = await enrichAdminMemberRows(teamId, pending);
+
+  if(manageTeamSubtitle){
+    if(adminMode){
+      const mc = data.approved_member_count ?? members.length;
+      const pts = data.ranking_month_total ?? 0;
+      let approvalLabel = "Cadastro aprovado";
+      if(team.approval_status === "pending") approvalLabel = "Cadastro pendente";
+      else if(team.approval_status === "rejected") approvalLabel = "Cadastro reprovado";
+      else if(team.pending_profile) approvalLabel = "Alteração de dados pendente";
+      manageTeamSubtitle.textContent = `Admin · ${approvalLabel} · ${mc} membros · Ranking mês: ${pts} pts`;
+    }else{
+      manageTeamSubtitle.textContent = "Gerencie pedidos e membros da equipe.";
+    }
+  }
+
+  if(manageTeamName) manageTeamName.textContent = team.name || "Equipe";
+  if(manageTeamMeta){
+    const loc = [team.city, team.region].filter(Boolean).join(" • ");
+    const bits = [];
+    if(loc) bits.push(loc);
+    if(adminMode && team.founder_name) bits.push(`Fundador: ${team.founder_name}`);
+    manageTeamMeta.textContent = bits.length ? bits.join(" · ") : "Sem localização definida";
+  }
+  renderTeamLogo(team.logo_url || "");
+
+  if(adminMode){
+    let qk = "none";
+    if(team.approval_status === "pending") qk = "new_registration";
+    else if(team.pending_profile) qk = "profile_edit";
+
+    if(qk === "new_registration" || qk === "profile_edit"){
+      adminTeamDetailContext = { teamId, queueKind: qk };
+      if(adminTeamApprovalRow) adminTeamApprovalRow.style.display = "flex";
+      if(adminApproveTeamBtn) adminApproveTeamBtn.textContent = qk === "profile_edit" ? "Aprovar alterações" : "Aprovar equipe";
+      if(adminRejectTeamBtn) adminRejectTeamBtn.textContent = qk === "profile_edit" ? "Reprovar alterações" : "Reprovar equipe";
+    }else{
+      adminTeamDetailContext = null;
+      if(adminTeamApprovalRow) adminTeamApprovalRow.style.display = "none";
+    }
+    if(adminDeleteTeamBtn) adminDeleteTeamBtn.style.display = adminMode ? "inline-flex" : "none";
+  }else if(adminDeleteTeamBtn){
+    adminDeleteTeamBtn.style.display = "none";
+  }
+
+  if(pendingRequestsList){
+    pendingRequestsList.innerHTML = !pending.length
+      ? `<div style="font-size:13px;color:var(--app-text-secondary);">Nenhum pedido pendente.</div>`
+      : pending.map((item)=>`
+        <div class="admin-subcard admin-subcard--member">
+          ${adminMemberAvatarBlock(item)}
+          <div style="min-width:0;flex:1;">
+            <div style="font-size:14px;font-weight:600;word-break:break-word;">${textToHtmlSafe(item.displayLabel || item.user_name || item.user_id)}</div>
+            <div style="font-size:12px;color:var(--app-text-secondary);margin-top:4px;">Pedido pendente</div>
+          </div>
+        </div>
+      `).join("");
+  }
+
+  if(approvedMembersList){
+    approvedMembersList.innerHTML = !members.length
+      ? `<div style="font-size:13px;color:var(--app-text-secondary);">Nenhum membro aprovado.</div>`
+      : members.map((item, index)=>`
+        <div class="admin-subcard admin-subcard--member">
+          ${adminMemberAvatarBlock(item)}
+          <div style="min-width:0;flex:1;">
+            <div style="font-size:14px;font-weight:600;word-break:break-word;">${index + 1}º • ${textToHtmlSafe(item.displayLabel || item.user_name || item.user_id)}</div>
+            <div style="font-size:12px;color:var(--app-text-secondary);margin-top:4px;">${item.role === "owner" ? "Dono" : item.role === "moderator" ? "Moderador" : "Membro"}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;font-size:11px;color:var(--app-text-secondary);flex-wrap:wrap;justify-content:flex-end;">
+            <span>EV ${item.event_points ?? 0}</span>
+            <span>INT ${item.interaction_points ?? 0}</span>
+            ${Number(item.report_reward_points) > 0 ? `<span>Den +${item.report_reward_points}</span>` : ""}
+            <strong style="font-size:12px;color:var(--app-text);">Total ${item.total_points ?? 0}</strong>
+          </div>
+        </div>
+      `).join("");
+  }
+}
+
+async function loadTeamsAdminPanel(){
+  if(!teamsPendingList || !teamsAllList) return;
+
+  teamsPendingList.innerHTML = `<div style="font-size:13px;opacity:.68;">Carregando…</div>`;
+  teamsAllList.innerHTML = "";
+
+  const { data, error } = await supabase.rpc("admin_list_teams_summary");
+
+  if(error){
+    console.error(error);
+    teamsPendingList.innerHTML = `
+      <div style="font-size:13px;line-height:1.45;color:#faa;">
+        Não foi possível carregar a lista de equipes.<br><br>
+        <span style="opacity:.9;">Confirme que executou <code style="font-size:11px;">sql/teams_approval.sql</code> e <code style="font-size:11px;">sql/team_profile_pending.sql</code> no Supabase e que a conta é administrador.</span>
+      </div>`;
+    return;
+  }
+
+  const rows = Array.isArray(data) ? data : [];
+  const pendingRows = rows.filter((r)=>{
+    if(r.approval_status === "pending") return true;
+    if(r.approval_status === "approved" && r.pending_profile) return true;
+    return false;
+  });
+
+  const statusLabel = (st)=>{
+    if(st === "pending") return "Pendente";
+    if(st === "rejected") return "Reprovada";
+    return "Aprovada";
+  };
+
+  const adminTeamQueueDisplay = (row)=>{
+    const pp = row.pending_profile;
+    const isProfileEdit = row.queue_kind === "profile_edit" || (row.approval_status === "approved" && pp);
+    let name = row.team_name || "Sem nome";
+    let logoUrl = row.logo_url;
+    let queueKind = "new_registration";
+    let statusLine = statusLabel(row.approval_status);
+    if(isProfileEdit && pp && typeof pp === "object"){
+      queueKind = "profile_edit";
+      if(pp.name) name = pp.name;
+      if(pp.logo_url != null && String(pp.logo_url).trim() !== "") logoUrl = pp.logo_url;
+      statusLine = "Alteração pendente";
+    }
+    return { name, logoUrl, queueKind, statusLine };
+  };
+
+  const renderCard = (row)=>{
+    const nameHtml = textToHtmlSafe(row.team_name || "Sem nome");
+    const idEsc = escapeHtmlAttr(String(row.team_id ?? ""));
+    const st = statusLabel(row.approval_status);
+    const mc = row.member_count ?? 0;
+    const pts = row.total_points ?? 0;
+    const logoBlock = adminTeamCardLogoHtml(row.logo_url);
+    return `<button type="button" class="admin-team-pick admin-team-card" data-team-id="${idEsc}">
+      <div class="admin-team-card__body">
+        <div class="admin-team-card__text">
+          <div class="admin-team-card__title">${nameHtml}</div>
+            <div class="admin-team-card__meta">
+              ${textToHtmlSafe(st)} · ${mc} membros · ${pts} pts
+            </div>
+        </div>
+        ${logoBlock}
+      </div>
+    </button>`;
+  };
+
+  const renderPendingCard = (row)=>{
+    const d = adminTeamQueueDisplay(row);
+    const nameHtml = textToHtmlSafe(d.name);
+    const idEsc = escapeHtmlAttr(String(row.team_id ?? ""));
+    const mc = row.member_count ?? 0;
+    const pts = row.total_points ?? 0;
+    const logoBlock = adminTeamCardLogoHtml(d.logoUrl);
+    const qkEsc = escapeHtmlAttr(d.queueKind);
+    const cardMod = d.queueKind === "profile_edit" ? " admin-team-pending-card--profile-edit" : "";
+    return `<div class="admin-team-pending-card${cardMod}">
+      <button type="button" class="admin-team-pick admin-team-card" data-team-id="${idEsc}">
+        <div class="admin-team-card__body">
+          <div class="admin-team-card__text">
+            <div class="admin-team-card__title">${nameHtml}</div>
+            <div class="admin-team-card__meta">
+              ${textToHtmlSafe(d.statusLine)} · ${mc} membros · ${pts} pts
+            </div>
+          </div>
+          ${logoBlock}
+        </div>
+      </button>
+      <div class="admin-team-quick-actions">
+        <button type="button" class="admin-team-quick-btn admin-btn-approve-team" data-team-id="${idEsc}" data-queue-kind="${qkEsc}">Aprovar</button>
+        <button type="button" class="admin-team-quick-btn admin-btn-reject-team" data-team-id="${idEsc}" data-queue-kind="${qkEsc}">Reprovar</button>
+      </div>
+    </div>`;
+  };
+
+  teamsPendingList.innerHTML = pendingRows.length
+    ? pendingRows.map(renderPendingCard).join("")
+    : `<div style="font-size:13px;opacity:.68;">Nenhuma equipe aguardando aprovação.</div>`;
+
+  teamsAllList.innerHTML = rows.length
+    ? rows.map(renderCard).join("")
+    : `<div style="font-size:13px;opacity:.68;">Nenhuma equipe cadastrada.</div>`;
+
+  document.querySelectorAll(".admin-team-pick").forEach((btn)=>{
+    btn.addEventListener("click", async ()=>{
+      const tid = btn.getAttribute("data-team-id");
+      if(!tid) return;
+      await loadManageTeamData(tid, { adminMode: true });
+      openManageTeamModal();
+    });
+  });
+
+  document.querySelectorAll(".admin-team-quick-btn").forEach((btn)=>{
+    btn.addEventListener("click", async (e)=>{
+      e.stopPropagation();
+      const tid = btn.getAttribute("data-team-id");
+      if(!tid) return;
+      const approve = btn.classList.contains("admin-btn-approve-team");
+      const qk = btn.getAttribute("data-queue-kind") || "new_registration";
+      await runAdminTeamApproval(approve ? "approved" : "rejected", tid, qk);
+    });
+  });
+
+  wireAdminTeamCardLogoImages(teamsPendingList);
+  wireAdminTeamCardLogoImages(teamsAllList);
+}
+
+function runAdminDeleteTeam(){
+  const tid = currentAdminManageTeamId;
+  if(!tid || !manageTeamAdminMode){
+    return;
+  }
+
+  showConfirmPopup({
+    title: "Apagar equipe?",
+    message: "Todos os membros ficam sem equipe e os vínculos somem. Não dá para desfazer.",
+    confirmLabel: "Apagar",
+    cancelLabel: "Cancelar",
+    bottomSheet: true,
+    compact: true,
+    onConfirm: async ()=>{
+      const { data: rpcData, error } = await supabase.rpc("delete_team_completely", {
+        p_team_id: tid
+      });
+
+      if(error){
+        console.error(error);
+        const detail = [error.message, error.details, error.hint].filter(Boolean).join("\n\n");
+        showMessagePopup({
+          title: "Erro ao apagar equipe",
+          message: detail || "Confirma que executaste sql/admin_delete_team.sql no Supabase e que a função delete_team_completely existe.",
+          buttonLabel: "Entendi",
+          bottomSheet: true,
+          compact: true
+        });
+        return;
+      }
+      if(rpcData && rpcData.success === false){
+        showMessagePopup({
+          title: "Não foi possível apagar",
+          message: String(rpcData.message || "Erro desconhecido."),
+          buttonLabel: "Entendi",
+          bottomSheet: true,
+          compact: true
+        });
+        return;
+      }
+
+      closeManageTeamModal();
+      if(teamsAdminSection && teamsAdminSection.style.display !== "none"){
+        await loadTeamsAdminPanel();
+      }
+      loadAdminCounters();
+    }
+  });
+}
+
+async function runAdminTeamApproval(nextStatus, explicitTeamId, queueKindOverride){
+  const teamId = explicitTeamId || adminTeamDetailContext?.teamId;
+  if(!teamId){
+    return;
+  }
+  const qk = queueKindOverride || adminTeamDetailContext?.queueKind || "new_registration";
+
+  let rpcData;
+  let error;
+
+  if(qk === "profile_edit"){
+    const decision = nextStatus === "approved" ? "approved" : "rejected";
+    const res = await supabase.rpc("admin_resolve_team_profile_change", {
+      p_team_id: teamId,
+      p_decision: decision
+    });
+    rpcData = res.data;
+    error = res.error;
+  }else{
+    const res = await supabase.rpc("admin_set_team_approval_status", {
+      p_team_id: teamId,
+      p_next_status: nextStatus
+    });
+    rpcData = res.data;
+    error = res.error;
+  }
+
+  if(error){
+    console.error(error);
+    showMessagePopup({
+      title: "Erro",
+      message: "Erro ao atualizar status da equipe.",
+      buttonLabel: "Entendi",
+      bottomSheet: true,
+      compact: true
+    });
+    return;
+  }
+  if(rpcData && rpcData.success === false){
+    showMessagePopup({
+      title: "Erro",
+      message: rpcData.message || "Não foi possível atualizar.",
+      buttonLabel: "Entendi",
+      bottomSheet: true,
+      compact: true
+    });
+    return;
+  }
+  closeManageTeamModal();
+  if(teamsAdminSection && teamsAdminSection.style.display !== "none"){
+    await loadTeamsAdminPanel();
+  }
+  loadAdminCounters();
+}
+
+if(teamsAdminBtn && teamsAdminSection){
+  teamsAdminBtn.onclick = async ()=>{
     menu.style.display = "none";
+    if(approvalsSection) approvalsSection.style.display = "none";
+    if(usersAdminSection) usersAdminSection.style.display = "none";
+    if(resetSystemSection) resetSystemSection.style.display = "none";
+    if(homeAdSection) homeAdSection.style.display = "none";
+    teamsAdminSection.style.display = "block";
+    await loadTeamsAdminPanel();
+  };
+}
+
+if(teamsAdminBack && teamsAdminSection && menu){
+  teamsAdminBack.onclick = ()=>{
+    teamsAdminSection.style.display = "none";
+    menu.style.display = "block";
+  };
+}
+
+if(approvalsAdminBack && approvalsSection && menu){
+  approvalsAdminBack.onclick = ()=>{
+    approvalsSection.style.display = "none";
+    menu.style.display = "block";
+  };
+}
+
+if(adminApproveTeamBtn){
+  adminApproveTeamBtn.addEventListener("click", ()=>runAdminTeamApproval("approved"));
+}
+
+if(adminRejectTeamBtn){
+  adminRejectTeamBtn.addEventListener("click", ()=>runAdminTeamApproval("rejected"));
+}
+
+if(adminDeleteTeamBtn){
+  adminDeleteTeamBtn.addEventListener("click", ()=>runAdminDeleteTeam());
+}
+
+if(usersAdminBtn && usersAdminSection && menu){
+  usersAdminBtn.onclick = async ()=>{
+    menu.style.display = "none";
+    if(approvalsSection) approvalsSection.style.display = "none";
+    if(teamsAdminSection) teamsAdminSection.style.display = "none";
+    if(resetSystemSection) resetSystemSection.style.display = "none";
+    if(homeAdSection) homeAdSection.style.display = "none";
+    usersAdminSection.style.display = "block";
+    await loadUsersAdminPanel();
+  };
+}
+
+if(usersAdminBack && usersAdminSection && menu){
+  usersAdminBack.onclick = ()=>{
+    usersAdminSection.style.display = "none";
+    menu.style.display = "block";
+  };
+}
+
+if(openResetSystemBtn && resetSystemSection && menu){
+  openResetSystemBtn.addEventListener("click", ()=>{
+    menu.style.display = "none";
+    if(approvalsSection) approvalsSection.style.display = "none";
+    if(usersAdminSection) usersAdminSection.style.display = "none";
+    if(teamsAdminSection) teamsAdminSection.style.display = "none";
+    if(homeAdSection) homeAdSection.style.display = "none";
+    resetSystemSection.style.display = "block";
+  });
+}
+
+if(resetSystemBack && resetSystemSection && menu){
+  resetSystemBack.addEventListener("click", ()=>{
+    resetSystemSection.style.display = "none";
+    menu.style.display = "block";
+  });
+}
+
+if(adminResetSystemRun){
+  adminResetSystemRun.addEventListener("click", ()=>{
+    showConfirmPopup({
+      title: "Confirmar reset de teste em massa?",
+      message: "Todas as interações, denúncias e pontuações mensais serão apagadas para todos os usuários. Contas, equipes e eventos permanecem.",
+      confirmLabel: "Sim, limpar tudo",
+      cancelLabel: "Cancelar",
+      bottomSheet: true,
+      compact: true,
+      onConfirm: async ()=>{
+        const { data, error } = await supabase.rpc("admin_reset_teste_todos_usuarios", {
+          p_remover_dos_times: false
+        });
+        if(error){
+          console.error(error);
+          showMessagePopup({
+            title: "Erro",
+            message: "Não foi possível limpar. Confirma que executaste sql/admin_reset_teste_todos_usuarios.sql no Supabase e que a conta é administrador.",
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+        if(!data || data.success === false){
+          showMessagePopup({
+            title: "Erro",
+            message: (data && data.message) ? String(data.message) : "Não foi possível resetar.",
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+        showMessagePopup({
+          title: "Teste limpo",
+          message: "Os dados foram apagados. A página vai recarregar.",
+          buttonLabel: "OK",
+          bottomSheet: true,
+          compact: true
+        });
+        setTimeout(()=>{
+          window.location.reload();
+        }, 600);
+      }
+    });
+  });
+}
+
+if(eventsBtn){
+  eventsBtn.onclick = ()=>{
+    menu.style.display = "none";
+    if(teamsAdminSection) teamsAdminSection.style.display = "none";
+    if(usersAdminSection) usersAdminSection.style.display = "none";
+    if(resetSystemSection) resetSystemSection.style.display = "none";
+    if(homeAdSection) homeAdSection.style.display = "none";
     approvalsSection.style.display = "block";
     loadEvents();
   };
 }
 
-if(eventsBtn){
-  eventsBtn.onclick = ()=>{
-    window.location.href = "published-events.html";
-  };
-}
-
-if(todayBtn){
-  todayBtn.onclick = ()=>{
-
-    const popup = document.getElementById("admin-popup");
-    const text = document.getElementById("admin-popup-text");
-    const actions = document.getElementById("popup-actions");
-    actions.style.display = "none";
-
-    text.innerHTML = `
-    <strong>Eventos do dia</strong><br><br>
-    Mostra eventos que acontecem hoje.<br><br>
-    • acompanhar eventos ativos<br>
-    • divulgar eventos nas redes sociais<br>
-    • verificar eventos próximos
-    `;
-
-    popup.style.display = "flex";
-  };
-}
-
 if(statsBtn){
-  statsBtn.onclick = ()=>{
+  statsBtn.onclick = async ()=>{
+    try{
+      const snapshotPromise = ensureUsageMonthlySnapshot().catch((snapshotError) => {
+        console.warn("admin_ensure_usage_month_snapshot:", snapshotError);
+        return null;
+      });
+      const { data, error } = await supabase.rpc("admin_usage_dashboard_stats");
 
-    const popup = document.getElementById("admin-popup");
-    const text = document.getElementById("admin-popup-text");
-    const actions = document.getElementById("popup-actions");
-    actions.style.display = "none";
+      if(error){
+        console.error(error);
+        showMessagePopup({
+          title: "Erro",
+          message: "A RPC admin_usage_dashboard_stats ainda não foi aplicada no Supabase. Rode sql/app_usage_analytics.sql e recarregue o schema.",
+          buttonLabel: "Entendi",
+          bottomSheet: true,
+          compact: true
+        });
+        return;
+      }
 
-    text.innerHTML = `
-    <strong>Estatísticas do aplicativo</strong><br><br>
-    • total de eventos cadastrados<br>
-    • eventos pagos<br>
-    • eventos gratuitos<br>
-    • eventos pendentes<br>
-    • eventos criados hoje<br>
-    • número de usuários ativos
-    `;
+      if(!data || data.ok !== true){
+        showMessagePopup({
+          title: "Erro",
+          message: data?.error ? String(data.error) : "Não foi possível carregar as estatísticas.",
+          buttonLabel: "Entendi",
+          bottomSheet: true,
+          compact: true
+        });
+        return;
+      }
 
-    popup.style.display = "flex";
+      const snapshot = await snapshotPromise;
+
+      showUsageStatsPopup({
+        dau: data.dau,
+        mau: data.mau,
+        newUsersWeek: data.new_users_week,
+        newUsersMonth: data.new_users_month,
+        eventsCreatedDay: data.events_created_day,
+        eventsCreatedMonth: data.events_created_month,
+        totalEventViews: data.total_event_views,
+        downloadButtonLabel: "Baixar snapshot",
+        onDownloadSnapshot: () => {
+          const fallbackSnapshot = snapshot || {
+            snapshot_year: new Date().getFullYear(),
+            snapshot_month: new Date().getMonth() + 1,
+            dau_peak: data.dau,
+            mau: data.mau,
+            new_users_month: data.new_users_month,
+            events_created_month: data.events_created_month,
+            total_event_views: data.total_event_views,
+            created_at: new Date().toISOString(),
+          };
+          const opened = downloadUsageSnapshotPdf(fallbackSnapshot);
+          if(!opened){
+            showMessagePopup({
+              title: "Erro",
+              message: "Não foi possível abrir a prévia de impressão. Tenta novamente.",
+              buttonLabel: "Entendi",
+              bottomSheet: true,
+              compact: true
+            });
+          }
+        },
+        buttonLabel: "Fechar"
+      });
+    }catch(error){
+      console.error(error);
+      showMessagePopup({
+        title: "Erro",
+        message: "Não foi possível carregar as estatísticas. Tenta novamente.",
+        buttonLabel: "Entendi",
+        bottomSheet: true,
+        compact: true
+      });
+    }
   };
 }
 
-if(databaseBtn){
-  databaseBtn.onclick = ()=>{
+if(prizeBtn){
+  prizeBtn.onclick = async ()=>{
+
+    const popup = document.getElementById("admin-popup");
+    const text = document.getElementById("admin-popup-text");
+    const actions = document.getElementById("popup-actions");
+    const { data: savedPrizeRow, error: prizeLoadError } = await supabase
+      .from("monthly_prize")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if(prizeLoadError){
+      console.error("Erro ao carregar prêmio:", prizeLoadError);
+    }
+
+    const savedPrize = savedPrizeRow || {};
+
+    actions.style.display = "none";
+
+    text.innerHTML = `
+      <div class="admin-prize-modal">
+        <div class="admin-prize-head">
+          <div>
+            <div class="admin-prize-title">Prêmio do mês</div>
+            <div class="admin-prize-subtitle">Configure o prêmio exibido na tela de ranking.</div>
+          </div>
+          <button id="close-prize-modal" type="button" class="admin-prize-close" aria-label="Fechar">×</button>
+        </div>
+
+        <div class="admin-prize-fields">
+          <div class="admin-prize-field">
+            <label class="admin-prize-label" for="prize-title">Nome do prêmio</label>
+            <input id="prize-title" class="admin-prize-input" type="text" placeholder="Ex: Carretilha 12 polegadas" value="${savedPrize.title || ""}" autocomplete="off" />
+          </div>
+
+          <div class="admin-prize-field">
+            <label class="admin-prize-label" for="prize-description">Descrição</label>
+            <textarea id="prize-description" class="admin-prize-textarea" rows="4" placeholder="Descrição do prêmio">${savedPrize.description || ""}</textarea>
+          </div>
+
+          <div class="admin-prize-field">
+            <label class="admin-prize-label" for="prize-image">Imagem do prêmio</label>
+            <div class="admin-prize-upload-row">
+              <input id="prize-image" class="admin-prize-file" type="file" accept="image/*" />
+              <div id="prize-image-preview" class="admin-prize-preview">
+                ${savedPrize.image ? `<img src="${savedPrize.image}" alt="">` : `<span class="admin-prize-preview-placeholder">Prêmio</span>`}
+              </div>
+            </div>
+            <p class="admin-prize-hint">PNG ou JPG. Imagem quadrada funciona melhor na vitrine.</p>
+          </div>
+
+          <div class="admin-prize-actions">
+            <button id="cancel-prize-modal" type="button" class="admin-prize-btn admin-prize-btn--secondary">Cancelar</button>
+            <button id="save-prize" type="button" class="admin-prize-btn admin-prize-btn--primary">Salvar prêmio</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    applyBottomSheetPopupStyles();
+    popup.style.display = "flex";
+
+    setTimeout(()=>{
+      const saveBtn = document.getElementById("save-prize");
+      const cancelBtn = document.getElementById("cancel-prize-modal");
+      const closeBtn = document.getElementById("close-prize-modal");
+      const prizeImageInput = document.getElementById("prize-image");
+      const prizeImagePreview = document.getElementById("prize-image-preview");
+
+      let imageData = savedPrize.image || "";
+      if(cancelBtn){
+        cancelBtn.onclick = ()=>{
+          popup.style.display = "none";
+          applyDefaultPopupStyles();
+        };
+      }
+      if(closeBtn){
+        closeBtn.onclick = ()=>{
+          popup.style.display = "none";
+          applyDefaultPopupStyles();
+        };
+      }
+
+      if(prizeImageInput){
+        prizeImageInput.onchange = ()=>{
+          const file = prizeImageInput.files?.[0];
+          if(!file) return;
+
+          const reader = new FileReader();
+          reader.onload = ()=>{
+            imageData = reader.result;
+            if(prizeImagePreview){
+              prizeImagePreview.innerHTML = `<img src="${imageData}" alt="">`;
+            }
+          };
+          reader.readAsDataURL(file);
+        };
+      }
+
+      if(saveBtn){
+        saveBtn.onclick = async ()=>{
+          const title = document.getElementById("prize-title")?.value?.trim() || "";
+          const description = document.getElementById("prize-description")?.value?.trim() || "";
+
+          const payload = {
+            title,
+            description,
+            image: imageData,
+            updated_at: new Date().toISOString()
+          };
+
+          let saveError = null;
+
+          if(savedPrize?.id){
+            const { error } = await supabase
+              .from("monthly_prize")
+              .update(payload)
+              .eq("id", savedPrize.id);
+
+            saveError = error;
+          }else{
+            const { error } = await supabase
+              .from("monthly_prize")
+              .insert(payload);
+
+            saveError = error;
+          }
+
+          if(saveError){
+            console.error("Erro ao salvar prêmio:", saveError);
+            showMessagePopup({
+              title: "Erro",
+              message: "Erro ao salvar prêmio do mês.",
+              buttonLabel: "Entendi",
+              bottomSheet: true,
+              compact: true
+            });
+            return;
+          }
+
+          showMessagePopup({
+            title: "Sucesso",
+            message: "Prêmio do mês salvo!",
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
+          popup.style.display = "none";
+          applyDefaultPopupStyles();
+        };
+      }
+    }, 50);
+  };
+}
+
+function formatAdminDateBR(iso){
+  const s = String(iso || "").slice(0, 10);
+  if(!s || s.length < 10) return "—";
+  const [y, m, d] = s.split("-");
+  if(!y || !m || !d) return s;
+  return `${d}/${m}/${y}`;
+}
+
+async function loadHomeAdvertisingList(){
+  if(!homeAdList) return;
+
+  homeAdList.innerHTML = `<div class="published-events-empty">Carregando campanhas…</div>`;
+
+  const { data: rows, error } = await supabase
+    .from("home_advertising")
+    .select("id, company_name, image_url, start_date, end_date, is_active, link_url, created_at")
+    .order("created_at", { ascending: false });
+
+  if(error){
+    console.error("Erro ao listar publicidade:", error);
+    homeAdList.innerHTML = `<div class="published-events-empty">Não foi possível carregar a lista. Tenta de novo.</div>`;
+    return;
+  }
+
+  if(!rows || rows.length === 0){
+    homeAdList.innerHTML = `<div class="published-events-empty">Nenhuma campanha ainda. Usa <strong>Nova publicidade</strong> para criar.</div>`;
+    return;
+  }
+
+  homeAdList.innerHTML = "";
+
+  const svgAdTrash = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2z"/><path d="M6 9h12l-1 12H7L6 9z"/><path d="M10 13v5M14 13v5"/></svg>`;
+  const svgAdPower = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4"/><path d="M8.5 6.5a7 7 0 109 9 7 7 0 00-9-9"/></svg>`;
+  const svgAdInfo = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>`;
+
+  rows.forEach((row)=>{
+    const titleSafe = textToHtmlSafe(String(row.company_name || "").trim() || "Sem nome");
+    const datesLine = `${formatAdminDateBR(row.start_date)} → ${formatAdminDateBR(row.end_date)}`;
+    const imgUrl = String(row.image_url || "").trim();
+    const thumb = imgUrl
+      ? `<div class="activity-event-thumb"><img src="${escapeHtmlAttr(imgUrl)}" alt="" loading="lazy" decoding="async" /></div>`
+      : `<div class="activity-event-thumb activity-event-thumb--initials">${textToHtmlSafe(adminMemberInitials(String(row.company_name || "")))}</div>`;
+
+    const activeOn = row.is_active !== false;
+    const toggleCls = activeOn ? "admin-home-ad-tool-toggle--on" : "admin-home-ad-tool-toggle--off";
+
+    const card = document.createElement("div");
+    card.className = "activity-event-item activity-event-item--admin-row is-static admin-home-ad-list-item";
+    card.innerHTML = `
+      <button type="button" class="activity-event-main-tap" data-role="edit" aria-label="Editar ${titleSafe}">
+        ${thumb}
+        <div class="activity-event-copy">
+          <div class="activity-event-title">${titleSafe}</div>
+          <div class="activity-event-location">${textToHtmlSafe(datesLine)}</div>
+        </div>
+      </button>
+      <div class="activity-event-admin-tools">
+        <button type="button" class="published-events-icon-btn admin-home-ad-tool-toggle ${toggleCls}" data-role="toggle-active" title="${activeOn ? "Desativar campanha" : "Ativar campanha"}" aria-label="${activeOn ? "Desativar campanha" : "Ativar campanha"}">${svgAdPower}</button>
+        <button type="button" class="published-events-icon-btn admin-home-ad-tool-info" data-role="ad-stats" title="Métricas da campanha" aria-label="Ver métricas da campanha">${svgAdInfo}</button>
+        <button type="button" class="published-events-icon-btn published-events-icon-btn--danger" data-role="delete" title="Excluir" aria-label="Excluir publicidade">${svgAdTrash}</button>
+      </div>
+    `;
+
+    const editTap = card.querySelector('[data-role="edit"]');
+    const delBtn = card.querySelector('[data-role="delete"]');
+    const toggleActiveBtn = card.querySelector('[data-role="toggle-active"]');
+    const statsBtn = card.querySelector('[data-role="ad-stats"]');
+
+    if(editTap){
+      editTap.addEventListener("click", ()=>{
+        openHomeAdEditorModal(row);
+      });
+    }
+
+    if(toggleActiveBtn){
+      toggleActiveBtn.addEventListener("click", async (e)=>{
+        e.stopPropagation();
+        const currentlyOn = row.is_active !== false;
+        const next = !currentlyOn;
+        toggleActiveBtn.disabled = true;
+        const { error: toggleErr } = await supabase
+          .from("home_advertising")
+          .update({ is_active: next })
+          .eq("id", row.id);
+        toggleActiveBtn.disabled = false;
+        if(toggleErr){
+          console.error(toggleErr);
+          showMessagePopup({
+            title: "Erro",
+            message: "Não foi possível atualizar o estado da campanha.",
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+        await loadHomeAdvertisingList();
+      });
+    }
+
+    if(statsBtn){
+      statsBtn.addEventListener("click", async (e)=>{
+        e.stopPropagation();
+        statsBtn.disabled = true;
+        const { data: stats, error: statsErr } = await supabase.rpc("admin_home_ad_stats", { p_ad_id: row.id });
+        statsBtn.disabled = false;
+        if(statsErr){
+          console.error(statsErr);
+          showMessagePopup({
+            title: "Métricas",
+            message: statsErr.message || "Não foi possível carregar as métricas.",
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+        if(!stats || stats.ok === false){
+          const hint = stats?.error === "denied"
+            ? "Acesso negado."
+            : "Executa sql/home_ad_analytics.sql no Supabase (tabela + funções) e recarrega.";
+          showMessagePopup({
+            title: "Métricas",
+            message: hint,
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+        const uni = Number(stats.unique_viewers ?? 0);
+        const imp = Number(stats.impressions ?? 0);
+        const clk = Number(stats.clicks ?? 0);
+        const nameLine = String(row.company_name || "").trim() || "Campanha";
+        showHomeAdStatsPopup({
+          campaignName: nameLine,
+          uniqueViewers: uni,
+          impressions: imp,
+          clicks: clk,
+          buttonLabel: "Fechar",
+        });
+      });
+    }
+
+    if(delBtn){
+      delBtn.addEventListener("click", (e)=>{
+        e.stopPropagation();
+        const name = String(row.company_name || "").trim() || "esta campanha";
+        showConfirmPopup({
+          title: "Excluir publicidade?",
+          message: `Remover "${name}"? Isto não tem volta.`,
+          confirmLabel: "Excluir",
+          cancelLabel: "Cancelar",
+          bottomSheet: true,
+          compact: true,
+          onConfirm: async ()=>{
+            const { error: delErr } = await supabase
+              .from("home_advertising")
+              .delete()
+              .eq("id", row.id);
+
+            if(delErr){
+              console.error(delErr);
+              showMessagePopup({
+                title: "Erro ao excluir",
+                message: "Confirma permissões de administrador no Supabase.",
+                buttonLabel: "Entendi",
+                bottomSheet: true,
+                compact: true
+              });
+              return;
+            }
+            await loadHomeAdvertisingList();
+          },
+        });
+      });
+    }
+
+    homeAdList.appendChild(card);
+  });
+}
+
+function openHomeAdEditorModal(savedAd){
+  const row = savedAd && typeof savedAd === "object" ? savedAd : {};
+  const isEdit = Boolean(row.id);
+
+  const popup = document.getElementById("admin-popup");
+  const text = document.getElementById("admin-popup-text");
+  const actions = document.getElementById("popup-actions");
+  if(actions) actions.style.display = "none";
+  if(!popup || !text) return;
+
+  const startVal = row.start_date ? String(row.start_date).slice(0, 10) : "";
+  const endVal = row.end_date ? String(row.end_date).slice(0, 10) : "";
+  const linkStored = row.link_url ? String(row.link_url).trim() : "";
+  const linkFieldDefault = linkStored || "";
+  const modalTitle = isEdit ? "Editar publicidade" : "Nova publicidade";
+
+  text.innerHTML = `
+    <div class="admin-prize-modal admin-prize-modal--home-ad">
+      <div class="admin-prize-head admin-prize-head--ad-only">
+        <div>
+          <div class="admin-prize-title">${textToHtmlSafe(modalTitle)}</div>
+        </div>
+        <button id="close-home-ad-modal" type="button" class="admin-prize-close" aria-label="Fechar">×</button>
+      </div>
+
+      <div class="admin-prize-fields">
+        <div class="admin-prize-field">
+          <label class="admin-prize-label" for="ad-company">Nome da empresa / anunciante</label>
+          <input id="ad-company" class="admin-prize-input" type="text" placeholder="Ex: Marca parceira" value="${textToHtmlSafe(row.company_name || "")}" autocomplete="off" />
+        </div>
+
+        <div class="admin-prize-field-row admin-prize-field-row--ad-dates">
+          <div class="admin-prize-date-col">
+            <label class="admin-prize-label" for="ad-start">Data inicial</label>
+            <input id="ad-start" class="admin-prize-input admin-prize-input--date" type="date" value="${textToHtmlSafe(startVal)}" />
+          </div>
+          <div class="admin-prize-date-col">
+            <label class="admin-prize-label" for="ad-end">Data final</label>
+            <input id="ad-end" class="admin-prize-input admin-prize-input--date" type="date" value="${textToHtmlSafe(endVal)}" />
+          </div>
+        </div>
+
+        <div class="admin-prize-field">
+          <label class="admin-prize-label" for="ad-link">Site do anunciante</label>
+          <input id="ad-link" class="admin-prize-input" type="text" placeholder="www.exemplo.com.br" value="${textToHtmlSafe(linkFieldDefault)}" autocomplete="off" />
+        </div>
+
+        <div class="admin-prize-field">
+          <label class="admin-prize-label" for="ad-image">Arte / imagem do banner</label>
+          <input id="ad-image" class="admin-prize-file admin-prize-file--fullwidth" type="file" accept="image/*" />
+          <p class="admin-prize-hint">PNG ou JPEG. Ao salvar, a imagem é redimensionada (largura máx. 1200px) e comprimida em JPEG para carregar mais rápido no app.</p>
+          <div class="admin-ad-phone-preview-wrap">
+            <div class="admin-ad-phone-frame">
+              <div id="ad-banner-full-preview" class="admin-ad-phone-slot" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-prize-actions">
+          <button id="cancel-home-ad-modal" type="button" class="admin-prize-btn admin-prize-btn--secondary">Cancelar</button>
+          <button id="save-home-ad" type="button" class="admin-prize-btn admin-prize-btn--primary">Salvar publicidade</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  applyBottomSheetPopupStyles();
+  popup.style.display = "flex";
+
+  setTimeout(()=>{
+    const saveBtn = document.getElementById("save-home-ad");
+    const cancelBtn = document.getElementById("cancel-home-ad-modal");
+    const closeBtn = document.getElementById("close-home-ad-modal");
+    const adImageInput = document.getElementById("ad-image");
+
+    let imageData = row.image_url || "";
+
+    function normalizeAdLinkSave(raw){
+      const s = String(raw ?? "").trim();
+      if(!s || s === "https://" || s === "http://") return null;
+      if(/^https?:\/\//i.test(s)) return s;
+      return "https://" + s.replace(/^\/+/, "");
+    }
+
+    function renderAdPhonePreview(){
+      const shell = document.getElementById("ad-banner-full-preview");
+      if(!shell) return;
+      if(!imageData || !String(imageData).trim()){
+        shell.innerHTML = `<div class="admin-ad-phone-empty">Escolha uma imagem para ver como o banner aparece na home.</div>`;
+        return;
+      }
+      const src = String(imageData).replace(/"/g, "&quot;");
+      shell.innerHTML = `
+        <div class="home-ad-card home-ad-card--static" aria-hidden="true">
+          <div class="home-ad-card__media"><img src="${src}" alt="" loading="eager" decoding="async" /></div>
+          <div class="home-ad-card__gradient" aria-hidden="true"></div>
+        </div>
+      `;
+    }
+
+    renderAdPhonePreview();
+
+    function closeAdModal(){
+      popup.style.display = "none";
+      applyDefaultPopupStyles();
+    }
+
+    if(cancelBtn) cancelBtn.onclick = closeAdModal;
+    if(closeBtn) closeBtn.onclick = closeAdModal;
+
+    if(adImageInput){
+      adImageInput.onchange = async ()=>{
+        const file = adImageInput.files?.[0];
+        if(!file) return;
+
+        try {
+          imageData = await compressHomeAdImageFile(file);
+          renderAdPhonePreview();
+        } catch (err) {
+          console.error(err);
+          showMessagePopup({
+            title: "Imagem",
+            message: "Não foi possível otimizar este arquivo. Tenta outro PNG ou JPEG.",
+            buttonLabel: "OK",
+            bottomSheet: true,
+            compact: true
+          });
+        }
+      };
+    }
+
+    if(saveBtn){
+      saveBtn.onclick = async ()=>{
+        const company = document.getElementById("ad-company")?.value?.trim() || "";
+        const startD = document.getElementById("ad-start")?.value || "";
+        const endD = document.getElementById("ad-end")?.value || "";
+        const linkNorm = normalizeAdLinkSave(document.getElementById("ad-link")?.value || "");
+        const isActive = row.id ? (row.is_active !== false) : true;
+
+        if(!company){
+          showMessagePopup({
+            title: "Campo obrigatório",
+            message: "Informe o nome da empresa ou anunciante.",
+            buttonLabel: "OK",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+        if(!startD || !endD){
+          showMessagePopup({
+            title: "Datas",
+            message: "Informe data inicial e final.",
+            buttonLabel: "OK",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+        if(startD > endD){
+          showMessagePopup({
+            title: "Datas inválidas",
+            message: "A data inicial não pode ser depois da final.",
+            buttonLabel: "OK",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+        if(!imageData || !String(imageData).trim()){
+          showMessagePopup({
+            title: "Imagem",
+            message: "Envie uma imagem para o banner.",
+            buttonLabel: "OK",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+
+        const payload = {
+          company_name: company,
+          image_url: imageData,
+          start_date: startD,
+          end_date: endD,
+          is_active: isActive,
+          link_url: linkNorm,
+        };
+
+        let saveError = null;
+
+        if(row.id){
+          const { error } = await supabase
+            .from("home_advertising")
+            .update(payload)
+            .eq("id", row.id);
+
+          saveError = error;
+        }else{
+          const { error } = await supabase
+            .from("home_advertising")
+            .insert(payload);
+
+          saveError = error;
+        }
+
+        if(saveError){
+          console.error("Erro ao salvar publicidade:", saveError);
+          showMessagePopup({
+            title: "Erro ao salvar",
+            message: "Confirme que executou sql/home_advertising.sql no Supabase e que a conta é administrador.",
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
+          return;
+        }
+
+        closeAdModal();
+        if(homeAdSection && homeAdSection.style.display !== "none"){
+          await loadHomeAdvertisingList();
+        }
+        showMessagePopup({
+          title: "Publicidade salva",
+          message: "A home mostra o banner dentro do período e com campanha ativa.",
+          buttonLabel: "OK",
+          bottomSheet: true,
+          compact: true
+        });
+      };
+    }
+  }, 50);
+}
+
+if(homeAdBtn && homeAdSection){
+  homeAdBtn.onclick = async ()=>{
+    menu.style.display = "none";
+    if(approvalsSection) approvalsSection.style.display = "none";
+    if(teamsAdminSection) teamsAdminSection.style.display = "none";
+    if(usersAdminSection) usersAdminSection.style.display = "none";
+    if(resetSystemSection) resetSystemSection.style.display = "none";
+    homeAdSection.style.display = "block";
+    await loadHomeAdvertisingList();
+  };
+}
+
+if(homeAdBack && homeAdSection && menu){
+  homeAdBack.onclick = ()=>{
+    homeAdSection.style.display = "none";
+    menu.style.display = "block";
+  };
+}
+
+if(homeAdNewBtn){
+  homeAdNewBtn.onclick = ()=>{
+    openHomeAdEditorModal({});
+  };
+}
+
+if(reportsBtn){
+  reportsBtn.onclick = async ()=>{
 
     const popup = document.getElementById("admin-popup");
     const text = document.getElementById("admin-popup-text");
     const actions = document.getElementById("popup-actions");
     actions.style.display = "none";
 
+    const { data: reports, error: reportsError } = await supabase
+      .from("event_reports")
+      .select("id,event_id,user_id,reason,custom_reason,status,created_at,admin_response,reviewed_at,reviewed_by")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
+
+    if(reportsError){
+      console.error("Erro ao carregar denúncias:", reportsError);
+      text.innerHTML = `
+        <div class="admin-reports-modal">
+          <div class="admin-reports-head">
+            <div>
+              <div class="admin-reports-title">Denúncias</div>
+              <div class="admin-reports-subtitle">Não foi possível carregar a lista. Tente de novo.</div>
+            </div>
+            <button id="close-reports-modal" type="button" class="admin-reports-close" aria-label="Fechar">×</button>
+          </div>
+        </div>`;
+      applyBottomSheetPopupStyles();
+      popup.style.display = "flex";
+      setTimeout(()=>{
+        const closeBtn = document.getElementById("close-reports-modal");
+        if(closeBtn){
+          closeBtn.onclick = ()=>{
+            popup.style.display = "none";
+            applyDefaultPopupStyles();
+          };
+        }
+      }, 30);
+      return;
+    }
+
+    const eventIds = [...new Set((reports || []).map(r => r.event_id).filter(Boolean))];
+    const reporterIds = [...new Set((reports || []).map(r => r.user_id).filter(Boolean))];
+    let eventsById = {};
+    const reportsById = Object.fromEntries((reports || []).map(report => [report.id, report]));
+    const reporterNamesById = await loadReporterDisplayNamesByUserIds(reporterIds);
+
+    if(eventIds.length){
+      const { data: relatedEvents, error: relatedEventsError } = await supabase
+        .from("events")
+        .select("id,title,team,city,date,image,user_id")
+        .in("id", eventIds);
+
+      if(relatedEventsError){
+        console.error("Erro ao carregar eventos denunciados:", relatedEventsError);
+      }else{
+        eventsById = Object.fromEntries((relatedEvents || []).map(ev => [ev.id, ev]));
+      }
+    }
+
+    if(!reports || reports.length === 0){
+      text.innerHTML = `
+        <div class="admin-reports-modal">
+          <div class="admin-reports-head">
+            <div>
+              <div class="admin-reports-title">Denúncias</div>
+              <div class="admin-reports-subtitle">Nenhuma denúncia pendente no momento.</div>
+            </div>
+            <button id="close-reports-modal" type="button" class="admin-reports-close" aria-label="Fechar">×</button>
+          </div>
+        </div>
+      `;
+
+      applyBottomSheetPopupStyles();
+      popup.style.display = "flex";
+
+      setTimeout(()=>{
+        const closeBtn = document.getElementById("close-reports-modal");
+        if(closeBtn){
+          closeBtn.onclick = ()=>{
+            popup.style.display = "none";
+            applyDefaultPopupStyles();
+          };
+        }
+      }, 30);
+      return;
+    }
+
     text.innerHTML = `
-    <strong>Banco completo de eventos</strong><br><br>
-    • visualizar todos os eventos do banco<br>
-    • filtrar pagos / gratuitos<br>
-    • visualizar eventos passados<br>
-    • editar eventos<br>
-    • deletar eventos
+      <div class="admin-reports-modal">
+        <div class="admin-reports-head">
+          <div>
+            <div class="admin-reports-title">Denúncias</div>
+            <div class="admin-reports-subtitle">Analise as denúncias pendentes dos eventos.</div>
+          </div>
+          <button id="close-reports-modal" type="button" class="admin-reports-close" aria-label="Fechar">×</button>
+        </div>
+
+        <div id="reports-list" class="admin-reports-list">
+        ${reports.map(report => {
+          const relatedEvent = eventsById[report.event_id] || {};
+          const formattedDate = relatedEvent.date ? (()=>{ const d = relatedEvent.date.slice(0,10).split("-"); return d[2] + "/" + d[1] + "/" + d[0].slice(2); })() : "";
+          const teamSafe = textToHtmlSafe(relatedEvent.team || "Equipe não informada");
+          const titleSafe = textToHtmlSafe(relatedEvent.title || "Evento não encontrado");
+          const citySafe = textToHtmlSafe(relatedEvent.city || "");
+          const motivoDetalheSafe = adminReportMotivoDetalheEscaped(report);
+          const rid = report.user_id ? String(report.user_id) : "";
+          const reporterRaw = rid ? (reporterNamesById[rid] || "").trim() : "";
+          const reporterLabelSafe = reporterRaw
+            ? textToHtmlSafe(reporterRaw)
+            : (report.user_id ? "Nome não disponível" : "Não identificado");
+          const sentAt = report.created_at ? new Date(report.created_at).toLocaleString("pt-BR") : "Não informado";
+          const imgSrc = relatedEvent.image ? escapeHtmlAttr(relatedEvent.image) : "";
+          const locLine = [citySafe, formattedDate].filter(Boolean).join(" • ");
+
+          return `
+            <div data-report-id="${report.id}" class="admin-report-card">
+              <div class="admin-report-card__row">
+                ${relatedEvent.image
+                  ? `<div class="admin-report-card__thumb"><img src="${imgSrc}" alt=""></div>`
+                  : `<div class="admin-report-card__thumb" aria-hidden="true"></div>`}
+                <div class="admin-report-card__body">
+                  <div class="admin-report-card__team">${teamSafe}</div>
+                  <div class="admin-report-card__title">${titleSafe}</div>
+                  ${locLine ? `<div class="admin-report-card__line">${locLine}</div>` : ""}
+                  <div class="admin-report-card__line">Denunciante: <strong>${reporterLabelSafe}</strong></div>
+                  <div class="admin-report-card__line">Enviada em: <strong>${sentAt}</strong></div>
+                  <div class="admin-report-card__reason">
+                    <div class="admin-report-card__reason-label">Motivo informado</div>
+                    <div class="admin-report-card__reason-text">${motivoDetalheSafe}</div>
+                  </div>
+                </div>
+              </div>
+              <div class="admin-report-card__actions">
+                <button type="button" class="admin-report-btn admin-report-btn--primary accept-report" data-report-id="${report.id}">Receber denúncia</button>
+                <button type="button" class="admin-report-btn admin-report-btn--ghost reject-report" data-report-id="${report.id}">Não receber</button>
+              </div>
+            </div>
+          `;
+        }).join("")}
+        </div>
+      </div>
     `;
 
+    applyBottomSheetPopupStyles();
     popup.style.display = "flex";
+
+    setTimeout(()=>{
+      const closeBtn = document.getElementById("close-reports-modal");
+      if(closeBtn){
+        closeBtn.onclick = ()=>{
+          popup.style.display = "none";
+          applyDefaultPopupStyles();
+        };
+      }
+
+      document.querySelectorAll(".accept-report").forEach((button)=>{
+        button.onclick = async ()=>{
+          const reportId = button.getAttribute("data-report-id");
+
+          const { data: rpcData, error: rpcError } = await supabase.rpc("admin_review_event_report", {
+            p_report_id: reportId,
+            p_decision: "accepted"
+          });
+
+          if(rpcError){
+            console.error("Erro ao confirmar denúncia:", rpcError);
+            showMessagePopup({
+              title: "Erro",
+              message: rpcError.message || "Erro ao confirmar denúncia.",
+              buttonLabel: "Entendi",
+              bottomSheet: true,
+              compact: true
+            });
+            return;
+          }
+
+          if(rpcData && rpcData.ok === false){
+            const code = String(rpcData.error || "");
+            const msg =
+              code === "denuncia_ja_rejeitada"
+                ? "Esta denúncia já foi marcada como não recebida."
+                : code === "denuncia_nao_encontrada"
+                  ? "Denúncia não encontrada."
+                  : "Não foi possível confirmar esta denúncia.";
+            showMessagePopup({
+              title: "Denúncia",
+              message: msg,
+              buttonLabel: "Entendi",
+              bottomSheet: true,
+              compact: true
+            });
+            return;
+          }
+
+          const reportCard = document.querySelector(`[data-report-id="${reportId}"]`);
+          if(reportCard) reportCard.remove();
+          loadAdminCounters();
+        };
+      });
+
+      document.querySelectorAll(".reject-report").forEach((button)=>{
+        button.onclick = async ()=>{
+          const reportId = button.getAttribute("data-report-id");
+          const { data: rpcData, error: rpcError } = await supabase.rpc("admin_review_event_report", {
+            p_report_id: reportId,
+            p_decision: "rejected"
+          });
+
+          if(rpcError){
+            console.error("Erro ao rejeitar denúncia:", rpcError);
+            showMessagePopup({
+              title: "Erro",
+              message: rpcError.message || "Erro ao rejeitar denúncia.",
+              buttonLabel: "Entendi",
+              bottomSheet: true,
+              compact: true
+            });
+            return;
+          }
+
+          if(rpcData && rpcData.ok === false){
+            const code = String(rpcData.error || "");
+            const msg =
+              code === "denuncia_ja_rejeitada"
+                ? "Esta denúncia já foi marcada como não recebida."
+                : code === "denuncia_nao_encontrada"
+                  ? "Denúncia não encontrada."
+                  : "Não foi possível rejeitar esta denúncia.";
+            showMessagePopup({
+              title: "Denúncia",
+              message: msg,
+              buttonLabel: "Entendi",
+              bottomSheet: true,
+              compact: true
+            });
+            return;
+          }
+
+          const reportCard = document.querySelector(`[data-report-id="${reportId}"]`);
+          if(reportCard) reportCard.remove();
+          loadAdminCounters();
+        };
+      });
+    }, 40);
   };
 }
 
 async function loadEvents(){
 
-  const { data: events, error } = await supabase
-    .from("events")
-    .select("*")
-    .in("payment_status", ["pending", "awaiting_payment"])
-    .order("date", { ascending:true });
+  const container = document.getElementById("events-pending-list");
+
+  let events = null;
+  let error = null;
+
+  const rpc = await supabase.rpc("admin_list_pending_events");
+  if(!rpc.error && Array.isArray(rpc.data)){
+    events = rpc.data;
+  }else if(rpc.error){
+    error = rpc.error;
+    console.warn("admin_list_pending_events falhou, tentando select direto", rpc.error);
+    const fallback = await supabase
+      .from("events")
+      .select("id,title,team,city,date,image,plan_type,payment_status,payment_reference,user_id,created_at,updated_at")
+      .in("payment_status", ["pending", "awaiting_payment"])
+      .order("date", { ascending: true })
+      .order("id", { ascending: true });
+
+    if(!fallback.error && Array.isArray(fallback.data)){
+      events = fallback.data;
+      error = null;
+    }else{
+      error = fallback.error || error;
+    }
+  }
+
+  if(error){
+    console.error("loadEvents:", error);
+    if(container){
+      container.innerHTML = `<div style="font-size:13px;opacity:.75">Não foi possível carregar a fila de aprovação.</div>`;
+    }
+    showMessagePopup({
+      title: "Erro",
+      message: error.message || "Não foi possível carregar a fila de aprovação.",
+      buttonLabel: "Entendi",
+      bottomSheet: true,
+      compact: true
+    });
+    await loadAllEvents();
+    return;
+  }
 
   if(events){
     events.sort((a,b)=>{
@@ -264,11 +2186,14 @@ async function loadEvents(){
     rejected: "Reprovado"
   };
 
-  const container = document.getElementById("events-list");
+  if(!container) return;
   container.innerHTML = "";
 
   if(!events || events.length === 0){
-    container.innerHTML = "Nenhum evento aguardando.";
+    container.innerHTML = `
+      <div class="published-events-empty admin-empty-msg">Nenhum evento nesta fila no momento.</div>
+    `;
+    await loadAllEvents();
     return;
   }
 
@@ -281,10 +2206,11 @@ async function loadEvents(){
       "15": "#2196F3",  // azul
       "30": "#9C27B0"   // roxo
     };
+    const normalizedPlanType = String(event.plan_type || "").trim();
 
     // normalizar planos antigos ou inválidos
     const validPlans = ["7","15","30"];
-    let planType = event.plan_type;
+    let planType = normalizedPlanType;
 
     if(!planType || planType === "free"){
       planType = "free";
@@ -295,51 +2221,60 @@ async function loadEvents(){
 
     const color = planColors[planType] || "#444";
 
-    card.style.background="#141414";
-    card.style.padding="10px";
-    card.style.borderRadius="12px";
-    card.style.marginBottom="10px";
-    card.style.borderLeft="6px solid " + color;
-    card.style.display="flex";
-    card.style.flexDirection="column";
-    card.style.gap="10px";
+    card.className = "admin-approval-card";
+    card.style.setProperty("--admin-plan-accent", color);
+
+    const dateFormatted = event.date
+      ? (()=>{
+        const d = event.date.slice(0, 10).split("-");
+        return `${d[2]}/${d[1]}/${d[0].slice(2)}`;
+      })()
+      : "";
+    const teamSafe = textToHtmlSafe(event.team || "");
+    const titleSafe = textToHtmlSafe(event.title || "");
+    const citySafe = textToHtmlSafe(event.city || "");
+    const statusKey = event.payment_status;
+    const statusLabel = textToHtmlSafe(statusLabels[statusKey] || statusKey || "");
+    const planLabel = planType === "free" ? "Gratuito" : `${planType} dias`;
+    const pixRefRaw = event.payment_reference || ("EVT-" + event.id);
+    const pixRefSafe = textToHtmlSafe(pixRefRaw);
+    const imgSrc = event.image ? escapeHtmlAttr(event.image) : "";
+
+    const thumbBlock = event.image
+      ? `<div class="admin-approval-thumb"><img src="${imgSrc}" alt=""></div>`
+      : `<div class="admin-approval-thumb admin-approval-thumb--empty" aria-hidden="true"></div>`;
+
+    const pixBlock = planType !== "free"
+      ? `<div class="admin-approval-pix">
+          <span class="admin-approval-pix__label">PIX</span>
+          <code id="pix-ref-${event.id}" class="admin-approval-pix__ref">${pixRefSafe}</code>
+          <button type="button" class="copy-pix admin-btn-copy-pix">Copiar</button>
+        </div>`
+      : "";
+
+    const subLine = (teamSafe && citySafe)
+      ? `<span class="admin-approval-card__team">${teamSafe}</span><span class="admin-approval-card__dot">·</span><span class="admin-approval-card__city">${citySafe}</span>`
+      : (teamSafe || citySafe || "—");
 
     card.innerHTML = `
-
-      <div style="display:flex;align-items:center;gap:14px;">
-
-        <div style="flex:1;min-width:150px;">
-          <strong style="font-size:13px;opacity:.9">${event.team || ""}</strong><br>
-          <strong style="font-size:14px">${event.title}</strong><br>
-          <span style="opacity:.8;font-size:13px">${event.city || ""}</span>
+      <div class="admin-approval-card__row">
+        ${thumbBlock}
+        <div class="admin-approval-card__main">
+          <div class="admin-approval-card__title">${titleSafe}</div>
+          <div class="admin-approval-card__sub">${subLine}</div>
+          <div class="admin-approval-card__chips" role="list">
+            <span class="admin-approval-chip" role="listitem">${textToHtmlSafe(dateFormatted || "—")}</span>
+            <span class="admin-approval-chip" role="listitem">${textToHtmlSafe(planLabel)}</span>
+            <span class="admin-approval-chip admin-approval-chip--status" role="listitem">${statusLabel}</span>
+          </div>
+          ${pixBlock}
         </div>
-
-        <div style="flex:1;font-size:12px;">
-          Data: <strong>${event.date ? (()=>{ const d = event.date.slice(0,10).split('-'); return d[2] + '/' + d[1] + '/' + d[0].slice(2); })() : ""}</strong><br>
-          Plano: <strong>${planType === "free" ? "Gratuito" : planType + " dias"}</strong><br>
-          Status: <strong>${statusLabels[event.payment_status] || event.payment_status}</strong>
-
-          ${planType !== "free" ? `
-            <div style="display:flex;align-items:center;gap:6px;margin-top:2px;">
-              <span style="font-size:11px;opacity:.8">PIX:</span>
-              <strong id="pix-ref-${event.id}" style="font-size:11px">${event.payment_reference || ("EVT-" + event.id)}</strong>
-              <button class="copy-pix" style="font-size:10px;padding:2px 6px;border-radius:4px;border:none;background:#333;color:#fff;cursor:pointer;">Copiar</button>
-            </div>
-          ` : ``}
-        </div>
-
-        ${event.image ? `<div style="width:70px;height:70px;border-radius:8px;overflow:hidden;flex-shrink:0;">
-          <img src="${event.image}" style="width:100%;height:100%;object-fit:cover;">
-        </div>` : `<div style="width:70px"></div>`}
-
       </div>
-
-      <div style="display:grid;grid-template-columns:1fr 1fr 70px;gap:14px;">
-        <button class="approve" style="background:#1DB954;border:none;color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;width:100%;">${event.payment_status === "awaiting_payment" ? "Confirmar PIX" : "Aprovar"}</button>
-        <button class="reject" style="background:#d4af37;border:none;color:#000;padding:6px 10px;border-radius:6px;cursor:pointer;width:100%;">Reprovar</button>
-        <button class="delete" style="background:#e53935;border:none;color:#fff;padding:6px 10px;border-radius:6px;cursor:pointer;width:100%;">Deletar</button>
+      <div class="admin-approval-actions">
+        <button type="button" class="approve admin-btn-approve">${event.payment_status === "awaiting_payment" ? "Confirmar PIX" : "Aprovar"}</button>
+        <button type="button" class="reject admin-btn-reject">Reprovar</button>
+        <button type="button" class="delete admin-btn-delete">Deletar</button>
       </div>
-
     `;
 
     const approveBtn = card.querySelector(".approve");
@@ -353,7 +2288,7 @@ async function loadEvents(){
         navigator.clipboard.writeText(pixRef);
         copyPixBtn.textContent = "Copiado!";
         setTimeout(()=>{
-          copyPixBtn.textContent = "Copiar PIX";
+          copyPixBtn.textContent = "Copiar";
         },1500);
       };
     }
@@ -364,19 +2299,30 @@ async function loadEvents(){
 
       const nextStatus = event.payment_status === "awaiting_payment" ? "paid" : "approved";
 
-      const { data, error } = await supabase
-        .from("events")
-        .update({ payment_status: nextStatus })
-        .match({ id: event.id })
-        .select();
-
-      console.log("UPDATE RESULT:", data, error);
+      const { data, error } = await supabase.rpc("admin_review_event", {
+        p_event_id: String(event.id),
+        p_decision: "approve"
+      });
 
       if(error){
         console.error("Erro ao aprovar:", error);
-        alert("Erro ao aprovar evento. Veja o console.");
+        showMessagePopup({
+          title: "Erro",
+          message: "Erro ao aprovar evento.",
+          buttonLabel: "Entendi",
+          bottomSheet: true,
+          compact: true
+        });
         return;
       }
+
+      window.dispatchEvent(new CustomEvent("profile-notices-refresh", {
+        detail: {
+          kind: "event_approved",
+          eventId: String(event.id),
+          paymentStatus: nextStatus
+        }
+      }));
 
       card.remove();
       loadAdminCounters();
@@ -384,16 +2330,30 @@ async function loadEvents(){
 
     rejectBtn.onclick = async ()=>{
 
-      const { error } = await supabase
-        .from("events")
-        .update({ payment_status:"rejected" })
-        .eq("id", event.id);
+      const { error } = await supabase.rpc("admin_review_event", {
+        p_event_id: String(event.id),
+        p_decision: "reject"
+      });
 
       if(error){
         console.error("Erro ao reprovar:", error);
-        alert("Erro ao reprovar evento.");
+        showMessagePopup({
+          title: "Erro",
+          message: "Erro ao reprovar evento.",
+          buttonLabel: "Entendi",
+          bottomSheet: true,
+          compact: true
+        });
         return;
       }
+
+      window.dispatchEvent(new CustomEvent("profile-notices-refresh", {
+        detail: {
+          kind: "event_rejected",
+          eventId: String(event.id),
+          paymentStatus: "rejected"
+        }
+      }));
 
       card.remove();
       loadAdminCounters();
@@ -408,16 +2368,19 @@ async function loadEvents(){
       const actions = document.getElementById("popup-actions");
       actions.style.display = "flex";
 
+      applyBottomSheetPopupStyles();
       text.textContent = "Deletar evento?";
       popup.style.display = "flex";
 
       cancel.onclick = ()=>{
         popup.style.display = "none";
+        applyDefaultPopupStyles();
       };
 
       confirmBtn.onclick = async ()=>{
 
         popup.style.display = "none";
+        applyDefaultPopupStyles();
 
         const { error } = await supabase
           .from("events")
@@ -426,7 +2389,13 @@ async function loadEvents(){
 
         if(error){
           console.error("Erro ao deletar:", error);
-          alert("Erro ao deletar evento.");
+          showMessagePopup({
+            title: "Erro",
+            message: "Erro ao deletar evento.",
+            buttonLabel: "Entendi",
+            bottomSheet: true,
+            compact: true
+          });
           return;
         }
 
@@ -441,13 +2410,314 @@ async function loadEvents(){
 
   });
 
+  await loadAllEvents();
 }
 
-const popupOverlay = document.getElementById("admin-popup");
+async function loadAllEvents(){
+  const container = document.getElementById("events-all-list");
+  if(!container) return;
+
+  container.innerHTML = `<div class="published-events-empty">Carregando catálogo…</div>`;
+
+  const ICON_TRASH = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>`;
+
+  const { data, error } = await supabase
+    .from("events")
+    .select("id,title,city,location,date,plan_type,payment_status,image,created_at,highlight_started_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if(error){
+    console.error("loadAllEvents:", error);
+    container.innerHTML = `<div class="published-events-empty admin-empty-msg">Não foi possível carregar o catálogo de eventos.</div>`;
+    return;
+  }
+
+  const rows = Array.isArray(data) ? data : [];
+
+  if(rows.length === 0){
+    container.innerHTML = `<div class="published-events-empty admin-empty-msg">Nenhum evento cadastrado.</div>`;
+    return;
+  }
+
+  container.innerHTML = "";
+
+  rows.forEach((event)=>{
+    const id = event.id ?? "";
+    const titleSafe = textToHtmlSafe(event.title || "Evento");
+    const citySafe = textToHtmlSafe(event.city || "Local não informado");
+    const dateSafe = textToHtmlSafe(formatAdminDateBR(event.date));
+    const normalizedPlanType = String(event.plan_type || "").trim();
+    const planType = ["7","15","30"].includes(normalizedPlanType) ? normalizedPlanType : "free";
+    const isPremium = isHighlightActiveEvent(event);
+    const accent = isPremium ? "rgba(212,175,55,.72)" : "rgba(255,255,255,.14)";
+    const imgHtml = event.image
+      ? `<div class="activity-event-thumb"><img src="${escapeHtmlAttr(event.image)}" alt=""></div>`
+      : `<div class="activity-event-thumb activity-event-thumb--initials">${textToHtmlSafe(String((event.title || "E").trim().slice(0, 2)).toUpperCase())}</div>`;
+    const card = document.createElement("div");
+    card.className = `activity-event-item admin-all-events-item is-static${isPremium ? " is-premium" : " is-free"}`;
+    card.dataset.eventId = id;
+    card.style.setProperty("--admin-plan-accent", accent);
+    if(isPremium){
+      card.setAttribute("role", "button");
+      card.setAttribute("tabindex", "0");
+    }
+    card.innerHTML = `
+      <div class="activity-event-main-tap" aria-hidden="true">
+        ${imgHtml}
+        <div class="activity-event-copy">
+          <div class="activity-event-title">${titleSafe}</div>
+          <div class="activity-event-location">${citySafe}</div>
+          <div class="activity-event-meta">${dateSafe}</div>
+        </div>
+      </div>
+      <div class="activity-event-admin-tools">
+        <button type="button" class="published-events-icon-btn published-events-icon-btn--danger" data-admin-action="delete" data-event-id="${id}" aria-label="Excluir evento">${ICON_TRASH}</button>
+      </div>
+    `;
+
+    if(isPremium){
+      const openEvent = ()=>{
+        window.location.href = `/pages/event.html?id=${encodeURIComponent(id)}`;
+      };
+      card.addEventListener("click", (e)=>{
+        if(e.target.closest('[data-admin-action="delete"]')) return;
+        openEvent();
+      });
+      card.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          openEvent();
+        }
+      });
+    }
+
+    const deleteBtn = card.querySelector('[data-admin-action="delete"]');
+    if(deleteBtn){
+      deleteBtn.addEventListener("click", async (e)=>{
+        e.preventDefault();
+        e.stopPropagation();
+        showConfirmPopup({
+          title: "Excluir evento?",
+          message: `Deseja excluir <strong>${titleSafe}</strong>? Esta ação não pode ser desfeita.`,
+          confirmLabel: "Excluir",
+          cancelLabel: "Cancelar",
+          compact: true,
+          bottomSheet: true,
+          onConfirm: async ()=>{
+            const { error } = await supabase
+              .from("events")
+              .delete()
+              .eq("id", id);
+            if(error){
+              console.error("Erro ao excluir evento:", error);
+              showMessagePopup({
+                title: "Erro",
+                message: error.message || "Não foi possível excluir o evento.",
+                buttonLabel: "Entendi",
+                compact: true,
+                bottomSheet: true
+              });
+              return;
+            }
+            await loadEvents();
+          }
+        });
+      });
+    }
+
+    container.appendChild(card);
+  });
+}
+
+function buildUserModerationBody(rpc){
+  if(rpc === "admin_advertencia_usuario"){
+    return "Zera o ranking inteiro (todos os meses com registro). <strong>Não</strong> remove da equipe nem apaga eventos. Confirma?";
+  }
+  if(rpc === "admin_ban_usuario_definitivo"){
+    return "<strong style=\"color:#f88\">Irreversível.</strong> Apaga login, eventos e dados da conta. Se for dono da equipe, outro membro assume. Confirma?";
+  }
+  return "";
+}
+
+/** Ícones em SVG (traço) — emojis falham no Simulador iOS; alinha ao estilo do footer. */
+function adminUserModerationIconSvg(kind){
+  const a = 'viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"';
+  if(kind === "reset"){
+    return `<svg ${a}><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>`;
+  }
+  if(kind === "warning"){
+    return `<svg ${a}><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+  }
+  if(kind === "ban"){
+    return `<svg ${a}><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>`;
+  }
+  return "";
+}
+
+function openUserModerationPopup({ uid, nome, rpc, title }){
+  const popup = document.getElementById("admin-popup");
+  const text = document.getElementById("admin-popup-text");
+  const actions = document.getElementById("popup-actions");
+  const cancel = document.getElementById("popup-cancel");
+  const confirmBtn = document.getElementById("popup-confirm");
+  actions.style.display = "flex";
+  text.innerHTML = `<strong>${textToHtmlSafe(title)}</strong><br><br>${buildUserModerationBody(rpc)}<br><br><span style="opacity:.85;font-size:12px;">Usuário: ${textToHtmlSafe(nome || "—")}</span>`;
+  applyBottomSheetPopupStyles();
+  popup.style.display = "flex";
+
+  cancel.onclick = ()=>{
+    popup.style.display = "none";
+    applyDefaultPopupStyles();
+  };
+
+  confirmBtn.onclick = async ()=>{
+    popup.style.display = "none";
+    applyDefaultPopupStyles();
+    const { error } = await supabase.rpc(rpc, { p_user_id: uid });
+    if(error){
+      console.error(error);
+      showMessagePopup({
+        title: "Erro",
+        message: "Não foi possível concluir: " + (error.message || "erro na base de dados."),
+        buttonLabel: "Entendi",
+        bottomSheet: true,
+        compact: true
+      });
+      return;
+    }
+    showMessagePopup({
+      title: "Sucesso",
+      message: "Ação concluída.",
+      buttonLabel: "Entendi",
+      bottomSheet: true,
+      compact: true
+    });
+    await loadUsersAdminPanel();
+    loadAdminCounters();
+  };
+}
+
+async function loadUsersAdminPanel(){
+  const container = document.getElementById("users-admin-list");
+  if(!container) return;
+  container.innerHTML = `<div style="font-size:13px;opacity:.7">Carregando…</div>`;
+
+  const { data, error } = await supabase.rpc("admin_list_users", { p_limit: 400 });
+  let rows = data;
+  if(error){
+    container.innerHTML = `<div style="font-size:13px;opacity:.75">Não foi possível carregar os usuários.</div>`;
+    showMessagePopup({
+      title: "Erro",
+      message: error.message || "Não foi possível carregar os usuários.",
+      buttonLabel: "Entendi",
+      bottomSheet: true,
+      compact: true
+    });
+    return;
+  }
+  if(typeof rows === "string"){
+    try{
+      rows = JSON.parse(rows);
+    }catch(_e){
+      rows = [];
+    }
+  }
+  if(!Array.isArray(rows)) rows = [];
+
+  if(rows.length === 0){
+    container.innerHTML = `<div style="font-size:13px;opacity:.7">Nenhum usuário.</div>`;
+    return;
+  }
+
+  container.innerHTML = "";
+  rows.forEach((row)=>{
+    const uid = row.id;
+    const card = document.createElement("div");
+    card.className = "activity-event-item activity-event-item--admin-row is-static";
+
+    const mainTap = document.createElement("div");
+    mainTap.className = "activity-event-main-tap";
+    mainTap.style.pointerEvents = "none";
+    mainTap.setAttribute("aria-hidden", "true");
+
+    const thumb = document.createElement("div");
+    thumb.className = "activity-event-thumb";
+    const avatarUrl = String(row.avatar_url || "").trim();
+    const nomeForInitials = row.nome || row.email || "";
+    if(avatarUrl){
+      const img = document.createElement("img");
+      img.src = avatarUrl;
+      img.alt = "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.addEventListener("error", ()=>{
+        img.remove();
+        thumb.classList.add("activity-event-thumb--initials");
+        thumb.textContent = adminMemberInitials(nomeForInitials);
+      }, { once: true });
+      thumb.appendChild(img);
+    }else{
+      thumb.classList.add("activity-event-thumb--initials");
+      thumb.textContent = adminMemberInitials(nomeForInitials);
+    }
+
+    const copy = document.createElement("div");
+    copy.className = "activity-event-copy";
+    copy.innerHTML = `<div class="activity-event-title">${textToHtmlSafe(row.nome || "—")}</div>
+      <div class="activity-event-location">${textToHtmlSafe(row.email || "")}</div>`;
+
+    mainTap.appendChild(thumb);
+    mainTap.appendChild(copy);
+
+    const tools = document.createElement("div");
+    tools.className = "activity-event-admin-tools";
+
+    const btns = [
+      { icon: "warning", rpc: "admin_advertencia_usuario", title: "Advertência", tip: "Zera ranking em todos os meses; mantém equipe e eventos" },
+      { icon: "ban", rpc: "admin_ban_usuario_definitivo", title: "Banimento definitivo", tip: "Apaga conta e dados (irreversível)", ban: true }
+    ];
+
+    btns.forEach((cfg)=>{
+      const b = document.createElement("button");
+      b.type = "button";
+      b.title = cfg.tip;
+      b.setAttribute("aria-label", cfg.title);
+      b.innerHTML = adminUserModerationIconSvg(cfg.icon);
+      b.className = cfg.ban
+        ? "published-events-icon-btn published-events-icon-btn--danger"
+        : "published-events-icon-btn";
+      b.onclick = ()=> openUserModerationPopup({
+        uid,
+        nome: row.nome || row.email || "",
+        rpc: cfg.rpc,
+        title: cfg.title
+      });
+      tools.appendChild(b);
+    });
+
+    card.appendChild(mainTap);
+    card.appendChild(tools);
+    container.appendChild(card);
+  });
+}
+
+// const popupOverlay = document.getElementById("admin-popup"); // REMOVED as per instructions
+
+if(closeManageTeamModalBtn){
+  closeManageTeamModalBtn.addEventListener("click", closeManageTeamModal);
+}
+
+if(manageTeamModal){
+  manageTeamModal.addEventListener("click", (event)=>{
+    if(event.target === manageTeamModal) closeManageTeamModal();
+  });
+}
 
 popupOverlay.addEventListener("click", (e)=>{
   if(e.target.id === "admin-popup"){
     popupOverlay.style.display = "none";
+    applyDefaultPopupStyles();
   }
 });
 
@@ -457,17 +2727,14 @@ popupOverlay.addEventListener("click", (e)=>{
   <div class="app-popup">
     <div id="admin-popup-text" class="app-popup-text"></div>
 
-    <div id="popup-actions" style="display:flex;gap:10px;justify-content:center;margin-top:14px;">
-      <button id="popup-cancel" class="app-popup-button" style="background:#333;color:#fff;">Cancelar</button>
-      <button id="popup-confirm" class="app-popup-button">Confirmar</button>
+    <div id="popup-actions" class="app-popup-actions app-popup-actions--row" style="display:flex;">
+      <button id="popup-cancel" type="button" class="app-popup-button app-popup-secondary">Cancelar</button>
+      <button id="popup-confirm" type="button" class="app-popup-button">Confirmar</button>
     </div>
   </div>
 </div>
 
-<script type="module">
-import { loadHeader } from "../js/header.js";
-loadHeader("Painel Admin");
-</script>
+<script type="module" src="../js/pwa.js?v=5"></script>
 
 </body>
 </html>

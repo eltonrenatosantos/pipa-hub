@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>document.documentElement.classList.add('app-preload');</script>
   <title>WebPipa</title>
-  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../assets/css/global.css?v=9" />
+  <link rel="stylesheet" href="../assets/css/components.css?v=18" />
+  <link rel="stylesheet" href="../assets/css/pages.css?v=2" />
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0b0b0b">
+  <meta name="theme-color" content="#0b0b0b" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="WebPipa">
@@ -16,66 +19,32 @@
 
   <div id="app-header"></div>
 
-  <!-- ANÚNCIO -->
-  <section class="ads">
-    <div class="ad-banner">Espaço Publicitário</div>
+  <section id="home-ad-slot" class="home-ad-slot" hidden aria-label="Publicidade"></section>
+
+  <section class="highlight home-highlight">
+    <div class="highlight-card"></div>
+    <div class="home-hero-dots" aria-hidden="true"></div>
   </section>
 
-  <!-- STORIES (EVENTOS PRÓXIMOS) -->
-  <!-- SECTION HEADER: EVENTOS PRÓXIMOS -->
   <div class="section-header">
-    <span class="section-title">Eventos Próximos</span>
-    <span class="section-arrow">››</span>
+    <div class="section-copy">
+      <span class="section-title">Próximos eventos</span>
+      <span class="section-subtitle">Os melhores eventos do universo dos pipeiros.</span>
+    </div>
   </div>
   <section class="stories">
     <div class="stories-container"></div>
   </section>
-
-  <!-- EVENTOS EM DESTAQUE -->
-  <!-- SECTION HEADER: EM DESTAQUE -->
-  <div class="section-header">
-    <span class="section-title">Eventos em destaque</span>
-  </div>
-  <section class="highlight" style="margin-top:12px;">
-    <div class="highlight-card"></div>
-  </section>
-
-
-  <script>
-    const navItems = document.querySelectorAll('.nav-item');
-
-    navItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const page = item.dataset.page;
-
-        if(page === 'events') window.location.href = '/pages/home.html';
-        if(page === 'map') window.location.href = '/pages/map.html';
-        if(page === 'publish') window.location.href = '/pages/publish.html';
-        if(page === 'ranking') window.location.href = '/pages/ranking.html';
-        if(page === 'profile') {
-          const userEmail = localStorage.getItem("user_email");
-
-          const admins = [
-            "duckcreativesolutions@gmail.com"
-          ];
-
-          if (admins.includes(userEmail)) {
-            window.location.href = '/pages/admin.html';
-          } else {
-            window.location.href = '/pages/profile.html';
-          }
-        }
-      });
-    });
-  </script>
 <script type="module">
-import { loadHeader } from "../js/header.js";
-import { loadFooter } from "../js/footer.js";
+import { loadHeader } from "../js/header.js?v=4";
+import { loadFooter } from "../js/footer.js?v=1";
 
-loadHeader("Eventos");
+await loadHeader('<img src="/assets/images/webpipa-logo.png" alt="WebPipa" class="header-logo">');
 loadFooter("events");
 </script>
-  <script type="module" src="../js/home.js"></script>
+
+  <script type="module" src="../js/home.js?v=17"></script>
+  <script type="module" src="../js/pwa.js?v=5"></script>
 
 </body>
 </html>
