@@ -1,2 +1,5 @@
 .vercel
 .env*.local
+**/._*
+**/.DS_Store
+.cursor/
