@@ -1,122 +1,155 @@
 // /js/publish.js
 
 import { supabase } from "./supabase.js";
+import { getAuthRedirectUrl, storeAuthReturnUrl } from "./auth-redirect.js";
+import { closePopup, showMessagePopup, showPopup as showAppPopup } from "./ui/popup.js";
+import { beginPageLoad, finishPageLoad } from "./ui/page-loader.js?v=2";
+import {
+  buildLocation,
+  buildLocationPreview,
+  clearPublishDraft,
+  countEventsForInstagramOnDate,
+  fetchCep,
+  findAwaitingPayment,
+  formatCep,
+  geocode,
+  getPlanPrice,
+  getMyPublishTeam,
+  isCompleteAddress,
+  insertEvent,
+  loadEventsByDate,
+  loadPublishDraft,
+  mapPlanToEventType,
+  markPublishNow,
+  millisecondsSinceLastPublish,
+  onlyDigits,
+  savePublishDraft,
+  similarEventName,
+  uploadEventImage,
+  validateImageFile
+} from "./services/publish.js?v=3";
+import {
+  showAwaitingReviewPopup,
+  showPixPaymentPopup,
+  showPlanPickerPopup
+} from "./publish-plan-payment.js?v=4";
 
-// PIX configuration (edit whenever needed)
-const PIX_KEY = "webpipapaypal@gmail.com";
-const PIX_QR_IMAGE = "/assets/pix/qrcode.png"; // replace with your QR image
+beginPageLoad();
 
-// ---- PIX payload generator (Banco Central BR Code) ----
-function crc16(str){
-  let crc = 0xFFFF;
-  for (let c = 0; c < str.length; c++){
-    crc ^= str.charCodeAt(c) << 8;
-    for (let i = 0; i < 8; i++){
-      if ((crc & 0x8000) !== 0) crc = (crc << 1) ^ 0x1021;
-      else crc <<= 1;
-      crc &= 0xFFFF;
-    }
-  }
-  return crc.toString(16).toUpperCase().padStart(4,"0");
+/** Nome do evento: maiúsculas, sem emoji, máx. 35 caracteres */
+const EVENT_TITLE_MAX_LEN = 35;
+
+function stripEmojisFromTitle(str){
+  return String(str)
+    .replace(/\p{Extended_Pictographic}/gu, "")
+    .replace(/\u2764\uFE0F?/gu, "")
+    .replace(/\uFE0F/g, "")
+    .replace(/\u200D/g, "");
 }
 
-function buildPixPayload(key,value,txid){
-
-  const merchantName = "ELTON RENATO";
-  const merchantCity = "SAO PAULO";
-
-  const amount = value.toFixed(2);
-
-  const gui = "BR.GOV.BCB.PIX";
-
-  const keyField = "01" + key.length.toString().padStart(2,"0") + key;
-
-  const merchantAccountInfo =
-    "00" + gui.length.toString().padStart(2,"0") + gui +
-    keyField;
-
-  const merchantAccount =
-    "26" + merchantAccountInfo.length.toString().padStart(2,"0") + merchantAccountInfo;
-
-  const txidClean = txid.replace(/[^A-Za-z0-9]/g,"");
-  const txidField = "05" + txidClean.length.toString().padStart(2,"0") + txidClean;
-
-  const additionalData =
-    "62" + txidField.length.toString().padStart(2,"0") + txidField;
-
-  let payload =
-    "000201" +
-    "010211" +
-    merchantAccount +
-    "52040000" +
-    "5303986" +
-    "54" + amount.length.toString().padStart(2,"0") + amount +
-    "5802BR" +
-    "59" + merchantName.length.toString().padStart(2,"0") + merchantName +
-    "60" + merchantCity.length.toString().padStart(2,"0") + merchantCity +
-    additionalData +
-    "6304";
-
-  const crc = crc16(payload);
-
-  return payload + crc;
+function normalizeEventTitleValue(raw){
+  return stripEmojisFromTitle(raw).toUpperCase().slice(0, EVENT_TITLE_MAX_LEN);
 }
 
 function showPopup(message){
-  const overlay = document.createElement("div");
-  overlay.className = "app-popup-overlay";
-
-  overlay.innerHTML = `
-    <div class="app-popup">
-      <div class="app-popup-text">${message}</div>
-      <button class="app-popup-button">OK</button>
-    </div>
-  `;
-
-  document.body.appendChild(overlay);
-
-  overlay.querySelector(".app-popup-button").onclick = () => {
-    overlay.remove();
-  };
+  showMessagePopup({ message });
 }
 
+function formatPublishDisplayDate(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  const [year, month, day] = raw.split("-");
+  if(!year || !month || !day) return raw;
+  return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year}`;
+}
+
+function resetPublishForm(){
+  if(document.getElementById("event-team")){
+    document.getElementById("event-team").value = lockedTeamName || "";
+  }
+
+  if(document.getElementById("event-title")) document.getElementById("event-title").value = "";
+  if(document.getElementById("event-cep")) document.getElementById("event-cep").value = "";
+  if(document.getElementById("event-city")) document.getElementById("event-city").value = "";
+  if(document.getElementById("event-number")) document.getElementById("event-number").value = "";
+  if(document.getElementById("event-location")) document.getElementById("event-location").value = "";
+  if(document.getElementById("event-date")) document.getElementById("event-date").value = "";
+  if(document.getElementById("event-date-display")) document.getElementById("event-date-display").value = "";
+  if(document.getElementById("event-instagram")) document.getElementById("event-instagram").value = "";
+  if(document.getElementById("event-description")) document.getElementById("event-description").value = "";
+  if(document.getElementById("event-image")) document.getElementById("event-image").value = "";
+  if(document.getElementById("event-image-name")){
+    document.getElementById("event-image-name").textContent = "Nenhum arquivo escolhido";
+    document.getElementById("event-image-name").classList.remove("has-file");
+  }
+
+  cepData = null;
+  cepDataCep = "";
+
+  if(preview){
+    preview.src = "";
+    preview.style.display = "none";
+  }
+
+  clearPublishDraft();
+}
+
+function showFreePublishSuccessPopup(){
+  const { overlay } = showAppPopup({
+    compact: true,
+    message: "Evento enviado para aprovação!",
+    actions: `
+      <button class="app-popup-button" type="button" data-role="close">Fechar</button>
+    `
+  });
+
+  overlay.querySelector('[data-role="close"]')?.addEventListener("click", () => {
+    closePopup(overlay);
+  });
+
+  return overlay;
+}
 
 /* -------- persist form data during login redirect -------- */
 
 function saveDraft(){
+  const eventDateValue = document.getElementById("event-date")?.value || "";
   const draft = {
     team: document.getElementById("event-team")?.value || "",
     title: document.getElementById("event-title")?.value || "",
+    cep: document.getElementById("event-cep")?.value || "",
     city: document.getElementById("event-city")?.value || "",
+    number: document.getElementById("event-number")?.value || "",
     location: document.getElementById("event-location")?.value || "",
-    date: document.getElementById("event-date")?.value || "",
-    instagram: document.getElementById("event-instagram")?.value || ""
+    date: eventDateValue,
+    instagram: document.getElementById("event-instagram")?.value || "",
+    description: document.getElementById("event-description")?.value || ""
   };
 
-  localStorage.setItem("eventDraft", JSON.stringify(draft));
+  savePublishDraft(draft);
 }
 
 function restoreDraft(){
-  const saved = localStorage.getItem("eventDraft");
-  if(!saved) return;
+  const draft = loadPublishDraft();
+  if(!draft) return;
 
-  try{
-    const draft = JSON.parse(saved);
-
-    if(document.getElementById("event-team")) document.getElementById("event-team").value = draft.team || "";
-    if(document.getElementById("event-title")) document.getElementById("event-title").value = draft.title || "";
-    if(document.getElementById("event-city")) document.getElementById("event-city").value = draft.city || "";
-    if(document.getElementById("event-location")) document.getElementById("event-location").value = draft.location || "";
-    if(document.getElementById("event-date")) document.getElementById("event-date").value = draft.date || "";
-    if(document.getElementById("event-instagram")) document.getElementById("event-instagram").value = draft.instagram || "";
-
-  }catch(e){
-    console.error("Erro ao restaurar draft", e);
+  if(document.getElementById("event-team")) document.getElementById("event-team").value = draft.team || "";
+  if(document.getElementById("event-title")){
+    document.getElementById("event-title").value = normalizeEventTitleValue(draft.title || "");
   }
+  if(document.getElementById("event-cep")) document.getElementById("event-cep").value = draft.cep || "";
+  if(document.getElementById("event-city")) document.getElementById("event-city").value = draft.city || "";
+  if(document.getElementById("event-number")) document.getElementById("event-number").value = draft.number || "";
+  if(document.getElementById("event-location")) document.getElementById("event-location").value = draft.location || "";
+  if(document.getElementById("event-date")) document.getElementById("event-date").value = draft.date || "";
+  if(document.getElementById("event-date-display")) document.getElementById("event-date-display").value = formatPublishDisplayDate(draft.date || "");
+  if(document.getElementById("event-instagram")) document.getElementById("event-instagram").value = draft.instagram || "";
+  if(document.getElementById("event-description")) document.getElementById("event-description").value = draft.description || "";
 }
 
 
 /* restore draft only if returning from login redirect */
+
 const loginRedirect = localStorage.getItem("loginRedirect");
 
 if(loginRedirect === "1"){
@@ -124,17 +157,172 @@ if(loginRedirect === "1"){
   localStorage.removeItem("loginRedirect");
 }else{
   // normal navigation → ensure form starts clean
-  localStorage.removeItem("eventDraft");
+  clearPublishDraft();
+}
+
+const teamField = document.getElementById("event-team");
+let lockedTeamName = "";
+
+async function syncPublishTeamField(){
+  if(!teamField) return;
+
+  teamField.readOnly = false;
+  teamField.disabled = false;
+  teamField.placeholder = "Nome da equipe";
+  lockedTeamName = "";
+
+  let myTeamData;
+  try{
+    myTeamData = await getMyPublishTeam();
+  }catch(myTeamError){
+    console.error("Erro ao carregar equipe do usuário no publish", myTeamError);
+    return;
+  }
+  if(!myTeamData) return;
+
+  if(myTeamData.state === "owner" || myTeamData.state === "member"){
+    lockedTeamName = (myTeamData.team_name || "").trim();
+
+    if(lockedTeamName){
+      teamField.value = lockedTeamName;
+      teamField.readOnly = true;
+      teamField.setAttribute("aria-readonly", "true");
+      teamField.style.opacity = "0.8";
+      teamField.style.cursor = "not-allowed";
+    }
+  }
+}
+
+Promise.resolve(syncPublishTeamField())
+  .catch((error) => {
+    console.error("Erro ao sincronizar equipe no publish", error);
+  })
+  .finally(() => {
+    finishPageLoad();
+  });
+
+const cepField = document.getElementById("event-cep");
+const numberField = document.getElementById("event-number");
+const cityField = document.getElementById("event-city");
+const locationField = document.getElementById("event-location");
+
+let cepData = null;
+let cepDataCep = "";
+
+function updateLocationFromCep(){
+  if(!cepData) return;
+  if(!locationField) return;
+
+  const street = cepData.logradouro || "";
+  const neighborhood = cepData.bairro || "";
+  const number = numberField?.value || "";
+
+  const fullLocation = buildLocation(street, number, neighborhood);
+  const previewLocation = buildLocationPreview(street, neighborhood);
+
+  locationField.value = fullLocation || previewLocation;
+}
+
+async function ensureCepDataForSubmit(rawCep){
+  const cleanCep = onlyDigits(rawCep);
+  if(cleanCep.length !== 8){
+    return null;
+  }
+
+  if(cepData && cepDataCep === cleanCep){
+    return cepData;
+  }
+
+  const data = await fetchCep(cleanCep);
+  cepData = data;
+  cepDataCep = cleanCep;
+
+  if(cityField && data.localidade){
+    cityField.value = data.localidade;
+  }
+
+  updateLocationFromCep();
+  saveDraft();
+
+  return data;
+}
+
+if(cepField){
+  cepField.addEventListener("input", ()=>{
+    cepField.value = formatCep(cepField.value);
+  });
+
+  cepField.addEventListener("blur", async ()=>{
+    const cleanCep = onlyDigits(cepField.value);
+
+    if(!cleanCep) return;
+
+    try{
+      const data = await fetchCep(cleanCep);
+      cepData = data;
+      cepDataCep = cleanCep;
+
+      if(cityField && data.localidade){
+        cityField.value = data.localidade;
+      }
+
+      updateLocationFromCep();
+      saveDraft();
+
+    }catch(e){
+      console.error(e);
+      showPopup(e.message || "Erro ao buscar CEP.");
+    }
+  });
+}
+
+if(numberField){
+  numberField.addEventListener("input", ()=>{
+    updateLocationFromCep();
+    saveDraft();
+  });
 }
 
 
 const imageInput = document.getElementById("event-image");
+const imageTrigger = document.getElementById("event-image-trigger");
+const imageName = document.getElementById("event-image-name");
 let preview = document.getElementById("preview");
+const eventDateInput = document.getElementById("event-date");
+const eventDateDisplay = document.getElementById("event-date-display");
+
+function syncPublishDateDisplay(){
+  if(!eventDateDisplay) return;
+  eventDateDisplay.value = formatPublishDisplayDate(eventDateInput?.value || "");
+}
+
+if(eventDateInput){
+  eventDateInput.addEventListener("change", () => {
+    syncPublishDateDisplay();
+    saveDraft();
+  });
+
+  eventDateInput.addEventListener("input", () => {
+    syncPublishDateDisplay();
+  });
+}
+
+syncPublishDateDisplay();
 
 
-// capitalizar primeira letra automaticamente
+// Nome do evento: só maiúsculas, sem emoji, máx. 35 (regras em normalizeEventTitleValue)
+const titleField = document.getElementById("event-title");
+if(titleField){
+  const syncTitle = ()=>{
+    const next = normalizeEventTitleValue(titleField.value);
+    if(next !== titleField.value) titleField.value = next;
+  };
+  titleField.addEventListener("input", syncTitle);
+  titleField.addEventListener("blur", syncTitle);
+}
+
+// capitalizar primeira letra automaticamente (exceto título, que é tudo maiúsculo)
 const textFields = [
-  "event-title",
   "event-city",
   "event-location",
   "event-instagram"
@@ -159,18 +347,30 @@ textFields.forEach(id => {
 if(imageInput && !preview){
   preview = document.createElement("img");
   preview.id = "preview";
-  preview.style.width = "50%";
-  preview.style.display = "none";
-  preview.style.margin = "10px auto";
-  preview.style.borderRadius = "12px";
+  preview.className = "publish-image-preview";
 
   imageInput.parentElement.appendChild(preview);
 }
 
 if(imageInput && preview){
+  imageTrigger?.addEventListener("click", () => {
+    imageInput.click();
+  });
+
   imageInput.addEventListener("change", () => {
     const file = imageInput.files[0];
-    if(!file) return;
+    if(!file){
+      if(imageName){
+        imageName.textContent = "Nenhum arquivo escolhido";
+        imageName.classList.remove("has-file");
+      }
+      return;
+    }
+
+    if(imageName){
+      imageName.textContent = file.name;
+      imageName.classList.add("has-file");
+    }
 
     const reader = new FileReader();
 
@@ -181,100 +381,6 @@ if(imageInput && preview){
 
     reader.readAsDataURL(file);
   });
-}
-
-// compressão da imagem antes do upload
-async function compressImage(file){
-  return new Promise((resolve) => {
-
-    const img = new Image();
-    const reader = new FileReader();
-
-    reader.onload = e => {
-      img.src = e.target.result;
-    };
-
-    img.onload = () => {
-
-      const canvas = document.createElement("canvas");
-
-      const maxWidth = 1200; // limite de largura
-      const scale = Math.min(maxWidth / img.width, 1);
-
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      canvas.toBlob(
-        blob => resolve(blob),
-        "image/jpeg",
-        0.7 // qualidade 70%
-      );
-
-    };
-
-    reader.readAsDataURL(file);
-  });
-}
-
-async function geocode(city, location){
-  try{
-
-    // 🔑 coloque aqui seu token do Mapbox
-    const MAPBOX_TOKEN = "pk.eyJ1IjoiZHVja2NyZWF0aXZlIiwiYSI6ImNtbWpzMW5yeTFoZnAycnBvY2Q1Y203NTUifQ.bm0hHqXLaxD9n7FNB7SIGQ";
-
-    const query = encodeURIComponent(`${location}, ${city}, São Paulo, Brasil`);
-
-    const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?access_token=${MAPBOX_TOKEN}&country=br&limit=5`;
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if(data && data.features && data.features.length){
-
-      const feature = data.features[0];
-
-      const [lng, lat] = feature.center;
-const placeName = feature.place_name;
-
-return {
-  lat: parseFloat(lat),
-  lng: parseFloat(lng),
-  place: placeName
-};
-    }
-
-    // se não encontrar
-    return { lat:null, lng:null };
-
-  }catch(e){
-    console.error("Erro ao buscar coordenadas Mapbox", e);
-  }
-
-  return { lat:null, lng:null };
-}
-
-function normalizeText(text){
-  return text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"") // remove acentos
-    .replace(/[^a-z0-9\s]/g,"")
-    .trim();
-}
-
-function similarEventName(a,b){
-  const t1 = normalizeText(a);
-  const t2 = normalizeText(b);
-
-  if(t1 === t2) return true;
-
-  // evita spam com pequenas variações
-  if(t1.includes(t2) || t2.includes(t1)) return true;
-
-  return false;
 }
 
 const button = document.getElementById("publish-event");
@@ -290,25 +396,37 @@ if(button) button.addEventListener("click", async ()=>{
 
     // mark that we are going to login redirect
     localStorage.setItem("loginRedirect","1");
+    storeAuthReturnUrl("/pages/publish.html");
 
     // abre login Google automaticamente
+    const loginRedirectUrl = getAuthRedirectUrl("/pages/publish.html");
+
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.href
+        redirectTo: loginRedirectUrl
       }
     });
     return;
   }
 
+  let publishTeamState = null;
+  const { data: publishMyTeamData, error: publishMyTeamError } = await supabase.rpc("get_my_team");
+
+  if(publishMyTeamError){
+    console.error("Erro ao validar equipe do usuário", publishMyTeamError);
+  }else{
+    publishTeamState = publishMyTeamData;
+  }
+
   const team = document.getElementById("event-team")?.value.trim();
-  const title = document.getElementById("event-title").value.trim();
-  const city = document.getElementById("event-city").value.trim();
-  const normalizedTitle = title.toLowerCase();
-  const normalizedCity = city.toLowerCase();
+  const title = normalizeEventTitleValue(document.getElementById("event-title")?.value || "").trim();
+  const cep = document.getElementById("event-cep")?.value.trim() || "";
+  const number = document.getElementById("event-number")?.value.trim() || "";
   const location = document.getElementById("event-location").value.trim();
   const date = document.getElementById("event-date").value;
   let instagram = document.getElementById("event-instagram").value.trim();
+  const description = document.getElementById("event-description")?.value.trim() || null;
   const imageFile = document.getElementById("event-image").files[0];
   let image = "";
 
@@ -320,9 +438,81 @@ if(button) button.addEventListener("click", async ()=>{
       .replace(/^@?/, "@");
   }
 
-  if(!team || !title || !city || !date || !imageFile){
-    showPopup("Preencha equipe, nome, cidade, data e adicione a arte do evento.");
+    if(!team || !title || !date || !imageFile){
+    showPopup("Preencha equipe, nome, data e adicione a arte do evento.");
     return;
+  }
+
+  if(!cep){
+    showPopup("Informe o CEP do evento.");
+    return;
+  }
+
+  let submitCepData = null;
+  try{
+    submitCepData = await ensureCepDataForSubmit(cep);
+  }catch(cepError){
+    console.error("Erro ao validar CEP no envio", cepError);
+    showPopup(cepError.message || "CEP não encontrado. Revise o número informado.");
+    return;
+  }
+
+  if(!submitCepData){
+    showPopup("Informe um CEP válido com 8 números.");
+    return;
+  }
+
+  const submitCity = String(submitCepData.localidade || "").trim();
+  const submitUf = String(submitCepData.uf || "").trim();
+  if(!submitCity){
+    showPopup("Não foi possível identificar a cidade do CEP informado.");
+    button.disabled = false;
+    button.textContent = originalBtnText;
+    return;
+  }
+  const normalizedTitle = title.toLowerCase();
+  const normalizedCity = submitCity.toLowerCase();
+
+  if(!number){
+    showPopup("Informe o número do endereço do evento.");
+    return;
+  }
+
+  const imageValidationError = validateImageFile(imageFile);
+  if(imageValidationError){
+    showPopup(imageValidationError);
+    return;
+  }
+
+  if(!isCompleteAddress(location)){
+    showPopup("Informe o endereço completo com rua, número e bairro.");
+    return;
+  }
+
+  if(
+    publishTeamState &&
+    (publishTeamState.state === "team_pending_approval" || publishTeamState.state === "team_rejected")
+  ){
+    showPopup(
+      publishTeamState.state === "team_pending_approval"
+        ? "Sua equipe ainda está em aprovação. Você poderá publicar eventos com o nome da equipe após a aprovação do administrador."
+        : "O registro da sua equipe não foi aprovado. Não é possível publicar eventos vinculados a ela no momento."
+    );
+    return;
+  }
+
+  if(publishTeamState && (publishTeamState.state === "owner" || publishTeamState.state === "member")){
+    const allowedTeamName = (publishTeamState.team_name || "").trim();
+
+    if(!allowedTeamName){
+      showPopup("Não foi possível identificar a equipe do seu usuário.");
+      return;
+    }
+
+    if(team !== allowedTeamName){
+      showPopup("Este usuário não pertence a essa equipe.");
+      return;
+    }
   }
 
   // impedir criação de eventos em datas passadas
@@ -338,40 +528,31 @@ if(button) button.addEventListener("click", async ()=>{
   }
 
   // proteção anti‑flood (30s entre publicações)
-  const lastPublish = localStorage.getItem("lastEventPublish");
-  if(lastPublish){
-    const diff = Date.now() - parseInt(lastPublish);
-    if(diff < 30000){
-      showPopup("Aguarde alguns segundos antes de publicar outro evento.");
-      return;
-    }
+  const lastPublishDiff = millisecondsSinceLastPublish();
+  if(lastPublishDiff !== null && lastPublishDiff < 30000){
+    showPopup("Aguarde alguns segundos antes de publicar outro evento.");
+    return;
   }
 
   // limite de 3 eventos por dia por organizador (usando instagram como identificador)
   if(instagram){
-    const { data: userEventsToday, error: limitError } = await supabase
-      .from("events")
-      .select("id")
-      .eq("instagram", instagram)
-      .eq("date", date);
+    try{
+      const userEventsToday = await countEventsForInstagramOnDate({ instagram, date });
 
-    if(limitError){
+      if(userEventsToday >= 3){
+        showPopup("Você já publicou o limite de eventos para esta data.");
+        return;
+      }
+    }catch(limitError){
       console.error("Erro ao verificar limite diário", limitError);
-    }
-
-    if(userEventsToday && userEventsToday.length >= 3){
-      showPopup("Você já publicou o limite de eventos para esta data.");
-      return;
     }
   }
 
   // verificar evento duplicado (mesmo nome + cidade + data)
-  const { data: existingEvents, error: duplicateError } = await supabase
-    .from("events")
-    .select("id,title,city")
-    .eq("date", date);
-
-  if(duplicateError){
+  let existingEvents = [];
+  try{
+    existingEvents = await loadEventsByDate(date);
+  }catch(duplicateError){
     console.error("Erro ao verificar duplicidade", duplicateError);
   }
 
@@ -389,153 +570,7 @@ if(button) button.addEventListener("click", async ()=>{
 
   /* -------- escolher plano de divulgação -------- */
 
-  const plan = await new Promise(resolve => {
-
-    const overlay = document.createElement("div");
-    overlay.className = "app-popup-overlay";
-
-    overlay.innerHTML = `
-      <div class="app-popup">
-
-        <div class="app-popup-text" style="font-weight:700;letter-spacing:0.5px;">
-          ESCOLHA COMO DIVULGAR SEU EVENTO
-        </div>
-
-        <div style="display:flex;align-items:center;gap:6px;">
-          <div id="plan-left" style="cursor:pointer;font-size:22px;padding:6px 8px;opacity:.8;">‹</div>
-      <div id="plan-slider" class="plan-slider" style="flex:1;overflow-x:auto;scroll-behavior:smooth;">
-        <div class="plan-card" data-plan="7" style="background:none;border:none;box-shadow:none;padding:0;">
-          <img src="/assets/plans/plan-7.jpg" class="plan-image" style="width:92%;height:auto;display:block;margin:auto;box-shadow:0 10px 28px rgba(0,0,0,0.6);border-radius:16px;">
-        </div>
-
-        <div class="plan-card" data-plan="15" style="background:none;border:none;box-shadow:none;padding:0;">
-          <img src="/assets/plans/plan-15.jpg" class="plan-image" style="width:92%;height:auto;display:block;margin:auto;box-shadow:0 10px 28px rgba(0,0,0,0.6);border-radius:16px;">
-        </div>
-
-        <div class="plan-card" data-plan="30" style="background:none;border:none;box-shadow:none;padding:0;">
-          <img src="/assets/plans/plan-30.jpg" class="plan-image" style="width:92%;height:auto;display:block;margin:auto;box-shadow:0 10px 28px rgba(0,0,0,0.6);border-radius:16px;">
-        </div>
-      </div>
-          <div id="plan-right" style="cursor:pointer;font-size:22px;padding:6px 8px;opacity:.8;">›</div>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
-
-          <button class="app-popup-button" id="plan-highlight">
-            Destacar evento
-          </button>
-
-          <button class="app-popup-button" id="plan-free" style="background:#333;color:#fff">
-            Publicar gratuitamente
-          </button>
-
-        </div>
-
-      </div>
-    `;
-
-    document.body.appendChild(overlay);
-
-    // fechar popup ao clicar fora dele
-    const popupBox = overlay.querySelector(".app-popup");
-
-    // impedir que clique dentro do popup feche ele
-    popupBox.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
-
-    // clicar no fundo fecha o popup
-    overlay.addEventListener("click", () => {
-      overlay.remove();
-      resolve("cancel");
-    });
-
-    // enable horizontal drag/swipe on plan slider
-    const slider = overlay.querySelector("#plan-slider");
-
-    // arrow navigation
-    const leftArrow = overlay.querySelector("#plan-left");
-    const rightArrow = overlay.querySelector("#plan-right");
-
-    if(leftArrow){
-      leftArrow.addEventListener("click", ()=>{
-        slider.scrollBy({ left: -260, behavior: "smooth" });
-      });
-    }
-
-    if(rightArrow){
-      rightArrow.addEventListener("click", ()=>{
-        slider.scrollBy({ left: 260, behavior: "smooth" });
-      });
-    }
-
-    let isDraggingPlans = false;
-    let startXPlans = 0;
-    let startScrollPlans = 0;
-
-    if(slider){
-      slider.addEventListener("mousedown", (e)=>{
-        isDraggingPlans = true;
-        startXPlans = e.pageX;
-        startScrollPlans = slider.scrollLeft;
-        slider.style.cursor = "grabbing";
-      });
-
-      window.addEventListener("mouseup", ()=>{
-        isDraggingPlans = false;
-        slider.style.cursor = "grab";
-      });
-
-      slider.addEventListener("mousemove", (e)=>{
-        if(!isDraggingPlans) return;
-        const dx = e.pageX - startXPlans;
-        slider.scrollLeft = startScrollPlans - dx;
-      });
-    }
-
-    let selectedPlan = null;
-    const highlightBtn = overlay.querySelector("#plan-highlight");
-    if(highlightBtn){
-      highlightBtn.disabled = true;
-      highlightBtn.style.opacity = "0.5";
-    }
-
-    overlay.querySelectorAll(".plan-card").forEach(card=>{
-      card.addEventListener("click",()=>{
-
-        selectedPlan = card.dataset.plan;
-
-        overlay.querySelectorAll(".plan-card").forEach(c=>{
-          c.style.transform = "scale(0.95)";
-        });
-
-        // destaque visual
-        card.style.transform = "scale(1)";
-
-        // ativar botão destacar
-        if(highlightBtn){
-          highlightBtn.disabled = false;
-          highlightBtn.style.opacity = "1";
-        }
-
-      });
-    });
-
-    overlay.querySelector("#plan-highlight").onclick = () => {
-
-      if(!selectedPlan){
-        return;
-      }
-
-      overlay.remove();
-      resolve(selectedPlan);
-    };
-
-    overlay.querySelector("#plan-free").onclick = () => {
-      overlay.remove();
-      resolve("free");
-    };
-  });
+  const plan = await showPlanPickerPopup();
 
   // se fechar popup apenas cancela
   if(plan === "cancel"){
@@ -555,257 +590,101 @@ if(button) button.addEventListener("click", async ()=>{
 
   if(imageFile){
 
-    const fileName = `${Date.now()}_${imageFile.name}`;
-
-    const compressedImage = await compressImage(imageFile);
-
-    const { error: uploadError } = await supabase
-      .storage
-      .from("event-images")
-      .upload(fileName, compressedImage);
-
-    if(uploadError){
-      console.error(uploadError);
-      showPopup("Erro ao enviar imagem");
+    try{
+      image = await uploadEventImage(imageFile);
+    }catch(uploadProcessError){
+      console.error(uploadProcessError);
+      const uploadMessage = uploadProcessError.message && uploadProcessError.message.toLowerCase().includes("invalid key")
+        ? "O nome da imagem contém caracteres inválidos. Renomeie a imagem e tente novamente."
+        : (uploadProcessError.message || "Não foi possível processar a imagem. Tente outra imagem.");
+      showPopup(uploadMessage);
       button.disabled = false;
       button.textContent = originalBtnText;
       return;
     }
 
-    const { data } = supabase
-      .storage
-      .from("event-images")
-      .getPublicUrl(fileName);
-
-    image = data.publicUrl;
-
   }
 
-  const coords = await geocode(city, location);
+  const coords = await geocode(submitCity, location, cep, submitUf);
   let insertedEvent = null;
   let error = null;
 
-  // create event immediately for paid plans (awaiting payment)
-  if(plan !== "free"){
-
-    // prevent multiple PIX generations for the same user (reuse pending payment)
-    const { data: existingPending } = await supabase
-      .from("events")
-      .select("id,payment_reference,plan_type")
-      .eq("user_id", user.id)
-      .eq("payment_status", "awaiting_payment")
-      .limit(1)
-      .maybeSingle();
-
-    if(existingPending){
-
-      const planPrices = {
-        "7": 89,
-        "15": 139,
-        "30": 199
-      };
-
-      const priceValue = planPrices[existingPending.plan_type] || 0;
-      const price = `R$${priceValue}`;
-
-      const pixPayload = buildPixPayload(PIX_KEY, priceValue, existingPending.payment_reference);
-
-      const paymentOverlay = document.createElement("div");
-      paymentOverlay.className = "app-popup-overlay";
-
-      paymentOverlay.innerHTML = `
-        <div class="app-popup">
-
-          <div class="app-popup-text" style="font-weight:700">
-            Você já possui um pagamento pendente.
-          </div>
-
-          <div style="margin-top:6px;font-size:13px;opacity:.9;">
-            Conclua este pagamento antes de criar outro evento.
-          </div>
-
-          <div style="margin-top:10px;font-size:14px;">
-            Plano selecionado: Destaque ${existingPending.plan_type} dias<br>
-            Valor: ${price}
-          </div>
-
-          <div style="margin:16px 0;text-align:center;">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(pixPayload)}" style="width:220px;border-radius:12px;">
-          </div>
-
-          <div style="font-size:13px;margin-bottom:10px;">
-            Chave PIX<br>
-            <strong>${PIX_KEY}</strong><br><br>
-            Referência do pagamento<br>
-            <strong>${existingPending.payment_reference}</strong>
-          </div>
-
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <button class="app-popup-button" id="copy-pix-btn">Copiar chave PIX</button>
-            <button class="app-popup-button" id="paid-pix-btn">Já paguei o PIX</button>
-            <button class="app-popup-button" id="close-pix-btn" style="background:#333;color:#fff">Fechar</button>
-          </div>
-
-          <div style="font-size:11px;opacity:.7;margin-top:10px;">
-            Após pagar, aguarde a aprovação do evento.
-          </div>
-
-        </div>
-      `;
-
-      document.body.appendChild(paymentOverlay);
-
-      const copyBtn = paymentOverlay.querySelector("#copy-pix-btn");
-      if(copyBtn){
-        copyBtn.onclick = () => {
-          navigator.clipboard.writeText(PIX_KEY);
-          copyBtn.innerText = "Chave copiada";
-        };
-      }
-
-      const paidBtn = paymentOverlay.querySelector("#paid-pix-btn");
-      if(paidBtn){
-        paidBtn.onclick = () => {
-
-          paymentOverlay.remove();
-
-          const reviewOverlay = document.createElement("div");
-          reviewOverlay.className = "app-popup-overlay";
-
-          reviewOverlay.innerHTML = `
-            <div class="app-popup">
-              <div class="app-popup-text">
-                Pagamento enviado!<br><br>
-                Estamos verificando seu PIX e aprovando seu evento.
-              </div>
-
-              <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
-                <button class="app-popup-button" id="follow-webpipa-btn" style="background:#E1306C;color:#fff">Seguir @webpipa</button>
-                <button class="app-popup-button" id="close-review-btn" style="background:#333;color:#fff">Fechar</button>
-              </div>
-            </div>
-          `;
-
-          document.body.appendChild(reviewOverlay);
-
-          const followBtn = reviewOverlay.querySelector("#follow-webpipa-btn");
-          if(followBtn){
-            followBtn.onclick = () => {
-              window.open("https://instagram.com/webpipa", "_blank");
-            };
-          }
-
-          const closeReviewBtn = reviewOverlay.querySelector("#close-review-btn");
-          if(closeReviewBtn){
-            closeReviewBtn.onclick = () => {
-              reviewOverlay.remove();
-            };
-          }
-
-        };
-      }
-
-      const closeBtn = paymentOverlay.querySelector("#close-pix-btn");
-      if(closeBtn){
-        closeBtn.onclick = () => {
-          paymentOverlay.remove();
-        };
-      }
-
-      button.disabled = false;
-      button.textContent = originalBtnText;
-      return;
-    }
-
-    const result = await supabase
-      .from("events")
-      .insert([
-        {
-          team,
-          title,
-          city,
-          location: coords.place || location,
-          date,
-          instagram,
-          image,
-          lat: coords.lat,
-          lng: coords.lng,
-          user_id: user.id,
-          plan_type: plan,
-          payment_reference: paymentReference,
-          payment_amount: plan === "7" ? 89 : plan === "15" ? 139 : 199,
-          payment_status: "awaiting_payment"
-        }
-      ])
-      .select()
-      .single();
-
-    if(result.error){
-      console.error("Erro ao criar evento", result.error);
-      showPopup("Erro ao iniciar pagamento.");
-      button.disabled = false;
-      button.textContent = originalBtnText;
-      return;
-    }
-
-    insertedEvent = result.data;
-    // watch payment approval in realtime
-    supabase
-      .channel("payment-watch")
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "events",
-          filter: `id=eq.${insertedEvent.id}`
-        },
-        (payload) => {
-
-          if(payload.new.payment_status === "paid"){
-            showPopup("Pagamento confirmado! Seu evento foi aprovado e já está visível no aplicativo.");
-          }
-
-        }
-      )
-      .subscribe();
-  }
-
-  // validar se o endereço foi encontrado
+  // validar se o endereço foi encontrado antes de qualquer criação de evento
   if(!coords.lat || !coords.lng){
-    showPopup("Endereço não encontrado. Verifique a cidade e o local do evento.");
+    showPopup("Não foi possível localizar esse endereço. Revise rua, número e bairro.");
     button.disabled = false;
     button.textContent = originalBtnText;
     return;
   }
 
+  // para planos pagos, só reutiliza pagamento pendente do mesmo plano já enviado para análise
+  if(plan !== "free"){
+
+    // prevent multiple PIX generations for the same user (reuse pending payment)
+    let existingPending = null;
+    try{
+      existingPending = await findAwaitingPayment({ userId: user.id, plan });
+    }catch(existingPendingError){
+      console.error("Erro ao buscar pagamento pendente", existingPendingError);
+    }
+
+    if(existingPending){
+      const priceValue = getPlanPrice(existingPending.plan_type);
+
+      showPixPaymentPopup({
+        plan: existingPending.plan_type,
+        paymentReference: existingPending.payment_reference,
+        paymentAmount: priceValue,
+        onPaid: async () => {
+          showAwaitingReviewPopup();
+        }
+      }).catch((err) => console.error(err));
+
+      button.disabled = false;
+      button.textContent = originalBtnText;
+      return;
+    }
+
+  }
+
+
 
   if(plan === "free"){
-    const result = await supabase
-      .from("events")
-      .insert([
-        {
-          team,
-          title,
-          city,
-          location: coords.place || location,
-          date,
-          instagram,
-          image,
-          lat: coords.lat,
-          lng: coords.lng,
-          user_id: user.id,
-          plan_type: plan,
-          payment_reference: null,
-          payment_amount: 0,
-          payment_status: "pending"
-        }
-      ])
-      .select()
-      .single();
+    try{
+      insertedEvent = await insertEvent({
+        team,
+        title,
+        city: submitCity,
+        location,
+        date,
+        instagram,
+        description,
+        image,
+        lat: coords.lat,
+        lng: coords.lng,
+        user_id: user.id,
+        plan_type: plan,
+        payment_reference: null,
+        payment_amount: 0,
+        payment_status: "pending"
+      });
 
-    insertedEvent = result.data;
-    error = result.error;
+      const eventType = mapPlanToEventType(plan);
+
+      if(eventType){
+        const { error: scoreError } = await supabase.rpc("add_event_points", {
+          p_user_id: user.id,
+          p_event_type: eventType
+        });
+
+        if(scoreError){
+          console.error("Erro ao registrar pontuação do evento gratuito", scoreError);
+        }
+      }
+
+    }catch(insertError){
+      error = insertError;
+    }
   }
 
   if(error){
@@ -818,149 +697,60 @@ if(button) button.addEventListener("click", async ()=>{
 
   // se plano for pago mostrar popup de pagamento PIX após criar evento
   if(plan !== "free"){
-
-    const planPrices = {
-      "7": 89,
-      "15": 139,
-      "30": 199
-    };
-
-    const priceValue = planPrices[plan] || 0;
-    const price = `R$${priceValue}`;
-
-    // criar payload PIX válido (Banco Central BR Code)
-    const pixPayload = buildPixPayload(PIX_KEY, priceValue, paymentReference);
-
-    const paymentOverlay = document.createElement("div");
-    paymentOverlay.className = "app-popup-overlay";
-
-    paymentOverlay.innerHTML = `
-      <div class="app-popup">
-
-        <div class="app-popup-text" style="font-weight:700">
-          CONFIRME SEU PLANO E REALIZE O PAGAMENTO
-        </div>
-
-        <div style="margin-top:10px;font-size:14px;">
-          Plano selecionado: Destaque ${plan} dias<br>
-          Valor: ${price}
-        </div>
-
-        <div style="margin:16px 0;text-align:center;">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(pixPayload)}" style="width:220px;border-radius:12px;">
-        </div>
-
-        <div style="font-size:13px;margin-bottom:10px;">
-          Chave PIX<br>
-          <strong>${PIX_KEY}</strong><br><br>
-          Referência do pagamento<br>
-          <strong>${paymentReference}</strong>
-        </div>
-
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="app-popup-button" id="copy-pix-btn">Copiar chave PIX</button>
-          <button class="app-popup-button" id="paid-pix-btn">Já paguei o PIX</button>
-          <button class="app-popup-button" style="background:#333;color:#fff" id="close-pix-btn">Fechar</button>
-        </div>
-
-        <div style="font-size:11px;opacity:.7;margin-top:10px;">
-          Após pagar, aguarde a aprovação do evento.
-        </div>
-
-      </div>
-    `;
-
-    document.body.appendChild(paymentOverlay);
-
-    const copyBtn = paymentOverlay.querySelector("#copy-pix-btn");
-    if(copyBtn){
-      copyBtn.onclick = () => {
-        navigator.clipboard.writeText(PIX_KEY);
-        copyBtn.innerText = "Chave copiada";
-      };
-    }
-
-    const paidBtn = paymentOverlay.querySelector("#paid-pix-btn");
-    if(paidBtn){
-      paidBtn.onclick = async () => {
-        // prevent double click
-        if(paidBtn.dataset.processing === "1") return;
-        paidBtn.dataset.processing = "1";
-        paidBtn.disabled = true;
-        paidBtn.textContent = "Processando...";
-
-        paymentOverlay.remove();
-
-        const reviewOverlay = document.createElement("div");
-        reviewOverlay.className = "app-popup-overlay";
-
-        reviewOverlay.innerHTML = `
-          <div class="app-popup">
-            <div class="app-popup-text">
-              Pagamento enviado!<br><br>
-              Estamos verificando seu PIX e aprovando seu evento.
-            </div>
-
-            <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
-              <button class="app-popup-button" id="follow-webpipa-btn" style="background:#E1306C;color:#fff">Seguir @webpipa</button>
-              <button class="app-popup-button" id="close-review-btn" style="background:#333;color:#fff">Fechar</button>
-            </div>
-          </div>
-        `;
-
-        document.body.appendChild(reviewOverlay);
-        
-        const followBtn = reviewOverlay.querySelector("#follow-webpipa-btn");
-        if(followBtn){
-          followBtn.onclick = () => {
-            window.open("https://instagram.com/webpipa", "_blank");
-          };
+    const priceValue = getPlanPrice(plan);
+    showPixPaymentPopup({
+      plan,
+      paymentReference,
+      paymentAmount: priceValue,
+      onPaid: async () => {
+        try{
+          insertedEvent = await insertEvent({
+            team,
+            title,
+            city: submitCity,
+            location,
+            date,
+            instagram,
+            description,
+            image,
+            lat: coords.lat,
+            lng: coords.lng,
+            user_id: user.id,
+            plan_type: plan,
+            payment_reference: paymentReference,
+            payment_amount: priceValue,
+            payment_status: "awaiting_payment"
+          });
+        }catch(resultError){
+          console.error("Erro ao criar evento", resultError);
+          showPopup("Erro ao iniciar pagamento.");
+          throw resultError;
         }
 
-        const closeReviewBtn = reviewOverlay.querySelector("#close-review-btn");
-        if(closeReviewBtn){
-          closeReviewBtn.onclick = () => {
-            reviewOverlay.remove();
-
-            const teamField = document.getElementById("event-team");
-            if(teamField) teamField.value = "";
-
-            const titleField = document.getElementById("event-title");
-            if(titleField) titleField.value = "";
-
-            const cityField = document.getElementById("event-city");
-            if(cityField) cityField.value = "";
-
-            const locationField = document.getElementById("event-location");
-            if(locationField) locationField.value = "";
-
-            const dateField = document.getElementById("event-date");
-            if(dateField) dateField.value = "";
-
-            const instaField = document.getElementById("event-instagram");
-            if(instaField) instaField.value = "";
-
-            const imageField = document.getElementById("event-image");
-            if(imageField) imageField.value = "";
-
-            if(preview){
-              preview.src = "";
-              preview.style.display = "none";
+        supabase
+          .channel(`payment-watch-${insertedEvent.id}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "UPDATE",
+              schema: "public",
+              table: "events",
+              filter: `id=eq.${insertedEvent.id}`
+            },
+            (payload) => {
+              if(payload.new.payment_status === "paid"){
+                showPopup("Pagamento confirmado! Seu evento foi aprovado e já está visível no aplicativo.");
+              }
             }
+          )
+          .subscribe();
 
-            localStorage.removeItem("eventDraft");
-          };
-        }
-
-      };
-    }
-
-    const closeBtn = paymentOverlay.querySelector("#close-pix-btn");
-    if(closeBtn){
-      closeBtn.onclick = () => {
-        paymentOverlay.remove();
-      };
-    }
+        markPublishNow();
+        clearPublishDraft();
+        resetPublishForm();
+        showAwaitingReviewPopup();
+      }
+    }).catch((err) => console.error(err));
   }
 
   // se o plano for pago, não mostrar popup de sucesso agora
@@ -970,51 +760,11 @@ if(button) button.addEventListener("click", async ()=>{
     button.textContent = originalBtnText;
     return;
   }
-  const successOverlay = document.createElement("div");
-  successOverlay.className = "app-popup-overlay";
-
-  successOverlay.innerHTML = `
-    <div class="app-popup">
-      <div class="app-popup-text">
-        Seu evento foi enviado para aprovação.<br><br>
-        Assim que aprovado ele aparecerá no aplicativo.
-      </div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
-        <button class="app-popup-button" id="follow-webpipa-btn" style="background:#E1306C;color:#fff">Seguir @webpipa</button>
-        <button class="app-popup-button" id="close-popup-btn" style="background:#333;color:#fff">Fechar</button>
-      </div>
-    </div>
-  `;
-
-  document.body.appendChild(successOverlay);
-
-  const followBtn = successOverlay.querySelector("#follow-webpipa-btn");
-  if(followBtn){
-    followBtn.onclick = () => {
-      window.open("https://instagram.com/webpipa", "_blank");
-    };
-  }
-
-  successOverlay.querySelector("#close-popup-btn").onclick = () => {
-    successOverlay.remove();
-  };
+  showFreePublishSuccessPopup();
   button.disabled = false;
   button.textContent = originalBtnText;
-  localStorage.removeItem("eventDraft");
-  // registrar tempo da última publicação
-  localStorage.setItem("lastEventPublish", Date.now().toString());
-
-  if(document.getElementById("event-team")) document.getElementById("event-team").value="";
-  document.getElementById("event-title").value="";
-  document.getElementById("event-city").value="";
-  document.getElementById("event-location").value="";
-  document.getElementById("event-date").value="";
-  document.getElementById("event-instagram").value="";
-  document.getElementById("event-image").value="";
-  if(preview){
-    preview.src = "";
-    // preview.style.display = "none";  // removed to avoid duplicated assignment
-    preview.style.display = "none";
-  }
+  clearPublishDraft();
+  markPublishNow();
+  resetPublishForm();
 
 });

@@ -3,11 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>document.documentElement.classList.add('app-preload');</script>
 
-<title>Adicionar Evento</title>
+<title>Cadastre seu Evento</title>
 
-<link rel="stylesheet" href="../css/style.css">
-
+  <link rel="stylesheet" href="../assets/css/global.css?v=9" />
+  <link rel="stylesheet" href="../assets/css/components.css?v=1" />
+<link rel="stylesheet" href="../assets/css/pages.css?v=4" />
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="WebPipa">
 </head>
 
 <body>
@@ -15,47 +22,78 @@
 
 <div id="app-header"></div>
 
-<section class="publish-container">
+<section class="publish-container publish-page">
 
-  <div class="publish-card">
+  <div class="publish-card publish-form app-form-card">
 
-    <div class="publish-group">
+    <div class="publish-group app-form-group">
       <label>Nome da equipe</label>
-      <input id="event-team" type="text" placeholder="Ex: Equipe Ventos do Norte">
+      <input id="event-team" class="app-form-input" type="text" placeholder="Nome da equipe">
     </div>
 
-    <div class="publish-group">
+    <div class="publish-group app-form-group">
       <label>Nome do evento</label>
-      <input id="event-title" type="text" placeholder="Ex: Festival das Bandeiras">
+      <input id="event-title" class="app-form-input" type="text" maxlength="35" autocomplete="off" placeholder="EX: FESTIVAL DAS BANDEIRAS" autocapitalize="characters" spellcheck="false" aria-describedby="event-title-hint">
+      <small id="event-title-hint" class="publish-hint publish-hint--title">Até 35 caracteres, só maiúsculas, sem emoji.</small>
     </div>
 
-    <div class="publish-group">
+    <div class="publish-row publish-row--address app-form-row">
+      <div class="publish-group publish-group--wide app-form-group">
+        <label>CEP</label>
+        <input id="event-cep" class="app-form-input" type="text" placeholder="Ex: 07012-030">
+      </div>
+
+      <div class="publish-group publish-group--narrow app-form-group">
+        <label>Número</label>
+        <input id="event-number" class="app-form-input" type="text" placeholder="Ex: 200">
+      </div>
+    </div>
+
+    <div class="publish-group app-form-group">
       <label>Cidade</label>
-      <input id="event-city" type="text" placeholder="Ex: Guarulhos">
+      <input id="event-city" class="app-form-input" type="text" placeholder="Ex: Guarulhos">
     </div>
 
-    <div class="publish-group">
+    <div class="publish-group app-form-group">
       <label>Local</label>
-      <input id="event-location" type="text" placeholder="Ex: Parque, Campo, Praça">
+      <input id="event-location" class="app-form-input" type="text" placeholder="Rua, número, bairro">
     </div>
 
-    <div class="publish-group">
-      <label>Data do evento</label>
-      <input id="event-date" type="date">
+    <div class="publish-row publish-row--meta app-form-row">
+      <div class="publish-group publish-group--date app-form-group">
+        <label>Data do evento</label>
+        <div class="publish-date-shell">
+          <input id="event-date-display" class="publish-date-display app-form-input" type="text" placeholder="dd/mm/aaaa" readonly>
+          <input id="event-date" class="publish-date-input" type="date" aria-label="Data do evento">
+        </div>
+      </div>
+
+      <div class="publish-group publish-group--instagram app-form-group">
+        <label>Instagram</label>
+        <div class="publish-prefix-field publish-prefix-shell">
+          <span class="publish-prefix">@</span>
+          <input id="event-instagram" type="text" placeholder="seuinsta">
+        </div>
+      </div>
     </div>
 
-    <div class="publish-group">
-      <label>Instagram do evento</label>
-      <input id="event-instagram" type="text" placeholder="Link do Instagram">
+    <div class="publish-group app-form-group">
+      <label>Descrição do evento (opcional)</label>
+      <textarea id="event-description" class="publish-input publish-description-input app-form-textarea" rows="2" placeholder="Regras, atrações, premiações"></textarea>
+      <small class="publish-hint">Essa descrição aparece apenas em eventos em destaque</small>
     </div>
 
-    <div class="publish-group">
+    <div class="publish-group app-form-group">
       <label>Arte do evento</label>
-      <input id="event-image" type="file" accept="image/*">
-      <small class="publish-hint" style="display:block;font-size:10px;text-align:right;opacity:0.7;margin-top:4px;">Stories: 1080×1920 px • Destaque: 1200×1200 px</small>
+      <div class="publish-file-field">
+        <button id="event-image-trigger" class="publish-file-button" type="button">Escolher arquivo</button>
+        <span id="event-image-name" class="publish-file-name">Nenhum arquivo escolhido</span>
+      </div>
+      <input id="event-image" class="publish-file-input" type="file" accept="image/*">
+      <small class="publish-hint">Recomendado: 1080x1350px</small>
     </div>
 
-    <button id="publish-event" class="publish-button">Publicar evento</button>
+    <button id="publish-event" class="publish-button app-form-submit">Publicar evento</button>
 
   </div>
 
@@ -63,18 +101,19 @@
 
 
 <script type="module">
-import { loadHeader } from "../js/header.js";
-loadHeader("Adicionar Evento");
+import { loadHeader } from "../js/header.js?v=4";
+await loadHeader("Cadastre seu Evento");
 </script>
 
 <div id="app-footer"></div>
 
 <script type="module">
-import { loadFooter } from "../js/footer.js";
+import { loadFooter } from "../js/footer.js?v=1";
 loadFooter("publish");
 </script>
 
-<script type="module" src="../js/publish.js"></script>
+<script type="module" src="../js/publish.js?v=12"></script>
+<script type="module" src="../js/pwa.js?v=5"></script>
 
 </body>
 </html>
